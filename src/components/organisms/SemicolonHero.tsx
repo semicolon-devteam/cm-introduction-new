@@ -54,36 +54,46 @@ function StarsBackground() {
   );
 }
 
-// Meteor trail particles - extends left from center
-function MeteorTrail({ progress }: { progress: number }) {
-  const particles = useMemo(() => Array.from({ length: 20 }, (_, i) => i), []);
+// Comet with long glowing tail
+function CometTrail({ x, y }: { x: number; y: number }) {
+  const particles = useMemo(() => Array.from({ length: 30 }, (_, i) => i), []);
 
   return (
     <>
-      {particles.map((i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full"
-          style={{
-            background: `radial-gradient(circle, ${COLORS.primary} 0%, transparent 70%)`,
-            filter: "blur(1px)",
-            left: "50%",
-            top: "50%",
-          }}
-          initial={{ opacity: 0, scale: 0, x: 0 }}
-          animate={{
-            opacity: progress > 0.3 ? [0, 0.8, 0] : 0,
-            scale: progress > 0.3 ? [0, 1.5, 0] : 0,
-            x: `${-i * 3}vw`, // Extends left from center
-            y: `${i * 0.3}vh`, // Slight downward curve
-          }}
-          transition={{
-            duration: 0.8,
-            delay: i * 0.03,
-            ease: "easeOut",
-          }}
-        />
-      ))}
+      {/* Comet head - bright white core */}
+      <motion.div
+        className="absolute w-3 h-3 md:w-5 md:h-5 rounded-full"
+        style={{
+          left: `${x}%`,
+          top: `${y}%`,
+          background: COLORS.white,
+          boxShadow: `0 0 20px 10px ${COLORS.white}, 0 0 40px 20px ${COLORS.primary}`,
+          filter: "blur(1px)",
+        }}
+      />
+
+      {/* Long trailing tail particles */}
+      {particles.map((i) => {
+        const offset = i * 2; // Spacing between particles
+        const opacity = Math.max(0, 1 - i / 30); // Fade out gradually
+        const size = Math.max(1, 5 - i / 6); // Get smaller towards end
+
+        return (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${x - offset * 0.5}%`,
+              top: `${y - offset * 0.3}%`,
+              width: `${size}px`,
+              height: `${size}px`,
+              background: `radial-gradient(circle, ${COLORS.primary} 0%, transparent 70%)`,
+              opacity: opacity * 0.8,
+              filter: "blur(2px)",
+            }}
+          />
+        );
+      })}
     </>
   );
 }
@@ -93,6 +103,7 @@ export function SemicolonHero() {
     "space" | "bigbang" | "meteor" | "formation" | "complete"
   >("space");
   const [skipAnimation, setSkipAnimation] = useState(false);
+  const [cometPosition, setCometPosition] = useState({ x: 50, y: 50 }); // Start at center
   const meteorProgress = useMotionValue(0);
 
   // Check for reduced motion preference
@@ -121,16 +132,25 @@ export function SemicolonHero() {
     return () => timers.forEach(clearTimeout);
   }, [skipAnimation, meteorProgress]);
 
-  // Animate meteor progress
+  // Animate meteor progress and comet movement
   useEffect(() => {
     if (animationPhase === "meteor") {
       const startTime = Date.now();
       const duration = 1500; // 1.5s
+      const startX = 50; // Center
+      const startY = 50; // Center
+      const endX = 60; // Move right
+      const endY = 40; // Move up slightly
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         meteorProgress.set(progress);
+
+        // Update comet position
+        const currentX = startX + (endX - startX) * progress;
+        const currentY = startY + (endY - startY) * progress;
+        setCometPosition({ x: currentX, y: currentY });
 
         if (progress < 1) {
           requestAnimationFrame(animate);
@@ -171,19 +191,20 @@ export function SemicolonHero() {
         )}
       </AnimatePresence>
 
-      {/* Phase 2: Big Bang - Explosion flash */}
+      {/* Phase 2: Big Bang - Explosion flash that becomes comet */}
       <AnimatePresence>
         {animationPhase === "bigbang" && (
           <>
-            {/* Central flash point */}
+            {/* Central flash point - stays visible and becomes comet head */}
             <motion.div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+              animate={{ scale: [0, 2, 1], opacity: [0, 1, 1] }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
               <div
-                className="w-4 h-4 md:w-8 md:h-8 rounded-full"
+                className="w-3 h-3 md:w-5 md:h-5 rounded-full"
                 style={{
                   background: COLORS.white,
                   boxShadow: `0 0 60px 30px ${COLORS.white}, 0 0 100px 50px ${COLORS.primary}`,
@@ -216,28 +237,9 @@ export function SemicolonHero() {
         )}
       </AnimatePresence>
 
-      {/* Phase 3: Meteor Speed - Center light with left trail */}
-      {!skipAnimation && (animationPhase === "meteor" || animationPhase === "formation") && (
-        <>
-          <MeteorTrail progress={meteorProgress.get()} />
-
-          {/* Center light (stays in center) */}
-          <motion.div
-            className="absolute w-6 h-6 md:w-10 md:h-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            initial={{ scale: 0 }}
-            animate={{ scale: animationPhase === "meteor" ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div
-              className="w-full h-full rounded-full"
-              style={{
-                background: `radial-gradient(circle, ${COLORS.white} 0%, ${COLORS.primary} 60%, transparent 100%)`,
-                boxShadow: `0 0 40px 20px ${COLORS.primary}`,
-                filter: "blur(2px)",
-              }}
-            />
-          </motion.div>
-        </>
+      {/* Phase 3: Meteor Speed - Moving comet with long tail */}
+      {!skipAnimation && animationPhase === "meteor" && (
+        <CometTrail x={cometPosition.x} y={cometPosition.y} />
       )}
 
       {/* Phase 4 & 5: Semicolon Formation and Final State */}
@@ -249,22 +251,57 @@ export function SemicolonHero() {
               initial={skipAnimation ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
+              style={
+                !skipAnimation && animationPhase === "formation"
+                  ? {
+                      position: "absolute",
+                      left: `${cometPosition.x}%`,
+                      top: `${cometPosition.y}%`,
+                      transform: "translate(-50%, -50%)",
+                    }
+                  : {}
+              }
             >
-              {/* Center Light becomes Semicolon Symbol */}
+              {/* Comet becomes Semicolon Symbol */}
               <motion.div
                 className="relative mb-6 md:mb-8"
+                initial={
+                  !skipAnimation && animationPhase === "formation"
+                    ? {
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                      }
+                    : undefined
+                }
                 animate={
                   animationPhase === "complete"
                     ? {
                         y: [0, -3, 0],
+                        position: "relative",
+                        left: "auto",
+                        top: "auto",
                       }
-                    : {}
+                    : animationPhase === "formation"
+                      ? {
+                          position: "relative",
+                          left: 0,
+                          top: 0,
+                        }
+                      : {}
                 }
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
+                transition={
+                  animationPhase === "complete"
+                    ? {
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                    : {
+                        duration: 0.8,
+                        ease: "easeOut",
+                      }
+                }
               >
                 {/* Top dot - from center light */}
                 <motion.div
