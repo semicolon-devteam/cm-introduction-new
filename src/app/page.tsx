@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
+import { SemicolonHero } from "@/components/organisms/SemicolonHero";
 import { LeaderCard } from "@/components/molecules/LeaderCard";
 import { Button } from "@/components/atoms/Button";
 import { getAllLeaders } from "@/data/leaders";
@@ -9,23 +10,12 @@ import { getAllLeaders } from "@/data/leaders";
 export default function HomePage() {
   const leaders = getAllLeaders();
 
-  console.log(leaders);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#141622] to-[#000000]">
       <Header />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-screen-xl mx-auto text-center">
-          <h1 className="text-heading-1 font-bold text-brand-white mb-6">
-            연결과 소통의 가치를 실현하다
-          </h1>
-          <p className="text-body-1 text-gray-medium max-w-3xl mx-auto">
-            세미콜론의 리더들과 함께하는 인재들을 소개합니다.
-          </p>
-        </div>
-      </section>
+      {/* Hero Section with Animation */}
+      <SemicolonHero />
 
       {/* Leaders Section */}
       <section className="py-20 px-6">
