@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 // Brand colors
@@ -54,7 +54,7 @@ function StarsBackground() {
   );
 }
 
-// Meteor trail particles
+// Meteor trail particles - extends left from center
 function MeteorTrail({ progress }: { progress: number }) {
   const particles = useMemo(() => Array.from({ length: 20 }, (_, i) => i), []);
 
@@ -67,13 +67,15 @@ function MeteorTrail({ progress }: { progress: number }) {
           style={{
             background: `radial-gradient(circle, ${COLORS.primary} 0%, transparent 70%)`,
             filter: "blur(1px)",
+            left: "50%",
+            top: "50%",
           }}
-          initial={{ opacity: 0, scale: 0 }}
+          initial={{ opacity: 0, scale: 0, x: 0 }}
           animate={{
             opacity: progress > 0.3 ? [0, 0.8, 0] : 0,
             scale: progress > 0.3 ? [0, 1.5, 0] : 0,
-            x: `${50 + progress * 100 * 0.4 - i * 2}vw`,
-            y: `${50 - i * 0.5}vh`,
+            x: `${-i * 3}vw`, // Extends left from center
+            y: `${i * 0.3}vh`, // Slight downward curve
           }}
           transition={{
             duration: 0.8,
@@ -138,9 +140,6 @@ export function SemicolonHero() {
       requestAnimationFrame(animate);
     }
   }, [animationPhase, meteorProgress]);
-
-  const meteorX = useTransform(meteorProgress, [0, 1], ["50vw", "70vw"]);
-  const meteorY = useTransform(meteorProgress, [0, 1], ["50vh", "45vh"]);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#141622] to-[#000000]">
@@ -217,18 +216,14 @@ export function SemicolonHero() {
         )}
       </AnimatePresence>
 
-      {/* Phase 3: Meteor Speed - Shooting across screen */}
+      {/* Phase 3: Meteor Speed - Center light with left trail */}
       {!skipAnimation && (animationPhase === "meteor" || animationPhase === "formation") && (
         <>
           <MeteorTrail progress={meteorProgress.get()} />
 
+          {/* Center light (stays in center) */}
           <motion.div
-            className="absolute w-6 h-6 md:w-10 md:h-10"
-            style={{
-              x: meteorX,
-              y: meteorY,
-              willChange: "transform",
-            }}
+            className="absolute w-6 h-6 md:w-10 md:h-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             initial={{ scale: 0 }}
             animate={{ scale: animationPhase === "meteor" ? 1 : 0 }}
             transition={{ duration: 0.2 }}
@@ -255,7 +250,7 @@ export function SemicolonHero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Semicolon Symbol */}
+              {/* Center Light becomes Semicolon Symbol */}
               <motion.div
                 className="relative mb-6 md:mb-8"
                 animate={
@@ -271,87 +266,65 @@ export function SemicolonHero() {
                   ease: "easeInOut",
                 }}
               >
-                <div className="text-7xl md:text-9xl font-bold flex flex-col items-center gap-2 md:gap-3">
-                  {/* Top dot */}
-                  <motion.div
-                    className="w-4 h-4 md:w-6 md:h-6 rounded-full relative"
-                    style={{
-                      backgroundColor: COLORS.white,
-                    }}
-                    initial={
-                      skipAnimation
-                        ? false
-                        : {
-                            scale: 0,
-                            x: skipAnimation
-                              ? 0
-                              : typeof window !== "undefined"
-                                ? window.innerWidth * 0.2
-                                : 0,
-                            y: skipAnimation
-                              ? 0
-                              : typeof window !== "undefined"
-                                ? -window.innerHeight * 0.05
-                                : 0,
-                          }
-                    }
-                    animate={{
-                      scale: 1,
-                      x: 0,
-                      y: 0,
-                    }}
-                    transition={
-                      skipAnimation
-                        ? {}
-                        : {
-                            duration: 0.5,
-                            ease: "easeOut",
-                            delay: 0.2,
-                          }
-                    }
-                  >
-                    {/* Glow pulse effect */}
-                    {animationPhase === "complete" && (
-                      <motion.div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                          boxShadow: `0 0 30px 10px ${COLORS.primary}`,
-                        }}
-                        animate={{
-                          opacity: [0.5, 1, 0.5],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    )}
-                  </motion.div>
+                {/* Top dot - from center light */}
+                <motion.div
+                  className="w-4 h-4 md:w-6 md:h-6 rounded-full relative mx-auto"
+                  style={{
+                    backgroundColor: COLORS.white,
+                  }}
+                  initial={skipAnimation ? false : { scale: 1.5, opacity: 1 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={
+                    skipAnimation
+                      ? {}
+                      : {
+                          duration: 0.3,
+                          ease: "easeOut",
+                          delay: 0.2,
+                        }
+                  }
+                >
+                  {/* Glow pulse effect */}
+                  {animationPhase === "complete" && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        boxShadow: `0 0 30px 10px ${COLORS.primary}`,
+                      }}
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  )}
+                </motion.div>
 
-                  {/* Bottom dot (comma part) */}
-                  <motion.div
-                    className="w-4 h-6 md:w-6 md:h-8 rounded-full rounded-br-none relative"
-                    style={{
-                      backgroundColor: COLORS.white,
-                      transform: "rotate(-15deg)",
-                    }}
-                    initial={skipAnimation ? false : { scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={
-                      skipAnimation
-                        ? {}
-                        : {
-                            duration: 0.4,
-                            delay: 0.4,
-                            ease: "easeOut",
-                          }
-                    }
-                  />
-                </div>
+                {/* Bottom dot (comma part) - grows downward from top dot */}
+                <motion.div
+                  className="w-4 h-6 md:w-6 md:h-8 rounded-full rounded-br-none relative mx-auto mt-2 md:mt-3"
+                  style={{
+                    backgroundColor: COLORS.white,
+                    transform: "rotate(-15deg)",
+                  }}
+                  initial={skipAnimation ? false : { scaleY: 0, opacity: 0, originY: 0 }}
+                  animate={{ scaleY: 1, opacity: 1 }}
+                  transition={
+                    skipAnimation
+                      ? {}
+                      : {
+                          duration: 0.3,
+                          delay: 0.4,
+                          ease: "easeOut",
+                        }
+                  }
+                />
               </motion.div>
 
-              {/* SEMICOLON Logo Typography - Center-outward reveal */}
+              {/* SEMICOLON Logo Typography - Spreads from semicolon */}
               <motion.div
                 className="flex items-center justify-center gap-1 md:gap-2 mb-12 md:mb-16"
                 initial={skipAnimation ? false : { opacity: 0 }}
@@ -360,45 +333,45 @@ export function SemicolonHero() {
                   skipAnimation
                     ? {}
                     : {
-                        duration: 0.5,
-                        delay: 0.6,
+                        duration: 0.3,
+                        delay: 0.5,
                       }
                 }
               >
-                {/* Left letters: S-E-M (reverse order for positioning) */}
+                {/* Left letters: S-E-M (expand leftward) */}
                 <motion.div className="flex items-center gap-1 md:gap-2">
                   <motion.div
                     className="relative w-8 h-8 md:w-12 md:h-12"
-                    initial={skipAnimation ? false : { opacity: 0, x: 20 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.1, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 1.0, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-s.svg" alt="S" fill className="object-contain" />
                   </motion.div>
                   <motion.div
                     className="relative w-6 h-6 md:w-9 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: 15 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.0, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 0.9, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-e.svg" alt="E" fill className="object-contain" />
                   </motion.div>
                   <motion.div
                     className="relative w-6 h-6 md:w-9 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: 10 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 0.9, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 0.8, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-m.svg" alt="M" fill className="object-contain" />
                   </motion.div>
                 </motion.div>
 
-                {/* Center: Semicolon (;) - appears first, replaces I */}
+                {/* Center: Semicolon (;) - appears after tail forms */}
                 <motion.div
                   className="relative w-3 h-8 md:w-4 md:h-10 mx-1 md:mx-2"
-                  initial={skipAnimation ? false : { opacity: 0, scale: 0.5 }}
+                  initial={skipAnimation ? false : { opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={skipAnimation ? {} : { duration: 0.4, delay: 0.7, ease: "easeOut" }}
+                  transition={skipAnimation ? {} : { duration: 0.3, delay: 0.6, ease: "easeOut" }}
                 >
                   <Image
                     src="/images/logo/logo-semicolon.svg"
@@ -408,42 +381,55 @@ export function SemicolonHero() {
                   />
                 </motion.div>
 
-                {/* Right letters: C-O-L-O-N */}
+                {/* Right letters: C-O-L-O-N (expand rightward) */}
                 <motion.div className="flex items-center gap-1 md:gap-2">
                   <motion.div
                     className="relative w-6 h-6 md:w-9 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: -10 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 0.9, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 0.8, ease: "easeOut" }}
                   >
                     <Image
-                      src="/images/logo/logo-i-o.svg"
+                      src="/images/logo/logo-i-c.svg"
                       alt="C"
                       fill
                       className="object-contain"
                     />
                   </motion.div>
                   <motion.div
-                    className="relative w-6 h-6 md:w-8 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: -15 }}
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.0, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 0.9, ease: "easeOut" }}
+                  >
+                    <Image
+                      src="/images/logo/logo-i-o.svg"
+                      alt="O"
+                      fill
+                      className="object-contain"
+                    />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-8 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 1.0, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-l.svg" alt="L" fill className="object-contain" />
                   </motion.div>
                   <motion.div
                     className="relative w-6 h-6 md:w-9 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: -20 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.1, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 1.1, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-o.svg" alt="O" fill className="object-contain" />
                   </motion.div>
                   <motion.div
                     className="relative w-6 h-6 md:w-9 md:h-9"
-                    initial={skipAnimation ? false : { opacity: 0, x: -25 }}
+                    initial={skipAnimation ? false : { opacity: 0, x: -60 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.2, ease: "easeOut" }}
+                    transition={skipAnimation ? {} : { duration: 0.4, delay: 1.2, ease: "easeOut" }}
                   >
                     <Image src="/images/logo/logo-n.svg" alt="N" fill className="object-contain" />
                   </motion.div>
