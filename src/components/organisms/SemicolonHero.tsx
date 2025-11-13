@@ -4,6 +4,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // Brand colors
 const COLORS = {
@@ -39,7 +40,10 @@ function Star({ delay }: { delay: number }) {
 
 // Stars background component
 function StarsBackground() {
-  const stars = useMemo(() => Array.from({ length: 50 }, (_, i) => ({ id: i, delay: Math.random() * 2 })), []);
+  const stars = useMemo(
+    () => Array.from({ length: 50 }, (_, i) => ({ id: i, delay: Math.random() * 2 })),
+    [],
+  );
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -83,9 +87,9 @@ function MeteorTrail({ progress }: { progress: number }) {
 }
 
 export function SemicolonHero() {
-  const [animationPhase, setAnimationPhase] = useState<"space" | "bigbang" | "meteor" | "formation" | "complete">(
-    "space"
-  );
+  const [animationPhase, setAnimationPhase] = useState<
+    "space" | "bigbang" | "meteor" | "formation" | "complete"
+  >("space");
   const [skipAnimation, setSkipAnimation] = useState(false);
   const meteorProgress = useMotionValue(0);
 
@@ -279,8 +283,16 @@ export function SemicolonHero() {
                         ? false
                         : {
                             scale: 0,
-                            x: skipAnimation ? 0 : typeof window !== "undefined" ? window.innerWidth * 0.2 : 0,
-                            y: skipAnimation ? 0 : typeof window !== "undefined" ? -window.innerHeight * 0.05 : 0,
+                            x: skipAnimation
+                              ? 0
+                              : typeof window !== "undefined"
+                                ? window.innerWidth * 0.2
+                                : 0,
+                            y: skipAnimation
+                              ? 0
+                              : typeof window !== "undefined"
+                                ? -window.innerHeight * 0.05
+                                : 0,
                           }
                     }
                     animate={{
@@ -339,48 +351,103 @@ export function SemicolonHero() {
                 </div>
               </motion.div>
 
-              {/* SEMICOLON Typography */}
+              {/* SEMICOLON Logo Typography - Center-outward reveal */}
               <motion.div
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-[0.3em] md:tracking-[0.5em] text-white mb-12 md:mb-16"
-                initial={
-                  skipAnimation
-                    ? false
-                    : {
-                        scaleX: 0,
-                        opacity: 0,
-                      }
-                }
-                animate={{
-                  scaleX: 1,
-                  opacity: 1,
-                }}
+                className="flex items-center justify-center gap-1 md:gap-2 mb-12 md:mb-16"
+                initial={skipAnimation ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={
                   skipAnimation
                     ? {}
                     : {
-                        duration: 0.8,
+                        duration: 0.5,
                         delay: 0.6,
-                        ease: "easeOut",
                       }
                 }
               >
-                {"SEMICOLON".split("").map((letter, i) => (
-                  <motion.span
-                    key={i}
-                    initial={skipAnimation ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={
-                      skipAnimation
-                        ? {}
-                        : {
-                            duration: 0.1,
-                            delay: 0.8 + i * 0.05,
-                          }
-                    }
+                {/* Left letters: S-E-M (reverse order for positioning) */}
+                <motion.div className="flex items-center gap-1 md:gap-2">
+                  <motion.div
+                    className="relative w-8 h-8 md:w-12 md:h-12"
+                    initial={skipAnimation ? false : { opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.1, ease: "easeOut" }}
                   >
-                    {letter}
-                  </motion.span>
-                ))}
+                    <Image src="/images/logo/logo-s.svg" alt="S" fill className="object-contain" />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: 15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.0, ease: "easeOut" }}
+                  >
+                    <Image src="/images/logo/logo-e.svg" alt="E" fill className="object-contain" />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 0.9, ease: "easeOut" }}
+                  >
+                    <Image src="/images/logo/logo-m.svg" alt="M" fill className="object-contain" />
+                  </motion.div>
+                </motion.div>
+
+                {/* Center: Semicolon (;) - appears first, replaces I */}
+                <motion.div
+                  className="relative w-3 h-8 md:w-4 md:h-10 mx-1 md:mx-2"
+                  initial={skipAnimation ? false : { opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={skipAnimation ? {} : { duration: 0.4, delay: 0.7, ease: "easeOut" }}
+                >
+                  <Image
+                    src="/images/logo/logo-semicolon.svg"
+                    alt=";"
+                    fill
+                    className="object-contain"
+                  />
+                </motion.div>
+
+                {/* Right letters: C-O-L-O-N */}
+                <motion.div className="flex items-center gap-1 md:gap-2">
+                  <motion.div
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 0.9, ease: "easeOut" }}
+                  >
+                    <Image
+                      src="/images/logo/logo-i-o.svg"
+                      alt="C"
+                      fill
+                      className="object-contain"
+                    />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-8 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -15 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.0, ease: "easeOut" }}
+                  >
+                    <Image src="/images/logo/logo-l.svg" alt="L" fill className="object-contain" />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.1, ease: "easeOut" }}
+                  >
+                    <Image src="/images/logo/logo-o.svg" alt="O" fill className="object-contain" />
+                  </motion.div>
+                  <motion.div
+                    className="relative w-6 h-6 md:w-9 md:h-9"
+                    initial={skipAnimation ? false : { opacity: 0, x: -25 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={skipAnimation ? {} : { duration: 0.3, delay: 1.2, ease: "easeOut" }}
+                  >
+                    <Image src="/images/logo/logo-n.svg" alt="N" fill className="object-contain" />
+                  </motion.div>
+                </motion.div>
               </motion.div>
 
               {/* Hero Text - Korean */}
