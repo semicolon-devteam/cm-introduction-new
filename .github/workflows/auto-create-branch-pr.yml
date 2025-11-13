@@ -1,0 +1,185 @@
+name: Auto Create Branch and Draft PR
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-branch-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Check Label is ready-for-dev
+        id: check_label
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labelName = context.payload.label.name;
+            const issue = context.payload.issue;
+
+            console.log(`Label added: ${labelName}`);
+            console.log(`Issue #${issue.number}: ${issue.title}`);
+
+            // 'ready-for-dev' 라벨이 아니면 종료
+            if (labelName !== 'ready-for-dev') {
+              console.log('Not ready-for-dev label, skipping');
+              core.setOutput('should_create', 'false');
+              return;
+            }
+
+            console.log('ready-for-dev label detected!');
+
+            // 이슈 본문에서 Branch 정보 추출
+            const branchMatch = issue.body.match(/> 🌿 \*\*Branch\*\*: `(\d+-[a-z0-9-]+)`/);
+
+            if (!branchMatch) {
+              console.log('No branch name found in issue body');
+              core.setOutput('should_create', 'false');
+
+              // 브랜치명이 없으면 이슈에 코멘트
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '⚠️ 이슈 본문에서 브랜치명을 찾을 수 없습니다. Epic/Bug to Tasks로 생성된 이슈인지 확인해주세요.'
+              });
+              return;
+            }
+
+            const branchName = branchMatch[1];
+            console.log(`Branch name: ${branchName}`);
+
+            core.setOutput('should_create', 'true');
+            core.setOutput('issue_number', issue.number);
+            core.setOutput('issue_title', issue.title);
+            core.setOutput('branch_name', branchName);
+            core.setOutput('repo_name', context.repo.repo);
+            core.setOutput('repo_owner', context.repo.owner);
+
+      - name: Checkout Repository
+        if: steps.check_label.outputs.should_create == 'true'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create Branch
+        if: steps.check_label.outputs.should_create == 'true'
+        id: create_branch
+        run: |
+          BRANCH_NAME="${{ steps.check_label.outputs.branch_name }}"
+
+          # Check if branch already exists
+          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+            echo "Branch $BRANCH_NAME already exists"
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            # Create branch from dev (or main if dev doesn't exist)
+            if git ls-remote --heads origin "dev" | grep -q "dev"; then
+              BASE_BRANCH="dev"
+            else
+              BASE_BRANCH="main"
+            fi
+
+            echo "Creating branch $BRANCH_NAME from $BASE_BRANCH"
+            git checkout -b "$BRANCH_NAME" "origin/$BASE_BRANCH"
+            git push origin "$BRANCH_NAME"
+
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+            echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Draft PR
+        if: steps.check_label.outputs.should_create == 'true' && steps.create_branch.outputs.branch_exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branchName = '${{ steps.check_label.outputs.branch_name }}';
+            const baseBranch = '${{ steps.create_branch.outputs.base_branch }}' || 'dev';
+            const issueNumber = '${{ steps.check_label.outputs.issue_number }}';
+            const issueTitle = '${{ steps.check_label.outputs.issue_title }}';
+
+            // PR 제목: 이슈 제목과 동일
+            const prTitle = issueTitle;
+
+            // PR 본문: 이슈 링크 (Closes 대신 Related to 사용하여 자동 종료 방지)
+            const prBody = `Related to #${issueNumber}
+
+            ## 작업 내용
+            <!-- 이 PR에서 수행한 작업을 간단히 설명해주세요 -->
+
+            ## 테스트
+            <!-- 테스트 방법을 설명해주세요 -->
+            - [ ] 단위 테스트 작성 및 통과
+            - [ ] 통합 테스트 통과
+            - [ ] 로컬 환경에서 동작 확인
+
+            ## 체크리스트
+            - [ ] 코드 리뷰 준비 완료
+            - [ ] 테스트 코드 작성 완료
+            - [ ] 문서 업데이트 완료 (필요한 경우)
+
+            ---
+            🤖 이 PR은 Task 이슈 #${issueNumber}에 'ready-for-dev' 라벨이 추가되면서 자동 생성되었습니다.
+            ℹ️ PR이 머지되면 Status가 '리뷰요청'으로 변경되지만 이슈는 자동으로 닫히지 않습니다.`;
+
+            try {
+              const { data: pr } = await github.rest.pulls.create({
+                owner,
+                repo,
+                title: prTitle,
+                head: branchName,
+                base: baseBranch,
+                body: prBody,
+                draft: true
+              });
+
+              console.log(`✅ Draft PR created: ${pr.html_url}`);
+
+              // 이슈에 PR 링크 코멘트 추가
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `🚀 Draft PR이 자동으로 생성되었습니다: ${pr.html_url}\n\n브랜치: \`${branchName}\`\n\n작업을 시작하려면 해당 브랜치를 체크아웃하고 코드를 작성한 후 PR을 "Ready for review" 상태로 변경해주세요.`
+              });
+
+              console.log('✅ Comment added to issue');
+
+            } catch (error) {
+              console.error('Error creating PR:', error);
+
+              // PR 생성 실패 시 이슈에 에러 코멘트 추가
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `⚠️ Draft PR 자동 생성에 실패했습니다.\n\n에러: ${error.message}\n\n수동으로 PR을 생성해주세요.`
+              });
+            }
+
+      - name: Comment if Branch Already Exists
+        if: steps.check_label.outputs.should_create == 'true' && steps.create_branch.outputs.branch_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issueNumber = '${{ steps.check_label.outputs.issue_number }}';
+            const branchName = '${{ steps.check_label.outputs.branch_name }}';
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: `ℹ️ 브랜치 \`${branchName}\`가 이미 존재합니다. 기존 PR을 확인하거나 새로운 PR을 수동으로 생성해주세요.`
+            });

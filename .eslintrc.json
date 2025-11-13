@@ -1,0 +1,183 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["@typescript-eslint", "import"],
+  "rules": {
+    // Phase 1: 경고로 시작 (현재 단계) - 점진적 적용
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    // TypeScript strict: false와 일치하도록 unsafe 규칙들 비활성화
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+
+    // 함수 반환 타입 - 라이브 안전성을 위해 완화
+    "@typescript-eslint/explicit-function-return-type": [
+      "off",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true,
+        "allowHigherOrderFunctions": true,
+        "allowDirectConstAssertionInArrowFunctions": true
+      }
+    ],
+
+    // 네이밍 규칙 - snake_case 허용 (API response)
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "default",
+        "format": ["camelCase", "PascalCase", "UPPER_CASE"],
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": "variable",
+        "format": ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": "property",
+        "format": null
+      },
+      {
+        "selector": "typeLike",
+        "format": ["PascalCase"]
+      }
+    ],
+
+    // Promise 관련 - 경고로 완화
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/await-thenable": "warn",
+    "@typescript-eslint/promise-function-async": "off",
+
+    // Prettier와 충돌 방지 - 포매팅은 Prettier에게 위임
+    "comma-dangle": "off",
+    "quotes": "off",
+    "semi": "off",
+
+    // 복잡도 - 현실적인 수준으로 조정 (임시 주석 처리)
+    // "max-lines-per-function": ["error", 80],
+    "max-lines": ["error", 400],
+    "complexity": ["warn", 25],
+
+    // Import 순서 - 경고로 시작
+    "import/order": [
+      "warn",
+      {
+        "groups": [["builtin", "external"], "internal", ["parent", "sibling"], "index", "type"],
+        "newlines-between": "always"
+      }
+    ],
+
+    // 기타 규칙
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/prefer-optional-chain": "warn",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+
+    // React 규칙
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-html-link-for-pages": "error",
+
+    // Next.js Image 규칙 - img 태그 대신 next/image 강제
+    "@next/next/no-img-element": "error",
+
+    // SVG 규칙 - 인라인 SVG 대신 파일 사용 강제
+    "react/forbid-elements": [
+      "error",
+      {
+        "forbid": [
+          {
+            "element": "svg",
+            "message": "인라인 SVG 대신 파일(.svg)을 사용해주세요. next/image 또는 img 태그로 svg 파일을 불러오세요."
+          }
+        ]
+      }
+    ],
+
+    // Import 경로 규칙 - 2단계 이상 상위 디렉토리 상대 경로 금지, alias 사용 강제
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../../*", "../../*/**"],
+            "message": "2단계 이상 상위 디렉토리 import 대신 path alias를 사용해주세요. (예: @atoms, @molecules, @organisms, @hooks, @services, @redux, @util 등)"
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": ["src/lib/supabase/database.types.ts"],
+      "rules": {
+        "max-lines": "off"
+      }
+    },
+    {
+      "files": ["src/app/api/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    },
+    {
+      "files": ["src/app/**/*.tsx", "src/app/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "out/",
+    "public/",
+    "*.config.js",
+    "*.config.ts",
+    "coverage/",
+    "scripts/",
+    ".bmad-core/",
+    ".eslintrc.*.js",
+    "examples/"
+  ]
+}

@@ -1,0 +1,179 @@
+name: Update Project Status on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  update-status:
+    # PR이 머지된 경우에만 실행
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Update Issue Status to Review Requested
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECTS_PAT }}
+          script: |
+            const pr = context.payload.pull_request;
+            const prBody = pr.body || '';
+
+            console.log('📋 PR이 머지되었습니다:', pr.html_url);
+
+            // PR 본문에서 이슈 번호 추출 (Related to #123 패턴)
+            const issueMatch = prBody.match(/Related to #(\d+)/i);
+
+            if (!issueMatch) {
+              console.log('⚠️ PR 본문에서 관련 이슈를 찾을 수 없습니다.');
+              return;
+            }
+
+            const issueNumber = parseInt(issueMatch[1]);
+            console.log(`🔍 관련 이슈: #${issueNumber}`);
+
+            try {
+              // 1. 이슈가 속한 프로젝트 아이템 찾기
+              const projectQuery = `
+                query($org: String!, $projectNumber: Int!, $issueNumber: Int!, $repo: String!) {
+                  organization(login: $org) {
+                    projectV2(number: $projectNumber) {
+                      id
+                      items(first: 100) {
+                        nodes {
+                          id
+                          content {
+                            ... on Issue {
+                              number
+                              repository {
+                                name
+                              }
+                            }
+                          }
+                          fieldValues(first: 20) {
+                            nodes {
+                              ... on ProjectV2ItemFieldSingleSelectValue {
+                                id
+                                name
+                                field {
+                                  ... on ProjectV2SingleSelectField {
+                                    id
+                                    name
+                                    options {
+                                      id
+                                      name
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+
+              const projectData = await github.graphql(projectQuery, {
+                org: 'semicolon-devteam',
+                projectNumber: 1,
+                issueNumber: issueNumber,
+                repo: context.repo.repo
+              });
+
+              const project = projectData.organization.projectV2;
+              const projectItem = project.items.nodes.find(item => {
+                return item.content &&
+                       item.content.number === issueNumber &&
+                       item.content.repository.name === context.repo.repo;
+              });
+
+              if (!projectItem) {
+                console.log('⚠️ 프로젝트에서 해당 이슈를 찾을 수 없습니다.');
+                return;
+              }
+
+              console.log(`✅ 프로젝트 아이템 찾음: ${projectItem.id}`);
+
+              // 2. Status 필드 찾기
+              const statusFieldValue = projectItem.fieldValues.nodes.find(
+                fv => fv.field && fv.field.name === 'Status'
+              );
+
+              if (!statusFieldValue || !statusFieldValue.field) {
+                console.log('⚠️ Status 필드를 찾을 수 없습니다.');
+                return;
+              }
+
+              const statusField = statusFieldValue.field;
+              const currentStatus = statusFieldValue.name;
+
+              console.log(`현재 Status: "${currentStatus}"`);
+
+              // 3. '리뷰요청' 옵션 ID 찾기
+              const reviewRequestedOption = statusField.options.find(
+                opt => opt.name === '리뷰요청'
+              );
+
+              if (!reviewRequestedOption) {
+                console.log('⚠️ "리뷰요청" Status 옵션을 찾을 수 없습니다.');
+                console.log('사용 가능한 옵션:', statusField.options.map(o => o.name).join(', '));
+                return;
+              }
+
+              console.log(`"리뷰요청" 옵션 ID: ${reviewRequestedOption.id}`);
+
+              // 4. Status 업데이트
+              const updateMutation = `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: {
+                        singleSelectOptionId: $optionId
+                      }
+                    }
+                  ) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }
+              `;
+
+              await github.graphql(updateMutation, {
+                projectId: project.id,
+                itemId: projectItem.id,
+                fieldId: statusField.id,
+                optionId: reviewRequestedOption.id
+              });
+
+              console.log(`✅ Status를 "${currentStatus}" → "리뷰요청"으로 변경했습니다.`);
+
+              // 5. 이슈에 코멘트 추가
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: `🎉 PR #${pr.number}이 머지되었습니다!\n\n프로젝트 Status가 "리뷰요청"으로 변경되었습니다. 리뷰어의 검수를 기다려주세요.`
+              });
+
+              console.log('✅ 이슈에 코멘트를 추가했습니다.');
+
+            } catch (error) {
+              console.error('❌ Status 업데이트 중 오류 발생:', error);
+
+              // 에러 시에도 이슈에 알림
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: `⚠️ PR #${pr.number}이 머지되었으나, Status 자동 업데이트에 실패했습니다.\n\n수동으로 Status를 "리뷰요청"으로 변경해주세요.\n\n에러: ${error.message}`
+              });
+            }
