@@ -27,17 +27,33 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Mobile: Horizontal scroll, Desktop: Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* <div className="flex md:hidden overflow-x-auto gap-4 pb-4 -mx-6 px-6 snap-x snap-mandatory"> */}
             {leaders.map((leader) => (
-              <LeaderCard
-                key={leader.id}
-                slug={leader.slug}
-                name={leader.name}
-                nickname={leader.nickname}
-                profileImage={leader.profileImage}
-                skills={leader.skills}
-              />
+              <div key={leader.id} className="flex-shrink-0 snap-start">
+                <LeaderCard
+                  slug={leader.slug}
+                  name={leader.name}
+                  nickname={leader.nickname}
+                  profileImage={leader.profileImage}
+                  skills={leader.skills}
+                />
+              </div>
             ))}
+            {/* </div> */}
+            {/* <div className="hidden md:contents">
+              {leaders.map((leader) => (
+                <LeaderCard
+                  key={leader.id}
+                  slug={leader.slug}
+                  name={leader.name}
+                  nickname={leader.nickname}
+                  profileImage={leader.profileImage}
+                  skills={leader.skills}
+                />
+              ))}
+            </div> */}
           </div>
         </div>
       </section>

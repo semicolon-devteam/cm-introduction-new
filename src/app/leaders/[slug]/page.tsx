@@ -36,7 +36,7 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
             <div className="flex flex-col lg:flex-row gap-12 items-start">
               {/* Profile Image */}
               <div className="w-full lg:w-auto flex-shrink-0">
-                <div className="relative w-64 h-64 mx-auto lg:mx-0 rounded-8 overflow-hidden bg-brand-surface">
+                <div className="relative w-full lg:w-80 aspect-square rounded-8 overflow-hidden bg-brand-surface">
                   <Image
                     src={leader.profileImage}
                     alt={`${leader.name} profile`}
@@ -147,17 +147,33 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
               <h2 className="text-heading-2 font-bold text-brand-white mb-8 text-center">
                 다른 리더들
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Mobile: Horizontal scroll, Desktop: Grid */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* <div className="flex md:hidden overflow-x-auto gap-4 pb-4 -mx-6 px-6 snap-x snap-mandatory"> */}
                 {otherLeaders.map((otherLeader) => (
-                  <LeaderCard
-                    key={otherLeader.id}
-                    slug={otherLeader.slug}
-                    name={otherLeader.name}
-                    nickname={otherLeader.nickname}
-                    profileImage={otherLeader.profileImage}
-                    skills={otherLeader.skills}
-                  />
+                  <div key={otherLeader.id} className="flex-shrink-0 snap-start">
+                    <LeaderCard
+                      slug={otherLeader.slug}
+                      name={otherLeader.name}
+                      nickname={otherLeader.nickname}
+                      profileImage={otherLeader.profileImage}
+                      skills={otherLeader.skills}
+                    />
+                  </div>
                 ))}
+                {/* </div> */}
+                {/* <div className="hidden md:contents">
+                  {otherLeaders.map((otherLeader) => (
+                    <LeaderCard
+                      key={otherLeader.id}
+                      slug={otherLeader.slug}
+                      name={otherLeader.name}
+                      nickname={otherLeader.nickname}
+                      profileImage={otherLeader.profileImage}
+                      skills={otherLeader.skills}
+                    />
+                  ))}
+                </div> */}
               </div>
             </div>
           </section>
