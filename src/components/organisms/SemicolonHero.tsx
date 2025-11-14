@@ -88,20 +88,22 @@ function StarsBackground() {
 }
 
 // Enhanced Comet with massive particle burst effect
-function CometTrail({ progress }: { progress: number }) {
+function CometTrail({ progress, phase }: { progress: number; phase?: string }) {
   const particles = useMemo(() => Array.from({ length: 800 }, (_, i) => i), []); // 800 particles for dense light effect!
 
-  // Fixed center position
-  const centerX = 50;
-  const centerY = 50;
+  // Adjusted center position to match semicolon symbol placement
+  const centerX = 48; // Slightly left for better alignment
+  const centerY = 42; // Slightly up for better alignment
 
-  // Tail direction - moving from upper-left to center (so tail goes opposite)
-  const moveDirection = { x: 1, y: 0.6 }; // Moving toward lower-right
-  const tailDirection = { x: -1, y: -0.6 }; // Tail in opposite direction (upper-left)
+  // Tail direction - particles scatter in opposite direction (upper-left)
+  const tailDirection = { x: -1, y: -0.6 };
+
+  // Fade out during formation phase
+  const opacity = phase === "formation" ? 0 : 1;
 
   return (
     <>
-      {/* Comet head - stays at center, bright white core */}
+      {/* Comet head - stays at center, bright white core, fades out when semicolon appears */}
       <motion.div
         className="absolute w-3 h-3 md:w-5 md:h-5 rounded-full"
         style={{
@@ -115,6 +117,7 @@ function CometTrail({ progress }: { progress: number }) {
         }}
         animate={{
           scale: [1, 1.3, 1],
+          opacity: opacity,
         }}
         transition={{
           duration: 0.4,
@@ -126,20 +129,22 @@ function CometTrail({ progress }: { progress: number }) {
       {/* Continuous particle emission - particles spawn throughout animation */}
       {particles.map((i) => {
         // Each particle has its own lifecycle timing
-        const particleSpawnTime = (i / particles.length) * 0.8; // Particles spawn progressively over 80% of animation
+        const particleSpawnTime = (i / particles.length) * 0.6; // Particles spawn only during first 60% (1.5s out of 2.5s)
         const particleAge = Math.max(0, progress - particleSpawnTime); // How long this particle has existed
-        const particleLifetime = 0.4; // Each particle lives for 40% of total animation time
+        const particleLifetime = 0.6; // Each particle lives longer (60% = 1.5s) to fully disperse
 
         // Particle visibility based on age
         const isSpawned = progress >= particleSpawnTime;
         const particleProgress = Math.min(particleAge / particleLifetime, 1);
         const fadeIn = Math.min(particleProgress * 5, 1); // Quick fade in
-        const fadeOut = Math.max(0, 1 - (particleProgress - 0.6) * 2.5); // Fade out in last 40%
+        const fadeOut = Math.max(0, 1 - (particleProgress - 0.5) * 2); // Start fading out after 50% of lifetime
 
+        // Hide all particles during formation phase (waiting period)
+        if (phase === "formation") return null;
         if (!isSpawned || particleProgress > 1) return null;
 
-        // Particle movement from center
-        const travelDistance = particleAge * 150; // How far particle has traveled
+        // Particle movement from center - travel faster and farther to leave screen
+        const travelDistance = particleAge * 250; // Increased from 150 to 250 for faster dispersion
         const baseOpacity = 0.8;
 
         // Smaller particles for light effect (1-5px)
@@ -204,8 +209,8 @@ export function SemicolonHero() {
       setTimeout(() => {
         setAnimationPhase("formation");
         setMeteorProgress(1);
-      }, 4500), // 4.5s: Meteor Speed (extended)
-      setTimeout(() => setAnimationPhase("complete"), 5500), // 5.5s: Formation
+      }, 5500), // 5.5s: Meteor finishes + wait for particles to clear
+      setTimeout(() => setAnimationPhase("complete"), 6500), // 6.5s: Formation (after particles clear)
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -215,7 +220,7 @@ export function SemicolonHero() {
   useEffect(() => {
     if (animationPhase === "meteor") {
       const startTime = Date.now();
-      const duration = 2500; // 2.5s
+      const duration = 2500; // 2.5s: Original meteor movement duration
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -225,6 +230,7 @@ export function SemicolonHero() {
         if (progress < 1) {
           requestAnimationFrame(animate);
         }
+        // After reaching 1.0, meteor stops but particles continue to disperse
       };
 
       requestAnimationFrame(animate);
@@ -246,20 +252,20 @@ export function SemicolonHero() {
         </button>
       )}
 
-      {/* Stars background - visible throughout, moves with meteor */}
+      {/* Stars background - visible throughout, moves rapidly with meteor */}
       {!skipAnimation && (
         <motion.div
           animate={
             animationPhase === "meteor"
               ? {
-                  x: ["0%", "10%"], // Move right (opposite of tail direction)
-                  y: ["0%", "6%"], // Move down
+                  x: ["0%", "30%"], // Move right faster (opposite of tail direction)
+                  y: ["0%", "18%"], // Move down faster
                 }
               : { x: "0%", y: "0%" }
           }
           transition={{
             duration: 2.5,
-            ease: "easeOut",
+            ease: [0.25, 0.1, 0.25, 1], // Custom easing for more dynamic movement
           }}
         >
           <StarsBackground />
@@ -282,9 +288,14 @@ export function SemicolonHero() {
       <AnimatePresence>
         {(animationPhase === "bigbang" || animationPhase === "meteor") && (
           <>
-            {/* Central flash point - stays visible and smoothly transitions to comet */}
+            {/* Central flash point - matches comet position (48%, 42%) */}
             <motion.div
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="absolute"
+              style={{
+                left: "48%",
+                top: "42%",
+                transform: "translate(-50%, -50%)",
+              }}
               initial={{ scale: 0, opacity: 0 }}
               animate={
                 animationPhase === "bigbang"
@@ -307,12 +318,15 @@ export function SemicolonHero() {
               />
             </motion.div>
 
-            {/* Radial burst effect - only during bigbang */}
+            {/* Radial burst effect - only during bigbang, centered at comet position */}
             {animationPhase === "bigbang" && (
               <>
                 <motion.div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw]"
+                  className="absolute w-[200vw] h-[200vw]"
                   style={{
+                    left: "48%",
+                    top: "42%",
+                    transform: "translate(-50%, -50%)",
                     background: `radial-gradient(circle, ${COLORS.white} 0%, ${COLORS.primary}40 10%, transparent 40%)`,
                   }}
                   initial={{ scale: 0, opacity: 0 }}
@@ -337,7 +351,9 @@ export function SemicolonHero() {
       </AnimatePresence>
 
       {/* Phase 3: Meteor Speed - Fixed center with extending tail */}
-      {!skipAnimation && animationPhase === "meteor" && <CometTrail progress={meteorProgress} />}
+      {!skipAnimation && (animationPhase === "meteor" || animationPhase === "formation") && (
+        <CometTrail progress={meteorProgress} phase={animationPhase} />
+      )}
 
       {/* Phase 4 & 5: Semicolon Formation and Final State */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
@@ -359,106 +375,7 @@ export function SemicolonHero() {
                   : {}
               }
             >
-              {/* Comet becomes Semicolon Symbol */}
-              <motion.div
-                className="relative mb-6 md:mb-8"
-                initial={
-                  !skipAnimation && animationPhase === "formation"
-                    ? {
-                        position: "absolute",
-                        left: 0,
-                        top: 0,
-                      }
-                    : undefined
-                }
-                animate={
-                  animationPhase === "complete"
-                    ? {
-                        y: [0, -3, 0],
-                        position: "relative",
-                        left: "auto",
-                        top: "auto",
-                      }
-                    : animationPhase === "formation"
-                      ? {
-                          position: "relative",
-                          left: 0,
-                          top: 0,
-                        }
-                      : {}
-                }
-                transition={
-                  animationPhase === "complete"
-                    ? {
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }
-                    : {
-                        duration: 0.8,
-                        ease: "easeOut",
-                      }
-                }
-              >
-                {/* Top dot - from center light */}
-                <motion.div
-                  className="w-4 h-4 md:w-6 md:h-6 rounded-full relative mx-auto"
-                  style={{
-                    backgroundColor: COLORS.white,
-                  }}
-                  initial={skipAnimation ? false : { scale: 1.5, opacity: 1 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={
-                    skipAnimation
-                      ? {}
-                      : {
-                          duration: 0.3,
-                          ease: "easeOut",
-                          delay: 0.2,
-                        }
-                  }
-                >
-                  {/* Glow pulse effect */}
-                  {animationPhase === "complete" && (
-                    <motion.div
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        boxShadow: `0 0 30px 10px ${COLORS.primary}`,
-                      }}
-                      animate={{
-                        opacity: [0.5, 1, 0.5],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  )}
-                </motion.div>
-
-                {/* Bottom dot (comma part) - grows downward from top dot */}
-                <motion.div
-                  className="w-4 h-6 md:w-6 md:h-8 rounded-full rounded-br-none relative mx-auto mt-2 md:mt-3"
-                  style={{
-                    backgroundColor: COLORS.white,
-                    transform: "rotate(-15deg)",
-                  }}
-                  initial={skipAnimation ? false : { scaleY: 0, opacity: 0, originY: 0 }}
-                  animate={{ scaleY: 1, opacity: 1 }}
-                  transition={
-                    skipAnimation
-                      ? {}
-                      : {
-                          duration: 0.3,
-                          delay: 0.4,
-                          ease: "easeOut",
-                        }
-                  }
-                />
-              </motion.div>
-
-              {/* SEMICOLON Logo Typography - Spreads from semicolon with spring effect */}
+              {/* SEM I COLON Typography - Symbol as 'I', spreads left and right */}
               <motion.div
                 className="flex items-center justify-center gap-1 md:gap-2 mb-12 md:mb-16"
                 initial={skipAnimation ? false : { opacity: 0 }}
@@ -527,28 +444,129 @@ export function SemicolonHero() {
                   </motion.div>
                 </motion.div>
 
-                {/* Center: Semicolon (;) - appears after tail forms */}
+                {/* Center: Semicolon Symbol as 'I' - appears from comet */}
                 <motion.div
-                  className="relative w-3 h-8 md:w-4 md:h-10 mx-1 md:mx-2"
-                  initial={skipAnimation ? false : { opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  className="relative mb-0"
+                  initial={
+                    !skipAnimation && animationPhase === "formation"
+                      ? {
+                          position: "absolute",
+                          left: 0,
+                          top: 0,
+                        }
+                      : undefined
+                  }
+                  animate={
+                    animationPhase === "complete"
+                      ? {
+                          y: [0, -3, 0],
+                          position: "relative",
+                          left: "auto",
+                          top: "auto",
+                        }
+                      : animationPhase === "formation"
+                        ? {
+                            position: "relative",
+                            left: 0,
+                            top: 0,
+                          }
+                        : {}
+                  }
                   transition={
-                    skipAnimation
-                      ? {}
+                    animationPhase === "complete"
+                      ? {
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }
                       : {
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 20,
-                          delay: 0.6,
+                          duration: 0.8,
+                          ease: "easeOut",
                         }
                   }
                 >
-                  <Image
-                    src="/images/logo/logo-semicolon.svg"
-                    alt=";"
-                    fill
-                    className="object-contain"
-                  />
+                  <div className="flex flex-col items-center mx-1 md:mx-2">
+                    {/* Top dot - matches comet size exactly (w-3 h-3 md:w-5 md:h-5) */}
+                    <motion.div
+                      className="w-3 h-3 md:w-5 md:h-5 rounded-full relative"
+                      style={{
+                        backgroundColor: COLORS.white,
+                        boxShadow: skipAnimation
+                          ? undefined
+                          : `0 0 20px 10px ${COLORS.white}, 0 0 40px 20px ${COLORS.primary}`,
+                        filter: skipAnimation ? undefined : "blur(1px)",
+                      }}
+                      initial={skipAnimation ? false : { scale: 1, opacity: 1 }}
+                      animate={{
+                        scale: animationPhase === "complete" ? 1.33 : 1, // 1.33x = 4px/6.65px (approximately w-4/w-6.5)
+                        opacity: 1,
+                        boxShadow:
+                          animationPhase === "complete"
+                            ? `0 0 20px 8px ${COLORS.white}, 0 0 30px 15px ${COLORS.primary}`
+                            : skipAnimation
+                              ? undefined
+                              : `0 0 20px 10px ${COLORS.white}, 0 0 40px 20px ${COLORS.primary}`,
+                        filter:
+                          animationPhase === "complete"
+                            ? "blur(0px)"
+                            : skipAnimation
+                              ? undefined
+                              : "blur(1px)",
+                      }}
+                      transition={
+                        skipAnimation
+                          ? {}
+                          : animationPhase === "complete"
+                            ? {
+                                duration: 0.5,
+                                ease: "easeOut",
+                              }
+                            : {
+                                duration: 0.3,
+                                ease: "easeOut",
+                                delay: 0.2,
+                              }
+                      }
+                    >
+                      {/* Glow pulse effect */}
+                      {animationPhase === "complete" && (
+                        <motion.div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            boxShadow: `0 0 30px 10px ${COLORS.primary}`,
+                          }}
+                          animate={{
+                            opacity: [0.5, 1, 0.5],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        />
+                      )}
+                    </motion.div>
+
+                    {/* Bottom dot (comma part) - grows downward from top dot */}
+                    <motion.div
+                      className="w-4 h-6 md:w-6 md:h-8 rounded-full rounded-br-none relative mt-2 md:mt-3"
+                      style={{
+                        backgroundColor: COLORS.white,
+                        transform: "rotate(-15deg)",
+                      }}
+                      initial={skipAnimation ? false : { scaleY: 0, opacity: 0, originY: 0 }}
+                      animate={{ scaleY: 1, opacity: 1 }}
+                      transition={
+                        skipAnimation
+                          ? {}
+                          : {
+                              duration: 0.3,
+                              delay: 0.4,
+                              ease: "easeOut",
+                            }
+                      }
+                    />
+                  </div>
                 </motion.div>
 
                 {/* Right letters: C-O-L-O-N (expand rightward) with spring */}
