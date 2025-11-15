@@ -6,12 +6,12 @@ import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-// Brand colors
+// Brand colors from Tailwind config (CI Guideline Compliant)
 const COLORS = {
-  primary: "#068FFF",
-  white: "#FFFFFF",
-  black: "#1B1B1C",
-  surface: "#1A1A1A",
+  primary: "#068FFF", // brand-primary
+  white: "#FFFFFF", // brand-white
+  black: "#1D242B", // brand-black (updated to CI standard)
+  surface: "#1A1A1A", // brand-surface
 };
 
 // Enhanced Star particle with size and brightness variation
@@ -669,9 +669,9 @@ export function SemicolonHero() {
                 </motion.div>
               </motion.div>
 
-              {/* Hero Text - Korean */}
+              {/* Hero Text - Vision & Mission (CI Guideline) */}
               <motion.div
-                className="text-center space-y-3 md:space-y-4 max-w-3xl"
+                className="text-center space-y-4 md:space-y-6 max-w-4xl"
                 initial={skipAnimation ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
@@ -683,11 +683,21 @@ export function SemicolonHero() {
                       }
                 }
               >
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white">
-                  연결과 소통의 가치를 실현하다
+                {/* Vision - Korean */}
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">
+                  당신의 커뮤니티; 우리의 솔루션;
                 </h1>
-                <p className="text-base md:text-xl lg:text-2xl text-white/80">
-                  세미콜론의 리더들과 함께하는 인재들을 소개합니다.
+
+                {/* Mission */}
+                <p className="text-base md:text-xl lg:text-2xl text-white/90 leading-relaxed">
+                  기술력으로 소통의 가치를 극대화하고,
+                  <br className="hidden md:block" />
+                  물리적·심리적 경계를 넘어선 진정한 연결 사회를 구현합니다.
+                </p>
+
+                {/* Vision - English */}
+                <p className="text-sm md:text-lg text-white/70 font-medium tracking-wider">
+                  Start; Communicate;
                 </p>
               </motion.div>
             </motion.div>

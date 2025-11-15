@@ -2,18 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-
-const navigation = [
-  { name: "홈", href: "/" },
-  // { name: "팀", href: "/leaders" },
-  // { name: "기술력", href: "/tech" },
-];
 
 export function Header() {
-  const pathname = usePathname();
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#1A1A1A]">
       <div className="max-w-screen-xl mx-auto px-6 py-3">

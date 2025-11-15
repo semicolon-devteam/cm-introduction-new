@@ -90,6 +90,45 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Core Values Section - 핵심 차별점 */}
+      <section className="py-20 px-6 bg-brand-black text-brand-white">
+        <div className="max-w-screen-xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-heading-2 font-bold mb-4">Our Core Values</h2>
+            <p className="text-body-2 text-gray-light">Semicolon만의 차별화된 핵심 가치입니다.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-8 rounded-8 bg-brand-surface border-2 border-brand-primary/20 hover:border-brand-primary/50 transition-colors">
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="text-heading-3 font-bold mb-4">AI 친화</h3>
+              <p className="text-body-2 text-gray-light leading-relaxed">
+                AI를 팀 가치 증폭의 도구로 활용합니다. AI 전환기에 선제적 지식을 구축하며 다른 팀을
+                돕습니다.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-8 bg-brand-surface border-2 border-brand-primary/20 hover:border-brand-primary/50 transition-colors">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-heading-3 font-bold mb-4">압도적 속도</h3>
+              <p className="text-body-2 text-gray-light leading-relaxed">
+                AI 역량을 활용해 기존 워크플로우보다 빠른 성과를 냅니다. 속도 자체가 경쟁
+                우위입니다.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-8 bg-brand-surface border-2 border-brand-primary/20 hover:border-brand-primary/50 transition-colors">
+              <div className="text-4xl mb-4">🔨</div>
+              <h3 className="text-heading-3 font-bold mb-4">과감한 혁신</h3>
+              <p className="text-body-2 text-gray-light leading-relaxed">
+                &quot;비버 집 부수기&quot; - 빠른 재구축을 위해 설계된 시스템. 관습을 깨고 유연하게
+                재구성합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Culture Section */}
       <section className="py-20 px-6 bg-brand-surface text-brand-white">
         <div className="max-w-screen-xl mx-auto">

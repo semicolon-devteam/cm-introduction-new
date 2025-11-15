@@ -13,12 +13,12 @@ export default {
     },
     extend: {
       colors: {
-        // Figma Design System Colors
+        // Figma Design System Colors (CI Guideline Compliant)
         brand: {
-          primary: "#068FFF",
-          white: "#FFFFFF",
-          black: "#1B1B1C",
-          surface: "#1A1A1A",
+          primary: "#068FFF", // Blue - connection, technology, trust
+          white: "#FFFFFF", // Pure white - clarity, simplicity
+          black: "#1D242B", // Dark gray-black - professionalism, depth
+          surface: "#1A1A1A", // Surface background
         },
         gray: {
           light: "#C7C7C7",
