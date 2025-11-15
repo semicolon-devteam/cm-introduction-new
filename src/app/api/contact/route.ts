@@ -16,13 +16,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "모든 필드를 입력해주세요." }, { status: 400 });
     }
 
-    console.log("[Contact API] Sending email to: roki@semi-colon.space");
+    // Resend 무료 플랜: 본인 이메일로만 발송 가능
+    // 프로덕션: 도메인 인증 후 to 주소를 roki@semi-colon.space로 변경
+    const recipientEmail =
+      process.env.NODE_ENV === "production"
+        ? "reus7042@gmail.com" // 임시: 무료 플랜 제한
+        : "reus7042@gmail.com";
+
+    console.log("[Contact API] Sending email to:", recipientEmail);
     console.log("[Contact API] From:", name, company);
 
     // 이메일 전송
     const { data, error } = await resend.emails.send({
       from: "Semicolon Contact <onboarding@resend.dev>", // Resend 기본 발신자 (나중에 도메인 설정 시 변경)
-      to: "roki@semi-colon.space",
+      to: recipientEmail,
       subject: `[문의] ${company} - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
