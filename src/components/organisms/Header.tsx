@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "홈", href: "/" },
-  { name: "팀", href: "/leaders" },
-  { name: "기술력", href: "/tech" },
+  // { name: "팀", href: "/leaders" },
+  // { name: "기술력", href: "/tech" },
 ];
 
 export function Header() {
@@ -33,7 +33,7 @@ export function Header() {
 
           {/* Navigation Menu */}
           <div className="flex items-center gap-5">
-            <ul className="flex items-center gap-5">
+            {/* <ul className="flex items-center gap-5">
               {navigation.map((item) => (
                 <li key={item.name}>
                   <Link
@@ -49,10 +49,10 @@ export function Header() {
                   </Link>
                 </li>
               ))}
-            </ul>
+            </ul> */}
 
             {/* Divider */}
-            <div className="w-px h-4 bg-[#5C5C5C]" />
+            {/* <div className="w-px h-4 bg-[#5C5C5C]" /> */}
 
             {/* Contact Button */}
             <Link
