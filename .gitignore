@@ -7,6 +7,8 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
@@ -41,3 +43,8 @@ vercel.json
 .bmad-core
 .claude
 .cursor
+# === SEMO ===
+.claude/*
+!.claude/memory/
+!.claude/memory/**
+semo-system/
