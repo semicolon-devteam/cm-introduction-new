@@ -3,7 +3,7 @@ export function AICasesSection() {
     <section className="py-24 px-6">
       <div className="max-w-screen-xl mx-auto">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-12 text-center">
           <p className="text-gray-light text-sm mb-2">실제 AI 활용 예시</p>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">세미콜론의</h2>
           <h2 className="text-2xl md:text-3xl font-bold text-brand-primary mb-4">AI 활용 사례</h2>
@@ -11,7 +11,7 @@ export function AICasesSection() {
         </div>
 
         {/* Cards Grid - 2x2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           {/* Card 1: AI 코드 리뷰 자동화 */}
           <div
             className="rounded-xl p-6 border border-white/10"
@@ -74,7 +74,7 @@ export function AICasesSection() {
         </div>
 
         {/* Bottom Note */}
-        <div className="flex items-center gap-2 mt-8 text-gray-light text-xs">
+        <div className="flex items-center justify-center gap-2 mt-8 text-gray-light text-xs">
           <span className="text-brand-primary">💡</span>
           <span>이 외에도 다양한 AI 도구를 개발 프로세스 전반에 활용합니다</span>
         </div>
