@@ -204,13 +204,13 @@ export function SemicolonHero() {
     if (skipAnimation) return;
 
     const timers = [
-      setTimeout(() => setAnimationPhase("bigbang"), 1500), // 1.5s: Deep Space (shortened)
-      setTimeout(() => setAnimationPhase("meteor"), 2000), // 2s: Big Bang
+      setTimeout(() => setAnimationPhase("bigbang"), 500), // 0.5s: Deep Space
+      setTimeout(() => setAnimationPhase("meteor"), 800), // 0.8s: Big Bang
       setTimeout(() => {
         setAnimationPhase("formation");
         setMeteorProgress(1);
-      }, 5500), // 5.5s: Meteor finishes + wait for particles to clear
-      setTimeout(() => setAnimationPhase("complete"), 6500), // 6.5s: Formation (after particles clear)
+      }, 2300), // 2.3s: Meteor finishes
+      setTimeout(() => setAnimationPhase("complete"), 2800), // 2.8s: Formation complete
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -220,7 +220,7 @@ export function SemicolonHero() {
   useEffect(() => {
     if (animationPhase === "meteor") {
       const startTime = Date.now();
-      const duration = 2500; // 2.5s: Original meteor movement duration
+      const duration = 1500; // 1.5s: Faster meteor movement
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -264,7 +264,7 @@ export function SemicolonHero() {
               : { x: "0%", y: "0%" }
           }
           transition={{
-            duration: 2.5,
+            duration: 1.5,
             ease: [0.25, 0.1, 0.25, 1], // Custom easing for more dynamic movement
           }}
         >
@@ -669,9 +669,9 @@ export function SemicolonHero() {
                 </motion.div>
               </motion.div>
 
-              {/* Hero Text - Vision & Mission (CI Guideline) */}
+              {/* Hero Content - Final Layout */}
               <motion.div
-                className="text-center space-y-4 md:space-y-6 max-w-4xl"
+                className="w-full max-w-screen-xl mx-auto px-6"
                 initial={skipAnimation ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
@@ -683,22 +683,84 @@ export function SemicolonHero() {
                       }
                 }
               >
-                {/* Vision - Korean */}
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">
-                  당신의 커뮤니티; 우리의 솔루션;
-                </h1>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                  {/* Left: Text Content */}
+                  <div className="space-y-6">
+                    <p className="text-gray-400 text-sm tracking-widest">SEMICOLON</p>
+                    <div>
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+                        당신의 커뮤니티
+                      </h1>
+                      <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#068FFF]">
+                        우리의 솔루션
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+                      연결과 소통을 통해 모두가 쉽게 참여할 수 있는
+                      <br />
+                      <span className="text-[#068FFF]">혁신적인 커뮤니티 생태계</span>를 만듭니다.
+                    </p>
+                    <div className="flex gap-4 pt-2">
+                      <a
+                        href="/skills"
+                        className="inline-flex items-center gap-2 bg-[#068FFF] hover:bg-[#068FFF]/90 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        우리의 기술력 보기 →
+                      </a>
+                      <a
+                        href="/contacts"
+                        className="inline-flex items-center gap-2 border border-gray-500 text-gray-300 hover:bg-white/10 px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        문의하기
+                      </a>
+                    </div>
+                  </div>
 
-                {/* Mission */}
-                <p className="text-base md:text-xl lg:text-2xl text-white/90 leading-relaxed">
-                  기술력으로 소통의 가치를 극대화하고,
-                  <br className="hidden md:block" />
-                  물리적·심리적 경계를 넘어선 진정한 연결 사회를 구현합니다.
-                </p>
+                  {/* Right: Logo + Stats */}
+                  <div className="flex flex-col items-center lg:items-end space-y-8">
+                    {/* SEMICOLON Logo */}
+                    <Image
+                      src="/images/main/Logo.svg"
+                      alt="SEMICOLON"
+                      width={330}
+                      height={80}
+                      className="h-16 md:h-20 w-auto"
+                    />
 
-                {/* Vision - English */}
-                <p className="text-sm md:text-lg text-white/70 font-medium tracking-wider">
-                  Start; Communicate;
-                </p>
+                    {/* Stats Cards */}
+                    <div className="flex gap-4">
+                      <div className="px-8 py-4 rounded-xl bg-white/10 backdrop-blur-sm text-center">
+                        <div className="text-2xl md:text-3xl font-bold text-white">100+</div>
+                        <div className="text-xs text-gray-400 mt-1">완료 프로젝트</div>
+                      </div>
+                      <div className="px-8 py-4 rounded-xl bg-white/10 backdrop-blur-sm text-center">
+                        <div className="text-2xl md:text-3xl font-bold text-white">50+</div>
+                        <div className="text-xs text-gray-400 mt-1">고객사</div>
+                      </div>
+                      <div className="px-8 py-4 rounded-xl bg-white/10 backdrop-blur-sm text-center">
+                        <div className="text-2xl md:text-3xl font-bold text-white">99.9%</div>
+                        <div className="text-xs text-gray-400 mt-1">만족도</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Scroll Indicator */}
+              <motion.div
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2.5, duration: 0.5 }}
+              >
+                <span className="text-xs text-gray-500 mb-2">SCROLL</span>
+                <div className="w-6 h-10 rounded-full border-2 border-gray-500 flex justify-center pt-2">
+                  <motion.div
+                    className="w-1.5 h-1.5 rounded-full bg-[#068FFF]"
+                    animate={{ y: [0, 12, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
               </motion.div>
             </motion.div>
           )}

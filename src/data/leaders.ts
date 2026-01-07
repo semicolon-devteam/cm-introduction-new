@@ -24,12 +24,21 @@ export const leaders: Leader[] = [
       "기술 통합 및 시스템 운영 고도화",
       "장애 대응 시스템 구축",
     ],
+    technicalSkills: [
+      { name: "Infra", level: 5 },
+      { name: "Backend", level: 4 },
+      { name: "DB", level: 5 },
+      { name: "DevOps", level: 4 },
+      { name: "Frontend", level: 3 },
+    ],
     projects: [
       {
         year: "2025",
-        name: "커뮤니티 플랫폼",
-        tags: ["Supabase", "Next.js", "TypeScript"],
-        description: "실시간 소통이 가능한 커뮤니티 플랫폼 구축",
+        name: "Semicolon Infrastructure",
+        tags: ["Supabase", "PostgreSQL", "DevOps"],
+        description:
+          "세미콜론 서비스의 핵심 인프라 및 서버 아키텍처 설계. 안정적인 운영 환경과 확장 가능한 시스템 구축을 총괄",
+        link: "https://github.com/semicolon-devteam",
       },
     ],
     isActive: true,
@@ -58,12 +67,21 @@ export const leaders: Leader[] = [
       "성능 최적화 및 번들 사이즈 관리",
       "프론트엔드 팀 리딩 및 코드 리뷰",
     ],
+    technicalSkills: [
+      { name: "React", level: 5 },
+      { name: "TypeScript", level: 5 },
+      { name: "CSS", level: 4 },
+      { name: "UI/UX", level: 4 },
+      { name: "Testing", level: 3 },
+    ],
     projects: [
       {
-        year: "2025",
-        name: "팀 소개 사이트",
-        tags: ["Next.js", "Tailwind CSS", "Figma"],
-        description: "Semicolon 팀을 소개하는 공식 웹사이트",
+        year: "2026",
+        name: "SEMO",
+        tags: ["TypeScript", "AI Agent", "Orchestration"],
+        description:
+          "AI 에이전트 오케스트레이션 프레임워크. 복잡한 워크플로우를 자동화하고 팀 협업을 혁신하는 모노레포 기반 시스템",
+        link: "https://github.com/semicolon-devteam/semo",
       },
     ],
     isActive: true,
@@ -91,12 +109,20 @@ export const leaders: Leader[] = [
       "사용자 피드백 수집 및 개선 방향 설정",
       "팀 간 커뮤니케이션 조율",
     ],
+    technicalSkills: [
+      { name: "기획", level: 5 },
+      { name: "분석", level: 5 },
+      { name: "Growth", level: 4 },
+      { name: "커뮤니케이션", level: 5 },
+      { name: "UX리서치", level: 4 },
+    ],
     projects: [
       {
-        year: "2024",
-        name: "사용자 참여 플랫폼",
-        tags: ["Product", "Analytics", "Growth"],
-        description: "사용자 참여도를 3배 향상시킨 커뮤니티 기능 기획",
+        year: "2026",
+        name: "정치판",
+        tags: ["React", "Node.js", "Data Analytics"],
+        description:
+          "정치 정보 플랫폼. 국회의원 활동, 법안 현황, 정당 분석 등 시민들이 쉽게 정치 정보에 접근할 수 있도록 서비스 기획 및 운영",
       },
     ],
     isActive: true,
@@ -125,12 +151,21 @@ export const leaders: Leader[] = [
       "서버 인프라 구축 및 관리",
       "보안 및 성능 최적화",
     ],
+    technicalSkills: [
+      { name: "Backend", level: 5 },
+      { name: "DB", level: 5 },
+      { name: "DevOps", level: 4 },
+      { name: "Security", level: 4 },
+      { name: "MSA", level: 5 },
+    ],
     projects: [
       {
-        year: "2024",
-        name: "실시간 알림 시스템",
-        tags: ["Spring Boot", "Redis", "WebSocket"],
-        description: "100만 사용자를 위한 실시간 알림 시스템 구축",
+        year: "2025",
+        name: "Core Community Package",
+        tags: ["TypeScript", "Node.js", "npm"],
+        description:
+          "커뮤니티 서비스의 핵심 기능을 모듈화한 노드 패키지. 인증, 게시판, 댓글 등 재사용 가능한 백엔드 컴포넌트 제공",
+        link: "https://github.com/semicolon-devteam/core-community-package",
       },
     ],
     isActive: true,
