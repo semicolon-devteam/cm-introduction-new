@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Bell, Search, Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
@@ -32,10 +33,13 @@ export function Navigation() {
         {/* Logo */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-sm font-bold text-primary-foreground">SC</span>
-            </div>
-            <span className="font-bold text-xl hidden sm:inline-block">Semicolon</span>
+            <Image
+              src="/images/main/Logo.svg"
+              alt="SEMICOLON"
+              width={132}
+              height={32}
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
