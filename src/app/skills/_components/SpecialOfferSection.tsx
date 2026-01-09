@@ -13,7 +13,7 @@ export function SpecialOfferSection() {
 
       <div className="max-w-screen-xl mx-auto relative z-10">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-12 text-center">
           <p className="text-brand-primary text-sm tracking-widest mb-4">Special</p>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">사업 초기 단계팀의</h2>
           <h2 className="text-2xl md:text-3xl font-bold text-brand-primary mb-4">특별한 제안</h2>
