@@ -1,13 +1,14 @@
-import { Building2, ShoppingCart, Factory, GraduationCap, Rocket, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { UsersRound } from "lucide-react";
 
 export function PartnersSection() {
   const partners = [
-    { name: "A 스타트업", icon: Building2 },
-    { name: "C 커머스", icon: ShoppingCart },
-    { name: "D 기업", icon: Factory },
-    { name: "A 대학교", icon: GraduationCap },
-    { name: "B 스타트업", icon: Rocket },
-    { name: "C 커뮤니티", icon: UsersRound },
+    { name: "정치판", logo: "/images/partners/정치판.png" },
+    { name: "코인톡", logo: "/images/partners/코인톡.png" },
+    { name: "MAJU", logo: "/images/partners/MAJU.jpg" },
+    { name: "매출지킴이", logo: "/images/partners/매출지킴이.png" },
+    { name: "차곡", logo: "/images/partners/차곡.png" },
+    { name: "현장관리 앱", logo: null },
   ];
 
   return (
@@ -21,20 +22,27 @@ export function PartnersSection() {
         </div>
 
         <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-          {partners.map((partner, index) => {
-            const IconComponent = partner.icon;
-            return (
-              <div
-                key={index}
-                className="flex flex-col items-center p-6 rounded-lg bg-white/5 border border-white/10"
-              >
-                <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center mb-3">
-                  <IconComponent className="w-6 h-6 text-brand-primary" />
-                </div>
-                <span className="text-xs text-gray-light">{partner.name}</span>
+          {partners.map((partner, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center p-6 rounded-lg bg-white/5 border border-white/10"
+            >
+              <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center mb-3 overflow-hidden">
+                {partner.logo ? (
+                  <Image
+                    src={partner.logo}
+                    alt={partner.name}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                ) : (
+                  <UsersRound className="w-6 h-6 text-brand-primary" />
+                )}
               </div>
-            );
-          })}
+              <span className="text-xs text-gray-light">{partner.name}</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

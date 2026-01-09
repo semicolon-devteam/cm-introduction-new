@@ -38,6 +38,7 @@ export const leaders: Leader[] = [
         tags: ["Supabase", "PostgreSQL", "DevOps"],
         description:
           "세미콜론 서비스의 핵심 인프라 및 서버 아키텍처 설계. 안정적인 운영 환경과 확장 가능한 시스템 구축을 총괄",
+        thumbnail: "/images/projects/인프라.jfif",
         link: "https://github.com/semicolon-devteam",
       },
     ],
@@ -81,6 +82,7 @@ export const leaders: Leader[] = [
         tags: ["TypeScript", "AI Agent", "Orchestration"],
         description:
           "AI 에이전트 오케스트레이션 프레임워크. 복잡한 워크플로우를 자동화하고 팀 협업을 혁신하는 모노레포 기반 시스템",
+        thumbnail: "/images/projects/세모.jfif",
         link: "https://github.com/semicolon-devteam/semo",
       },
     ],
@@ -123,6 +125,7 @@ export const leaders: Leader[] = [
         tags: ["React", "Node.js", "Data Analytics"],
         description:
           "정치 정보 플랫폼. 국회의원 활동, 법안 현황, 정당 분석 등 시민들이 쉽게 정치 정보에 접근할 수 있도록 서비스 기획 및 운영",
+        thumbnail: "/images/projects/정치판.png",
       },
     ],
     isActive: true,
@@ -165,11 +168,56 @@ export const leaders: Leader[] = [
         tags: ["TypeScript", "Node.js", "npm"],
         description:
           "커뮤니티 서비스의 핵심 기능을 모듈화한 노드 패키지. 인증, 게시판, 댓글 등 재사용 가능한 백엔드 컴포넌트 제공",
+        thumbnail: "/images/projects/코어.png",
         link: "https://github.com/semicolon-devteam/core-community-package",
       },
     ],
     isActive: true,
     displayOrder: 4,
+  },
+  {
+    id: "5",
+    slug: "yeomso",
+    name: "염현준",
+    nickname: "Yeomso",
+    position: "디자인 총괄",
+    profileImage: "/images/leaders/yeomso.png",
+    skills: ["디자인 총괄", "UI/UX 디자인"],
+    oneLiner: "사람의 마음을 바꾸는 인터페이스를 만듭니다.",
+    professionalHistory: [
+      "명지전문대학교 컴퓨터공학과 졸업",
+      "10년 차 인프라 엔지니어",
+      "KT DS 백엔드 개발 기술자 재직",
+      "풀스택 개발",
+    ],
+    philosophy:
+      "좋은 디자인은 사용자의 마음을 움직입니다. 단순히 아름다운 것이 아니라 직관적이고 편리한 경험을 제공하는 것이 진정한 UI/UX의 가치입니다.",
+    workAreas: [
+      "Supabase 기반 인프라 구조 설계",
+      "성능 최적화 및 확장성 개선",
+      "기술 통합 및 시스템 운영 고도화",
+      "장애 대응 시스템 구축",
+    ],
+    technicalSkills: [
+      { name: "UI/UX", level: 5 },
+      { name: "Figma", level: 5 },
+      { name: "Design System", level: 4 },
+      { name: "Prototyping", level: 4 },
+      { name: "Branding", level: 4 },
+    ],
+    projects: [
+      {
+        year: "2025",
+        name: "Semicolon Design System",
+        tags: ["Figma", "UI/UX", "Design System"],
+        description:
+          "세미콜론 서비스 전반에 적용되는 통합 디자인 시스템. 일관된 사용자 경험과 효율적인 디자인 협업을 위한 컴포넌트 라이브러리 구축",
+        thumbnail: "/images/projects/디자인.jpg",
+        link: "https://semi-colon.space",
+      },
+    ],
+    isActive: true,
+    displayOrder: 5,
   },
 ];
 

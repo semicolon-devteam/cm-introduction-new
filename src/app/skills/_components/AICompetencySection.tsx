@@ -80,7 +80,7 @@ export function AICompetencySection() {
                     className="text-xs px-3 py-1 rounded-full"
                     style={{ color: "#068FFF", border: "1px solid #068FFF" }}
                   >
-                    100+ 프로젝트 완료
+                    신뢰할 수 있는 기술력
                   </span>
                 </div>
                 <p className="text-gray-light text-sm">

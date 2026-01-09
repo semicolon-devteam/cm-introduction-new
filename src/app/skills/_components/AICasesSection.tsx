@@ -4,7 +4,7 @@ export function AICasesSection() {
       <div className="max-w-screen-xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
-          <p className="text-gray-light text-sm mb-2">실제 AI 활용 예시</p>
+          <p className="text-brand-primary text-sm tracking-widest mb-4">Example</p>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">세미콜론의</h2>
           <h2 className="text-2xl md:text-3xl font-bold text-brand-primary mb-4">AI 활용 사례</h2>
           <p className="text-gray-light text-sm">일상적으로 AI를 활용해 생산성을 극대화합니다</p>
@@ -23,7 +23,7 @@ export function AICasesSection() {
               className="text-xs px-3 py-1 rounded-full"
               style={{ color: "#068FFF", border: "1px solid #068FFF" }}
             >
-              200% 생산성 향상
+              300% 생산성 향상
             </span>
           </div>
 
@@ -38,7 +38,7 @@ export function AICasesSection() {
               className="text-xs px-3 py-1 rounded-full"
               style={{ color: "#068FFF", border: "1px solid #068FFF" }}
             >
-              테스트 커버리지 80% 달성
+              테스트 커버리지 90% 달성
             </span>
           </div>
 
@@ -53,7 +53,7 @@ export function AICasesSection() {
               className="text-xs px-3 py-1 rounded-full"
               style={{ color: "#068FFF", border: "1px solid #068FFF" }}
             >
-              문서 시간 60% 절감
+              문서화 시간 80% 절감
             </span>
           </div>
 
@@ -68,15 +68,15 @@ export function AICasesSection() {
               className="text-xs px-3 py-1 rounded-full"
               style={{ color: "#068FFF", border: "1px solid #068FFF" }}
             >
-              디버깅 시간 50% 단축
+              디버깅 시간 60% 단축
             </span>
           </div>
         </div>
 
         {/* Bottom Note */}
-        <div className="flex items-center justify-center gap-2 mt-8 text-gray-light text-xs">
-          <span className="text-brand-primary">💡</span>
-          <span>이 외에도 다양한 AI 도구를 개발 프로세스 전반에 활용합니다</span>
+        <div className="text-center mt-8">
+          <p className="text-gray-light text-xs">이 외에도 다양한 AI 도구를</p>
+          <p className="text-gray-light text-xs">개발 프로세스 전반에 활용합니다</p>
         </div>
       </div>
     </section>

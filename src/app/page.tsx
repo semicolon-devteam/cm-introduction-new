@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Users, MessageCircle, Lightbulb, Heart, Target, Zap } from "lucide-react";
 
 import { Header } from "@/components/organisms/Header";
@@ -9,6 +8,7 @@ import { Button } from "@/components/atoms/Button";
 import { getAllLeaders } from "@/data/leaders";
 
 import { StatsSection, PartnersSection, JourneySection } from "./_components";
+import { HomeLeadersSection } from "./_components/HomeLeadersSection";
 
 export default function HomePage() {
   const leaders = getAllLeaders();
@@ -118,7 +118,7 @@ export default function HomePage() {
                   10년+ 경력의 리드 엔지니어가 직접 프로젝트 리딩
                 </p>
                 <span className="inline-block px-3 py-1 text-xs text-brand-primary border border-brand-primary/50 rounded-full">
-                  100+ 프로젝트 완료
+                  신뢰할 수 있는 기술력
                 </span>
               </div>
               <div className="p-6 rounded-lg bg-white/5 border border-white/10">
@@ -146,60 +146,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 3: Leaders */}
-      <section className="py-24 px-6 border-b border-white/10">
-        <div className="max-w-screen-xl mx-auto">
-          <div className="mb-12">
-            <p className="text-brand-primary text-sm tracking-widest mb-4">Background</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-4">
-              세미콜론을 이끄는 리더들
-            </h2>
-            <p className="text-gray-light text-sm">
-              세미콜론의 리더들은 각자의 전문성으로 회사의 비전을 실현하고 있습니다.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {leaders.map((leader) => (
-              <Link key={leader.id} href={`/leaders/${leader.slug}`} className="group">
-                <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-lg bg-brand-surface">
-                  <Image
-                    src={leader.profileImage}
-                    alt={leader.name}
-                    fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-brand-white">{leader.name}</span>
-                      <span className="text-sm text-gray-light">{leader.nickname}</span>
-                    </div>
-                    <span className="text-brand-primary">→</span>
-                  </div>
-                  <div className="space-y-1">
-                    {leader.skills.map((skill) => (
-                      <div key={skill} className="flex items-center gap-2 text-xs text-gray-light">
-                        <span className="text-brand-primary">○</span>
-                        <span>{skill}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Section 3: Leaders - temporarily disabled */}
+      {/* <HomeLeadersSection leaders={leaders} /> */}
 
       {/* Section 4: Core Values */}
       <section className="py-24 px-6 border-b border-white/10">
         <div className="max-w-screen-xl mx-auto">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-px h-16 border-l border-dashed border-gray-light/30" />
-            <div className="w-2 h-2 rounded-full bg-brand-primary" />
-          </div>
           <div className="text-center mb-16">
+            {/* Decorative element - dashed line with dot */}
+            <div className="flex flex-col items-center mb-8">
+              <div
+                className="w-px h-16"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to bottom, rgba(156, 163, 175, 0.3) 50%, transparent 50%)",
+                  backgroundSize: "1px 8px",
+                }}
+              />
+              <div className="w-2 h-2 rounded-full bg-brand-primary mt-1" />
+            </div>
             <p className="text-brand-primary text-sm tracking-widest mb-4">Core Values</p>
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-4">
               우리를 움직이는 가치
@@ -226,16 +191,12 @@ export default function HomePage() {
       </section>
 
       <JourneySection />
-      <StatsSection />
+      {/* <StatsSection /> */}
       <PartnersSection />
 
       {/* Section 8: CTA */}
       <section className="py-24 px-6">
         <div className="max-w-screen-xl mx-auto">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-px h-16 border-l border-dashed border-gray-light/30" />
-            <div className="w-2 h-2 rounded-full bg-brand-primary" />
-          </div>
           <div className="text-center">
             <p className="text-brand-primary text-sm tracking-widest mb-4">Contact Us</p>
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-2">당신의 비전을</h2>
