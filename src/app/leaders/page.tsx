@@ -28,8 +28,8 @@ export default function LeadersPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-6">
               리더들을 소개합니다.
             </h2>
-            <p className="text-gray-light text-sm">
-              세미콜론의 리더들은 각자의 전문성으로 회사의 비전을 실현하고 있습니다.
+            <p className="text-gray-light text-sm whitespace-pre-line">
+              {"세미콜론의 리더들은 각자의 전문성으로\n회사의 비전을 실현하고 있습니다."}
             </p>
           </div>
 
@@ -44,8 +44,8 @@ export default function LeadersPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-4">참여 구성원</h2>
-            <p className="text-gray-light text-sm">
-              다양한 분야의 전문가들이 세미콜론과 함께 성장하고 있습니다.
+            <p className="text-gray-light text-sm whitespace-pre-line">
+              {"다양한 분야의 전문가들이\n세미콜론과 함께 성장하고 있습니다."}
             </p>
           </div>
 
@@ -277,7 +277,9 @@ export default function LeadersPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-6">
               문화를 소개합니다.
             </h2>
-            <p className="text-gray-light text-sm">세미콜론은 언제나 연결과 소통을 우선합니다.</p>
+            <p className="text-gray-light text-sm whitespace-pre-line">
+              {"세미콜론은 언제나\n연결과 소통을 우선합니다."}
+            </p>
           </div>
 
           {/* Culture Cards */}
@@ -286,17 +288,17 @@ export default function LeadersPage() {
               {
                 icon: MessageSquare,
                 title: "수평적 소통",
-                desc: "직급과 상관없이 누구나 자유롭게 의견을 나누고 존중합니다.",
+                desc: "직급과 상관없이 누구나 자유롭게\n의견을 나누고 존중합니다.",
               },
               {
                 icon: Monitor,
                 title: "성장 지원",
-                desc: "교육비 지원, 컨퍼런스 참여 등 개인의 성장을 적극 지원합니다.",
+                desc: "교육비 지원, 컨퍼런스 참여 등\n개인의 성장을 적극 지원합니다.",
               },
               {
                 icon: Sparkles,
                 title: "워라밸",
-                desc: "유연 근무제와 재택근무로 일과 삶의 균형을 지켜드립니다.",
+                desc: "유연 근무제와 재택근무로\n일과 삶의 균형을 지켜드립니다.",
               },
             ].map((item, index) => {
               const IconComponent = item.icon;
@@ -309,7 +311,9 @@ export default function LeadersPage() {
                     <IconComponent className="w-6 h-6 text-brand-primary" />
                   </div>
                   <h3 className="text-lg font-bold text-brand-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-light leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-gray-light leading-relaxed whitespace-pre-line">
+                    {item.desc}
+                  </p>
                 </div>
               );
             })}
@@ -323,13 +327,14 @@ export default function LeadersPage() {
           {/* Content */}
           <div className="text-center">
             <p className="text-brand-primary text-sm tracking-widest mb-4">Contact Us</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-2">당신의 비전을</h2>
             <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-6">
-              당신의 비전을 함께 실현하겠습니다.
+              함께 실현하겠습니다.
             </h2>
-            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto">
-              세미콜론과 함께라면 불가능해 보이는 아이디어도 현실이 됩니다.
-              <br />
-              지금바로 여정을 시작하세요.
+            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto whitespace-pre-line">
+              {
+                "세미콜론과 함께라면\n불가능해 보이는 아이디어도 현실이 됩니다.\n지금 바로 여정을 시작하세요."
+              }
             </p>
             <Link href="/contacts">
               <Button className="bg-brand-primary hover:bg-brand-primary/90 text-brand-white px-6 py-2 text-sm">

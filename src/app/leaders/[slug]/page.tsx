@@ -92,7 +92,7 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
               {/* 한줄 소개 */}
               <div className="rounded-xl p-6" style={{ backgroundColor: "#0D0E16" }}>
                 <h2 className="text-center text-gray-light text-sm mb-4">한줄 소개</h2>
-                <p className="text-center text-brand-primary text-lg">
+                <p className="text-center text-brand-primary text-lg whitespace-pre-line">
                   &quot;{leader.oneLiner}&quot;
                 </p>
               </div>
@@ -161,7 +161,9 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
             <div className="mt-16">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-white mb-2">다른 리더들</h2>
-                <p className="text-gray-light text-sm">세미콜론을 이끌어가는 리더들 입니다.</p>
+                <p className="text-gray-light text-sm whitespace-pre-line">
+                  {"세미콜론을 이끌어가는\n리더들 입니다."}
+                </p>
               </div>
 
               <OtherLeadersCarousel leaders={otherLeaders} />
@@ -183,12 +185,11 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
           {/* Content */}
           <div className="text-center">
             <p className="text-brand-primary text-sm tracking-widest mb-4">Contact Us</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">세미콜론과</h2>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              함께 성장할 파트너를 찾습니다.
+              세미콜론과 함께 성장할 파트너를 찾습니다.
             </h2>
-            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto">
-              세미콜론은 함께 미래를 만들어갈 파트너를 기다립니다.
+            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto whitespace-pre-line">
+              {"세미콜론은 함께 미래를 만들어갈\n파트너를 기다립니다."}
             </p>
             <Link
               href="/contacts"

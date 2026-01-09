@@ -9,7 +9,7 @@ export const leaders: Leader[] = [
     position: "시스템 아키텍트",
     profileImage: "/images/leaders/garden.png",
     skills: ["시스템 아키텍처", "기술 통합 리드"],
-    oneLiner: "고객과 시스템 사이, 최적의 구조를 설계합니다.",
+    oneLiner: "고객과 시스템 사이,\n최적의 구조를 설계합니다.",
     professionalHistory: [
       "명지전문대학교 컴퓨터공학과 졸업",
       "10년 차 인프라 엔지니어",
@@ -53,7 +53,7 @@ export const leaders: Leader[] = [
     position: "프론트엔드 리드",
     profileImage: "/images/leaders/reus.png",
     skills: ["프론트 리드 엔지니어", "협업 매니저"],
-    oneLiner: "사용자 경험을 최우선으로 생각하며 팀과 함께 성장합니다.",
+    oneLiner: "사용자 경험을 최우선으로 생각하며\n팀과 함께 성장합니다.",
     professionalHistory: [
       "프론트엔드 개발 5년 차",
       "React/Next.js 전문가",
@@ -97,7 +97,7 @@ export const leaders: Leader[] = [
     position: "서비스 총괄",
     profileImage: "/images/leaders/roki.png",
     skills: ["서비스총괄", "그로스 디렉터"],
-    oneLiner: "데이터 기반 의사결정으로 서비스를 성장시킵니다.",
+    oneLiner: "데이터 기반 의사결정으로\n서비스를 성장시킵니다.",
     professionalHistory: [
       "프로덕트 매니저 경력 7년",
       "스타트업 서비스 론칭 경험 다수",
@@ -139,7 +139,7 @@ export const leaders: Leader[] = [
     position: "백엔드 총괄",
     profileImage: "/images/leaders/kyago.png",
     skills: ["백엔드 총괄", "기술 솔루션 리드"],
-    oneLiner: "안정적이고 확장 가능한 시스템을 설계합니다.",
+    oneLiner: "안정적이고 확장 가능한\n시스템을 설계합니다.",
     professionalHistory: [
       "백엔드 개발 8년 차",
       "대용량 트래픽 처리 경험",
@@ -183,7 +183,7 @@ export const leaders: Leader[] = [
     position: "디자인 총괄",
     profileImage: "/images/leaders/yeomso.png",
     skills: ["디자인 총괄", "UI/UX 디자인"],
-    oneLiner: "사람의 마음을 바꾸는 인터페이스를 만듭니다.",
+    oneLiner: "사람의 마음을 바꾸는\n인터페이스를 만듭니다.",
     professionalHistory: [
       "명지전문대학교 컴퓨터공학과 졸업",
       "10년 차 인프라 엔지니어",

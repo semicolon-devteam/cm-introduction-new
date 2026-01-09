@@ -39,57 +39,102 @@ export function HeroSection() {
           {/* Right Column - Feature Cards */}
           <div className="space-y-4">
             {/* Card 1 - 검증된 기술 리더십 */}
-            <div className="bg-[#12131A] rounded-xl p-6 flex items-start justify-between">
+            <div className="bg-[#12131A] rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center flex-shrink-0">
                   <Zap className="w-5 h-5 text-brand-primary" />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">검증된 기술 리더십</h3>
-                  <p className="text-gray-light text-xs">
-                    AI를 적극 활용해 개발 속도를 3-5배 향상시킵니다
-                  </p>
+                <div className="flex-1">
+                  {/* Mobile */}
+                  <div className="md:hidden">
+                    <h3 className="text-white font-semibold mb-1">검증된 기술 리더십</h3>
+                    <p className="text-gray-light text-xs mb-3 whitespace-pre-line">
+                      {"AI를 적극 활용해 개발 속도를\n3-5배 향상시킵니다"}
+                    </p>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full">
+                      300% 생산성 향상
+                    </span>
+                  </div>
+                  {/* Desktop */}
+                  <div className="hidden md:flex md:items-start md:justify-between">
+                    <div>
+                      <h3 className="text-white font-semibold mb-1">검증된 기술 리더십</h3>
+                      <p className="text-gray-light text-xs">
+                        AI를 적극 활용해 개발 속도를 3-5배 향상시킵니다
+                      </p>
+                    </div>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap ml-4">
+                      300% 생산성 향상
+                    </span>
+                  </div>
                 </div>
               </div>
-              <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap">
-                300% 생산성 향상
-              </span>
             </div>
 
             {/* Card 2 - 고수준 엔지니어링 */}
-            <div className="bg-[#12131A] rounded-xl p-6 flex items-start justify-between">
+            <div className="bg-[#12131A] rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center flex-shrink-0">
                   <Users className="w-5 h-5 text-brand-primary" />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">고수준 엔지니어링</h3>
-                  <p className="text-gray-light text-xs">
-                    AI 의존도가 높은 팀 대비 트러블슈팅과 위기 대처 능력 보유
-                  </p>
+                <div className="flex-1">
+                  {/* Mobile */}
+                  <div className="md:hidden">
+                    <h3 className="text-white font-semibold mb-1">고수준 엔지니어링</h3>
+                    <p className="text-gray-light text-xs mb-3 whitespace-pre-line">
+                      {"AI 의존도가 높은 팀 대비 트러블슈팅과\n위기 대처 능력 보유"}
+                    </p>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full">
+                      리드 엔지니어 직접 참여
+                    </span>
+                  </div>
+                  {/* Desktop */}
+                  <div className="hidden md:flex md:items-start md:justify-between">
+                    <div>
+                      <h3 className="text-white font-semibold mb-1">고수준 엔지니어링</h3>
+                      <p className="text-gray-light text-xs">
+                        AI 의존도가 높은 팀 대비 트러블슈팅과 위기 대처 능력 보유
+                      </p>
+                    </div>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap ml-4">
+                      리드 엔지니어 직접 참여
+                    </span>
+                  </div>
                 </div>
               </div>
-              <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap">
-                리드 엔지니어 직접 참여
-              </span>
             </div>
 
             {/* Card 3 - 검증된 기술력 */}
-            <div className="bg-[#12131A] rounded-xl p-6 flex items-start justify-between">
+            <div className="bg-[#12131A] rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center flex-shrink-0">
                   <Shield className="w-5 h-5 text-brand-primary" />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">검증된 기술력</h3>
-                  <p className="text-gray-light text-xs">
-                    AI 미활용 시에도 뛰어난 개발 역량으로 안정적인 결과물 보장
-                  </p>
+                <div className="flex-1">
+                  {/* Mobile */}
+                  <div className="md:hidden">
+                    <h3 className="text-white font-semibold mb-1">검증된 기술력</h3>
+                    <p className="text-gray-light text-xs mb-3 whitespace-pre-line">
+                      {"AI 미활용 시에도 뛰어난 개발 역량으로\n안정적인 결과물 보장"}
+                    </p>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full">
+                      신뢰할 수 있는 기술력
+                    </span>
+                  </div>
+                  {/* Desktop */}
+                  <div className="hidden md:flex md:items-start md:justify-between">
+                    <div>
+                      <h3 className="text-white font-semibold mb-1">검증된 기술력</h3>
+                      <p className="text-gray-light text-xs">
+                        AI 미활용 시에도 뛰어난 개발 역량으로 안정적인 결과물 보장
+                      </p>
+                    </div>
+                    <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap ml-4">
+                      신뢰할 수 있는 기술력
+                    </span>
+                  </div>
                 </div>
               </div>
-              <span className="text-brand-primary text-xs font-medium bg-brand-primary/10 px-3 py-1 rounded-full whitespace-nowrap">
-                신뢰할 수 있는 기술력
-              </span>
             </div>
           </div>
         </div>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 
 interface Leader {
   id: string;
@@ -19,98 +18,163 @@ interface OtherLeadersCarouselProps {
 }
 
 export function OtherLeadersCarousel({ leaders }: OtherLeadersCarouselProps) {
-  const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 4;
-
-  const handlePrev = () => {
-    if (startIndex > 0) {
-      setStartIndex(startIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (startIndex < leaders.length - visibleCount) {
-      setStartIndex(startIndex + 1);
-    }
-  };
+  const [isPaused, setIsPaused] = useState(false);
 
   if (!leaders || leaders.length === 0) {
     return null;
   }
 
-  const visibleLeaders = leaders.slice(startIndex, startIndex + visibleCount);
+  // 무한 스크롤을 위해 리더 목록을 복제
+  const duplicatedLeaders = [...leaders, ...leaders];
 
   return (
-    <div className="relative">
-      {/* Leaders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {visibleLeaders.map((leader) => (
-          <Link key={leader.id} href={`/leaders/${leader.slug}`} className="group">
-            <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#0D0E16" }}>
-              {/* Profile Image */}
-              <div className="relative aspect-square bg-brand-surface">
-                {leader.profileImage ? (
-                  <Image
-                    src={leader.profileImage}
-                    alt={`${leader.name} profile`}
-                    fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-brand-surface">
-                    <span className="text-4xl text-gray-light">{leader.name.charAt(0)}</span>
+    <>
+      {/* Mobile: 2-column marquee */}
+      <div
+        className="md:hidden relative overflow-hidden"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div
+          className="marquee-content-mobile flex gap-4"
+          style={{
+            animationName: "other-leaders-marquee-mobile",
+            animationDuration: "15s",
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationPlayState: isPaused ? "paused" : "running",
+            width: "fit-content",
+          }}
+        >
+          {duplicatedLeaders.map((leader, index) => (
+            <Link
+              key={`mobile-${leader.id}-${index}`}
+              href={`/leaders/${leader.slug}`}
+              className="group flex-shrink-0"
+              style={{ width: "calc(50vw - 28px)" }}
+            >
+              {/* Profile Image - Grayscale */}
+              <div className="relative aspect-[3/4] mb-3 overflow-hidden rounded-lg bg-brand-surface">
+                <Image
+                  src={leader.profileImage}
+                  alt={leader.name}
+                  fill
+                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-300"
+                />
+                {/* Name overlay on image */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                  <div className="flex items-center gap-1">
+                    <span className="text-base font-bold text-white">{leader.name}</span>
+                    <span className="text-xs text-gray-300">{leader.nickname}</span>
                   </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg font-bold text-white">{leader.name}</span>
-                  <span className="text-sm text-gray-light">{leader.nickname}</span>
-                  <ExternalLink className="w-4 h-4 text-gray-light ml-auto" />
-                </div>
-                <div className="space-y-1">
-                  {leader.skills.slice(0, 2).map((skill) => (
-                    <div key={skill} className="flex items-center gap-2 text-xs text-gray-light">
-                      <span className="text-brand-primary">○</span>
-                      <span>{skill}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
-            </div>
-          </Link>
-        ))}
+              {/* Info below image */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    {leader.skills.slice(0, 2).map((skill, skillIndex) => (
+                      <div
+                        key={`${skill}-${skillIndex}`}
+                        className="flex items-center gap-1.5 text-xs text-gray-light"
+                      >
+                        <span className="text-brand-primary">○</span>
+                        <span>{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-brand-primary text-sm">→</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+        <style>{`
+          @keyframes other-leaders-marquee-mobile {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+        `}</style>
       </div>
 
-      {/* Navigation Buttons */}
-      {leaders.length > visibleCount && (
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            onClick={handlePrev}
-            disabled={startIndex === 0}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors border ${
-              startIndex === 0
-                ? "border-white/20 text-white/30 cursor-not-allowed"
-                : "border-white/30 text-white hover:border-white/50"
-            }`}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={startIndex >= leaders.length - visibleCount}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors border ${
-              startIndex >= leaders.length - visibleCount
-                ? "border-white/20 text-white/30 cursor-not-allowed"
-                : "border-white/30 text-white hover:border-white/50"
-            }`}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+      {/* Desktop: Marquee */}
+      <div
+        className="hidden md:block relative overflow-hidden"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Marquee Container */}
+        <div
+          className="marquee-content flex gap-6"
+          style={{
+            animationName: "other-leaders-marquee",
+            animationDuration: "20s",
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationPlayState: isPaused ? "paused" : "running",
+            width: "fit-content",
+          }}
+        >
+          {duplicatedLeaders.map((leader, index) => (
+            <Link
+              key={`${leader.id}-${index}`}
+              href={`/leaders/${leader.slug}`}
+              className="group flex-shrink-0"
+              style={{ width: "calc((100vw - 120px) / 4 - 18px)", maxWidth: "280px" }}
+            >
+              {/* Profile Image - Grayscale */}
+              <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-lg bg-brand-surface">
+                <Image
+                  src={leader.profileImage}
+                  alt={leader.name}
+                  fill
+                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-300"
+                />
+                {/* Name overlay on image */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-white">{leader.name}</span>
+                    <span className="text-sm text-gray-300">{leader.nickname}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Info below image */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    {leader.skills.slice(0, 2).map((skill, skillIndex) => (
+                      <div
+                        key={`${skill}-${skillIndex}`}
+                        className="flex items-center gap-2 text-xs text-gray-light"
+                      >
+                        <span className="text-brand-primary">○</span>
+                        <span>{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-brand-primary">→</span>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
-      )}
-    </div>
+
+        {/* CSS Animation using global style */}
+        <style>{`
+          @keyframes other-leaders-marquee {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+        `}</style>
+      </div>
+    </>
   );
 }

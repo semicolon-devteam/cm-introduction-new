@@ -43,7 +43,9 @@ export function JourneySection() {
         <div className="mb-16 text-center">
           <p className="text-brand-primary text-sm tracking-widest mb-4">Our Journey</p>
           <h2 className="text-3xl md:text-4xl font-bold text-brand-white mb-4">함께 걸어온 길</h2>
-          <p className="text-gray-light text-sm">세미콜론의 성자 이야기를 연도별로 만나보세요</p>
+          <p className="text-gray-light text-sm whitespace-pre-line">
+            {"세미콜론의 성장 이야기를\n연도별로 만나보세요"}
+          </p>
         </div>
 
         {/* Timeline */}
