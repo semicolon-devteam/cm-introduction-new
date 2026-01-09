@@ -28,7 +28,7 @@ export function Footer() {
             </Link>
             <Link
               href="/skills"
-              className="text-sm text-brand-primary hover:text-brand-primary/80 transition-colors"
+              className="text-sm text-gray-light hover:text-brand-white transition-colors"
             >
               기술력
             </Link>
