@@ -100,28 +100,34 @@ export default function LeadersPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 {
-                  name: "장 현 봉",
+                  name: "Bon",
                   role: "프론트엔드 개발",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
+                  company: "Frontend Developer",
+                  experience: "경력 9년",
                 },
                 {
-                  name: "강 동 현",
+                  name: "Dwight",
                   role: "프론트엔드 개발",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
+                  company: "Frontend Developer",
+                  experience: "경력 10년",
                 },
                 {
-                  name: "박 지 호",
+                  name: "Joshua",
                   role: "프론트엔드 개발",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
+                  company: "Frontend Developer",
+                  experience: "경력 5년",
                 },
                 {
-                  name: "이 안",
+                  name: "Bae",
                   role: "백엔드 개발",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
+                  company: "Backend Developer",
+                  experience: "경력 5년",
+                },
+                {
+                  name: "Kai",
+                  role: "개발",
+                  company: "Software Developer",
+                  experience: "경력 3년",
                 },
               ].map((member, index) => (
                 <div
@@ -179,15 +185,9 @@ export default function LeadersPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 {
-                  name: "엄 현 준",
+                  name: "Yeon",
                   role: "UI / UX 디자인",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
-                },
-                {
-                  name: "이 가 연",
-                  role: "UI / UX 디자인",
-                  company: "회사 UI/UX Designer",
+                  company: "UI/UX Designer",
                   experience: "경력 8년",
                 },
               ].map((member, index) => (
@@ -246,10 +246,10 @@ export default function LeadersPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 {
-                  name: "고 권 희",
+                  name: "Goni",
                   role: "서비스운영",
-                  company: "회사 UI/UX Designer",
-                  experience: "경력 8년",
+                  company: "Service Operations",
+                  experience: "경력 5년",
                 },
               ].map((member, index) => (
                 <div
