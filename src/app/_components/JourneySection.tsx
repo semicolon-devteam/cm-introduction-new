@@ -9,7 +9,7 @@ export function JourneySection() {
         },
         {
           title: "첫 프로젝트 수주",
-          desc: "A 대학교 커뮤니티 플랫폼 구축으로\n10만 사용자 확보 경험",
+          desc: "A 대학교 커뮤니티 플랫폼 구축",
         },
       ],
     },
@@ -22,7 +22,7 @@ export function JourneySection() {
         },
         {
           title: "기술 혁신",
-          desc: "AI 기반 추천 시스템 개발로\n고객사 매출 35% 증가 달성",
+          desc: "솔루션 및 AI 협업 프레임워크 개발로\n다양한 서비스 출시",
         },
       ],
     },
