@@ -18,7 +18,7 @@ export function AICasesSection() {
             style={{ backgroundColor: "#12131A" }}
           >
             <h3 className="text-white font-bold mb-2">AI 코드 리뷰 자동화</h3>
-            <p className="text-gray-light text-sm mb-4">GPT-4를 활용한 실시간 코드 품질 검증</p>
+            <p className="text-gray-light text-sm mb-4">Claude Code 기반 실시간 코드 품질 검증</p>
             <span
               className="text-xs px-3 py-1 rounded-full"
               style={{ color: "#068FFF", border: "1px solid #068FFF" }}
