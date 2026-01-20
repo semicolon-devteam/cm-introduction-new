@@ -44,10 +44,14 @@ export async function middleware(request: NextRequest) {
   // 보호된 라우트 정의
   const protectedRoutes = ["/dashboard", "/profile", "/settings", "/admin"];
   const authRoutes = ["/auth/login", "/auth/register", "/auth/callback"];
+  // 자체 인증을 사용하는 라우트 (Supabase 인증 제외)
+  const selfAuthRoutes = ["/admin/reports"];
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
+  const isSelfAuthRoute = selfAuthRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
+  const isProtectedRoute =
+    !isSelfAuthRoute && protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
   // 인증이 필요한 라우트에 미인증 사용자가 접근하는 경우
