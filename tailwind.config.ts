@@ -86,6 +86,15 @@ export default {
         // Figma Specific Spacing
         420: "420px",
       },
+      keyframes: {
+        "scroll-bounce": {
+          "0%, 100%": { transform: "translateY(0)", opacity: "1" },
+          "50%": { transform: "translateY(8px)", opacity: "0.3" },
+        },
+      },
+      animation: {
+        "scroll-bounce": "scroll-bounce 1.5s ease-in-out infinite",
+      },
     },
   },
   plugins: [],
