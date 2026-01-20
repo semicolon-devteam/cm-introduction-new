@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
-
-import { ArrowRight, Mouse } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 // 통계 데이터
 const stats = [

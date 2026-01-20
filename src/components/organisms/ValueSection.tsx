@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-
 import { ArrowRight } from "lucide-react";
 
 // 가치 카드 데이터

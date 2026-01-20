@@ -6,3 +6,5 @@ export { IncidentSection, INCIDENT_STATUS } from "./IncidentSection";
 export type { IncidentItem } from "./IncidentSection";
 export { GoalCard, GOAL_CATEGORIES, GOAL_STATUS } from "./GoalCard";
 export type { GoalItem } from "./GoalCard";
+export { MilestoneCard, MILESTONE_STATUS } from "./MilestoneCard";
+export type { MilestoneItem } from "./MilestoneCard";

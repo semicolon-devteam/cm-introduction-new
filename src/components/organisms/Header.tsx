@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-
 import { Menu, X } from "lucide-react";
 
 const navigation = [

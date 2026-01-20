@@ -108,9 +108,7 @@ function CometTrail({ progress, phase }: { progress: number; phase?: string }) {
     ? Math.min((progress - convergeStart) / (1 - convergeStart), 1)
     : 0;
 
-  // Easing functions
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-  const easeInCubic = (t: number) => t * t * t;
+  // Easing function
   const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
   // Seeded random function (consistent server/client)

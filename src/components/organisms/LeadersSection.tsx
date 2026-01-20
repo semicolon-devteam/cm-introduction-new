@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 // 리더 데이터 (이미지는 추후 업로드)
