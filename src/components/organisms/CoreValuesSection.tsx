@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Users, MessageSquare, Lightbulb, Heart, Target, Zap } from "lucide-react";
+import { Users, MessageSquare, Lightbulb, Heart, Target, Zap, type LucideIcon } from "lucide-react";
 
 // 핵심 가치 데이터
 const coreValues = [
@@ -45,7 +45,7 @@ function ValueCard({
   delay,
   isVisible,
 }: {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   title: string;
   description: string;
   delay: number;

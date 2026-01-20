@@ -8,9 +8,6 @@ import { ResultSection } from "@/components/organisms/ResultSection";
 import { PartnersSection } from "@/components/organisms/PartnersSection";
 import { Footer } from "@/components/organisms/Footer";
 
-import { StatsSection, PartnersSection, JourneySection } from "./_components";
-import { HomeLeadersSection } from "./_components/HomeLeadersSection";
-
 export default function HomePage() {
   return (
     <div className="h-screen overflow-y-auto snap-y snap-mandatory bg-black">

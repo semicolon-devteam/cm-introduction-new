@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { CheckSquare, Users, Heart, Clock } from "lucide-react";
+import { CheckSquare, Users, Heart, Clock, type LucideIcon } from "lucide-react";
 
 // 성과 데이터
 const results = [
@@ -35,7 +35,7 @@ function ResultCard({
   delay,
   isVisible,
 }: {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   value: string;
   label: string;
   delay: number;

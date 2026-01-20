@@ -1,9 +1,9 @@
 "use client";
 
-import type { ComponentType } from "react";
+import type { LucideIcon } from "lucide-react";
 
 interface CultureCardProps {
-  icon: ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   title: string;
   description: string;
   delay: number;
