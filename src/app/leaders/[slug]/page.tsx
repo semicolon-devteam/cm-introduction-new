@@ -221,54 +221,46 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
                 <p className="text-gray-light text-sm">세미콜론을 이끌어가는 리더들 입니다.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {otherLeaders.map((otherLeader) => (
                   <Link
                     key={otherLeader.id}
                     href={`/leaders/${otherLeader.slug}`}
                     className="group"
                   >
-                    <div
-                      className="rounded-xl overflow-hidden"
-                      style={{ backgroundColor: "#0D0E16" }}
-                    >
-                      {/* Profile Image */}
-                      <div className="relative aspect-square bg-brand-surface">
-                        {otherLeader.profileImage ? (
-                          <Image
-                            src={otherLeader.profileImage}
-                            alt={`${otherLeader.name} profile`}
-                            fill
-                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-brand-surface">
-                            <span className="text-4xl text-gray-light">
-                              {otherLeader.name.charAt(0)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                    {/* Profile Image */}
+                    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 mb-3">
+                      {otherLeader.profileImage ? (
+                        <Image
+                          src={otherLeader.profileImage}
+                          alt={`${otherLeader.name} profile`}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-gray-700 to-gray-900">
+                          <span className="text-4xl text-gray-600">
+                            {otherLeader.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Info */}
-                      <div className="p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg font-bold text-white">{otherLeader.name}</span>
-                          <span className="text-sm text-gray-light">{otherLeader.nickname}</span>
-                          <ExternalLink className="w-4 h-4 text-gray-light ml-auto" />
-                        </div>
-                        <div className="space-y-1">
-                          {otherLeader.skills.slice(0, 2).map((skill) => (
-                            <div
-                              key={skill}
-                              className="flex items-center gap-2 text-xs text-gray-light"
-                            >
-                              <span className="text-brand-primary">○</span>
-                              <span>{skill}</span>
-                            </div>
-                          ))}
-                        </div>
+                    {/* Info */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-white">{otherLeader.name}</span>
+                        <span className="text-sm text-gray-500">| {otherLeader.nickname}</span>
                       </div>
+                      <ArrowLeft className="w-5 h-5 text-brand-primary rotate-180" />
+                    </div>
+                    <div className="space-y-1">
+                      {otherLeader.skills.slice(0, 2).map((skill) => (
+                        <div key={skill} className="flex items-center gap-2 text-sm text-gray-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                          <span>{skill}</span>
+                        </div>
+                      ))}
                     </div>
                   </Link>
                 ))}
