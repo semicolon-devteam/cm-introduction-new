@@ -1,14 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, ExternalLink, Briefcase, Target } from "lucide-react";
 import Image from "next/image";
+import { ArrowLeft, Mail, ExternalLink, Briefcase, Target } from "lucide-react";
 
 import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
 import { getLeaderBySlug, getOtherLeaders } from "@/data/leaders";
 import { RadarChart } from "../_components/RadarChart";
-import { ProjectsCarousel } from "../_components/ProjectsCarousel";
-import { OtherLeadersCarousel } from "../_components/OtherLeadersCarousel";
 
 interface LeaderPageProps {
   params: Promise<{ slug: string }>;
@@ -92,15 +90,74 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
               {/* 한줄 소개 */}
               <div className="rounded-xl p-6" style={{ backgroundColor: "#0D0E16" }}>
                 <h2 className="text-center text-gray-light text-sm mb-4">한줄 소개</h2>
-                <p className="text-center text-brand-primary text-lg whitespace-pre-line">
+                <p className="text-center text-brand-primary text-lg">
                   &quot;{leader.oneLiner}&quot;
                 </p>
               </div>
 
               {/* 대표 프로젝트 */}
               <div className="rounded-xl p-6" style={{ backgroundColor: "#0D0E16" }}>
-                <h2 className="text-gray-light text-sm mb-4">대표 프로젝트</h2>
-                <ProjectsCarousel projects={leader.projects} />
+                <h2 className="text-white font-bold mb-4">대표 프로젝트</h2>
+
+                {leader.projects.length > 0 ? (
+                  <div className="flex flex-col md:flex-row gap-4">
+                    {/* Project Thumbnail */}
+                    <div className="w-full md:w-40 h-32 rounded-lg bg-gradient-to-br from-brand-primary/20 to-brand-primary/5 flex-shrink-0 overflow-hidden">
+                      {leader.projects[0].thumbnail ? (
+                        <Image
+                          src={leader.projects[0].thumbnail}
+                          alt={leader.projects[0].name}
+                          width={160}
+                          height={128}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Briefcase className="w-12 h-12 text-brand-primary/50" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Project Info */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-brand-primary text-sm">
+                          {leader.projects[0].year}
+                        </span>
+                        <span className="text-white">|</span>
+                        {leader.projects[0].link ? (
+                          <a
+                            href={leader.projects[0].link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 hover:text-brand-primary transition-colors"
+                          >
+                            <span className="text-white font-bold">{leader.projects[0].name}</span>
+                            <ExternalLink className="w-4 h-4 text-gray-light" />
+                          </a>
+                        ) : (
+                          <span className="text-white font-bold">{leader.projects[0].name}</span>
+                        )}
+                      </div>
+                      <p className="text-gray-light text-sm leading-relaxed mb-4">
+                        {leader.projects[0].description}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {leader.projects[0].tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-xs px-3 py-1 rounded-full"
+                            style={{ color: "#068FFF", border: "1px solid #068FFF" }}
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-light text-sm">등록된 프로젝트가 없습니다.</p>
+                )}
               </div>
             </div>
           </div>
@@ -161,12 +218,61 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
             <div className="mt-16">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-white mb-2">다른 리더들</h2>
-                <p className="text-gray-light text-sm whitespace-pre-line">
-                  {"세미콜론을 이끌어가는\n리더들 입니다."}
-                </p>
+                <p className="text-gray-light text-sm">세미콜론을 이끌어가는 리더들 입니다.</p>
               </div>
 
-              <OtherLeadersCarousel leaders={otherLeaders} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {otherLeaders.map((otherLeader) => (
+                  <Link
+                    key={otherLeader.id}
+                    href={`/leaders/${otherLeader.slug}`}
+                    className="group"
+                  >
+                    <div
+                      className="rounded-xl overflow-hidden"
+                      style={{ backgroundColor: "#0D0E16" }}
+                    >
+                      {/* Profile Image */}
+                      <div className="relative aspect-square bg-brand-surface">
+                        {otherLeader.profileImage ? (
+                          <Image
+                            src={otherLeader.profileImage}
+                            alt={`${otherLeader.name} profile`}
+                            fill
+                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-brand-surface">
+                            <span className="text-4xl text-gray-light">
+                              {otherLeader.name.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg font-bold text-white">{otherLeader.name}</span>
+                          <span className="text-sm text-gray-light">{otherLeader.nickname}</span>
+                          <ExternalLink className="w-4 h-4 text-gray-light ml-auto" />
+                        </div>
+                        <div className="space-y-1">
+                          {otherLeader.skills.slice(0, 2).map((skill) => (
+                            <div
+                              key={skill}
+                              className="flex items-center gap-2 text-xs text-gray-light"
+                            >
+                              <span className="text-brand-primary">○</span>
+                              <span>{skill}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -185,11 +291,12 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
           {/* Content */}
           <div className="text-center">
             <p className="text-brand-primary text-sm tracking-widest mb-4">Contact Us</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">세미콜론과</h2>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              세미콜론과 함께 성장할 파트너를 찾습니다.
+              함께 성장할 파트너를 찾습니다.
             </h2>
-            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto whitespace-pre-line">
-              {"세미콜론은 함께 미래를 만들어갈\n파트너를 기다립니다."}
+            <p className="text-gray-light text-sm mb-8 max-w-xl mx-auto">
+              세미콜론은 함께 미래를 만들어갈 파트너를 기다립니다.
             </p>
             <Link
               href="/contacts"
