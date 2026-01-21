@@ -121,6 +121,7 @@ export default function LeadersPage() {
                       key={index}
                       name={leader.name}
                       nickname={leader.nickname}
+                      slug={leader.slug}
                       image={leader.image}
                       roles={leader.roles}
                       delay={800 + index * 150}
