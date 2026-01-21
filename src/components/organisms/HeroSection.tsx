@@ -164,7 +164,7 @@ export function HeroSection() {
                 style={{ transitionDelay: "800ms" }}
               >
                 <Link
-                  href="/tech"
+                  href="/skills"
                   className="flex items-center gap-2 px-6 py-3 bg-[#068FFF] text-white text-sm md:text-base font-medium rounded-full hover:bg-[#068FFF]/90 transition-colors"
                 >
                   우리의 기술력 보기

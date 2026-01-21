@@ -1,5 +1,8 @@
 import { Inter } from "next/font/google";
 
+import { QueryProvider } from "@providers/query-provider";
+import { CoreAuthProvider } from "@providers/core-auth-provider";
+
 import type { Metadata } from "next";
 
 import "./globals.css";
@@ -21,7 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <QueryProvider>
+          <CoreAuthProvider>{children}</CoreAuthProvider>
+        </QueryProvider>
+      </body>
     </html>
   );
 }

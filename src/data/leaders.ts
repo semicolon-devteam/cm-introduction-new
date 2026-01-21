@@ -7,7 +7,7 @@ export const leaders: Leader[] = [
     name: "서정원",
     nickname: "Garden",
     position: "시스템 아키텍트",
-    profileImage: "/images/leaders/garden.png",
+    profileImage: "/images/leaders/leader-1.png",
     skills: ["시스템 아키텍처", "기술 통합 리드"],
     oneLiner: "고객과 시스템 사이,\n최적의 구조를 설계합니다.",
     professionalHistory: [
@@ -51,7 +51,7 @@ export const leaders: Leader[] = [
     name: "전준영",
     nickname: "Reus",
     position: "프론트엔드 리드",
-    profileImage: "/images/leaders/reus.png",
+    profileImage: "/images/leaders/leader-2.png",
     skills: ["프론트 리드 엔지니어", "협업 매니저"],
     oneLiner: "사용자 경험을 최우선으로 생각하며\n팀과 함께 성장합니다.",
     professionalHistory: [
@@ -95,7 +95,7 @@ export const leaders: Leader[] = [
     name: "노영록",
     nickname: "Roki",
     position: "서비스 총괄",
-    profileImage: "/images/leaders/roki.png",
+    profileImage: "/images/leaders/leader-3.png",
     skills: ["서비스총괄", "그로스 디렉터"],
     oneLiner: "데이터 기반 의사결정으로\n서비스를 성장시킵니다.",
     professionalHistory: [
@@ -137,7 +137,7 @@ export const leaders: Leader[] = [
     name: "강용준",
     nickname: "Kyago",
     position: "백엔드 총괄",
-    profileImage: "/images/leaders/kyago.png",
+    profileImage: "/images/leaders/leader-4.png",
     skills: ["백엔드 총괄", "기술 솔루션 리드"],
     oneLiner: "안정적이고 확장 가능한\n시스템을 설계합니다.",
     professionalHistory: [
@@ -181,7 +181,7 @@ export const leaders: Leader[] = [
     name: "염현준",
     nickname: "Yeomso",
     position: "디자인 총괄",
-    profileImage: "/images/leaders/yeomso.png",
+    profileImage: "/images/leaders/leader-5.png",
     skills: ["디자인 총괄", "UI/UX 디자인"],
     oneLiner: "사람의 마음을 바꾸는\n인터페이스를 만듭니다.",
     professionalHistory: [
