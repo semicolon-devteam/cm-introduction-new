@@ -147,8 +147,16 @@ async function fetchSearchAnalytics(
   startDate: string,
   endDate: string,
   dimensions?: string[],
-  rowLimit = 25
-): Promise<{ rows?: Array<{ keys: string[]; clicks: number; impressions: number; ctr: number; position: number }> }> {
+  rowLimit = 25,
+): Promise<{
+  rows?: Array<{
+    keys: string[];
+    clicks: number;
+    impressions: number;
+    ctr: number;
+    position: number;
+  }>;
+}> {
   const body: Record<string, unknown> = {
     startDate,
     endDate,
@@ -169,7 +177,7 @@ async function fetchSearchAnalytics(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -195,13 +203,16 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const period = searchParams.get("period") || "28days";
 
-  const siteUrl = process.env.SEARCH_CONSOLE_SITE_URL;
+  // siteUrl 파라미터 지원 (멀티 프로젝트용)
+  // 파라미터가 없으면 환경변수 사용
+  const siteUrl = searchParams.get("siteUrl") || process.env.SEARCH_CONSOLE_SITE_URL;
 
   // 환경 변수 체크
   if (!siteUrl || !process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
     return NextResponse.json({
       connected: false,
-      error: "Search Console 연동 필요: SEARCH_CONSOLE_SITE_URL, GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY 환경 변수 설정 필요",
+      error:
+        "Search Console 연동 필요: siteUrl 파라미터 또는 SEARCH_CONSOLE_SITE_URL 환경 변수 필요",
     } as SearchConsoleResponse);
   }
 
@@ -246,23 +257,79 @@ export async function GET(request: Request) {
     }
 
     // 병렬로 데이터 가져오기
-    const [currentOverview, previousOverview, topQueries, topPages, deviceData, countryData, dailyData] =
-      await Promise.all([
-        // 현재 기간 전체 통계
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), undefined, 1),
-        // 이전 기간 전체 통계
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(previousStartDate), formatDate(previousEndDate), undefined, 1),
-        // 인기 검색어 (Top 25)
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), ["query"], 25),
-        // 인기 페이지 (Top 25)
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), ["page"], 25),
-        // 기기별 분석
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), ["device"], 10),
-        // 국가별 분석
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), ["country"], 10),
-        // 일별 데이터
-        fetchSearchAnalytics(accessToken, siteUrl, formatDate(startDate), formatDate(endDate), ["date"], 100),
-      ]);
+    const [
+      currentOverview,
+      previousOverview,
+      topQueries,
+      topPages,
+      deviceData,
+      countryData,
+      dailyData,
+    ] = await Promise.all([
+      // 현재 기간 전체 통계
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        undefined,
+        1,
+      ),
+      // 이전 기간 전체 통계
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(previousStartDate),
+        formatDate(previousEndDate),
+        undefined,
+        1,
+      ),
+      // 인기 검색어 (Top 25)
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        ["query"],
+        25,
+      ),
+      // 인기 페이지 (Top 25)
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        ["page"],
+        25,
+      ),
+      // 기기별 분석
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        ["device"],
+        10,
+      ),
+      // 국가별 분석
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        ["country"],
+        10,
+      ),
+      // 일별 데이터
+      fetchSearchAnalytics(
+        accessToken,
+        siteUrl,
+        formatDate(startDate),
+        formatDate(endDate),
+        ["date"],
+        100,
+      ),
+    ]);
 
     // 현재 기간 통계 파싱
     const currentMetrics: SearchConsoleMetric = currentOverview.rows?.[0]

@@ -18,3 +18,5 @@ export * from "./POManager";
 export * from "./ReportGenerator";
 export * from "./GoogleAnalyticsCard";
 export * from "./SearchConsoleCard";
+export * from "./SEOProjectCard";
+export * from "./SEOProjectsSection";

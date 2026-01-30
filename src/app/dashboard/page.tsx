@@ -23,8 +23,7 @@ import {
   GoalComparisonView,
   RevenueManager,
   ReportGenerator,
-  GoogleAnalyticsCard,
-  SearchConsoleCard,
+  SEOProjectsSection,
   type CalendarEvent,
   type PeriodFilter,
 } from "./_components";
@@ -233,10 +232,9 @@ export default function DashboardPage() {
           <KPISummaryCards metrics={kpiMetrics} isLoading={isLoading} />
         </section>
 
-        {/* 섹션 1.5: SEO 분석 (Google Analytics + Search Console) */}
-        <section className="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <GoogleAnalyticsCard />
-          <SearchConsoleCard />
+        {/* 섹션 1.5: SEO 프로젝트 */}
+        <section className="mb-6">
+          <SEOProjectsSection />
         </section>
 
         {/* 섹션 2: 목표 & 수익 요약 */}
@@ -311,7 +309,10 @@ export default function DashboardPage() {
 
         {/* 섹션 5: 차트 영역 */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <GoalProgressChart data={goalProgress.length > 0 ? goalProgress : []} isLoading={isLoading} />
+          <GoalProgressChart
+            data={goalProgress.length > 0 ? goalProgress : []}
+            isLoading={isLoading}
+          />
           <RevenueChart
             data={revenueData}
             projectRevenues={data.revenue.projectRevenues}

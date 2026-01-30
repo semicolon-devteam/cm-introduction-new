@@ -120,7 +120,7 @@ async function fetchGAData(
   startDate: string,
   endDate: string,
   metrics: string[],
-  dimensions?: string[]
+  dimensions?: string[],
 ): Promise<any> {
   const body: any = {
     dateRanges: [{ startDate, endDate }],
@@ -140,7 +140,7 @@ async function fetchGAData(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -160,14 +160,16 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const period = searchParams.get("period") || "7days";
 
-  const propertyId = process.env.GA_PROPERTY_ID;
+  // propertyId를 쿼리 파라미터로 받거나 환경 변수에서 가져옴
+  const propertyId = searchParams.get("propertyId") || process.env.GA_PROPERTY_ID;
 
   // 환경 변수 체크
   if (!propertyId || !process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
     // Demo 데이터 반환 (GA 미연동 시)
     return NextResponse.json({
       connected: false,
-      error: "GA 연동 필요: GA_PROPERTY_ID, GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY 환경 변수 설정 필요",
+      error:
+        "GA 연동 필요: GA_PROPERTY_ID, GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY 환경 변수 설정 필요",
       // 데모 데이터 (테스트용)
       demo: true,
       metrics: {
@@ -175,7 +177,12 @@ export async function GET(request: Request) {
         sessions: { name: "세션", value: 0, previousValue: 0, changePercent: 0 },
         pageViews: { name: "페이지뷰", value: 0, previousValue: 0, changePercent: 0 },
         bounceRate: { name: "이탈률", value: 0, previousValue: 0, changePercent: 0 },
-        avgSessionDuration: { name: "평균 세션 시간", value: 0, previousValue: 0, changePercent: 0 },
+        avgSessionDuration: {
+          name: "평균 세션 시간",
+          value: 0,
+          previousValue: 0,
+          changePercent: 0,
+        },
         newUsers: { name: "신규 사용자", value: 0, previousValue: 0, changePercent: 0 },
       },
       topPages: [],
@@ -235,7 +242,7 @@ export async function GET(request: Request) {
         "bounceRate",
         "averageSessionDuration",
         "newUsers",
-      ]
+      ],
     );
 
     // 이전 기간 메트릭 (비교용)
@@ -251,7 +258,7 @@ export async function GET(request: Request) {
         "bounceRate",
         "averageSessionDuration",
         "newUsers",
-      ]
+      ],
     );
 
     // 인기 페이지
@@ -261,7 +268,7 @@ export async function GET(request: Request) {
       formatDate(startDate),
       formatDate(now),
       ["screenPageViews", "averageSessionDuration"],
-      ["pagePath"]
+      ["pagePath"],
     );
 
     // 트래픽 소스
@@ -271,7 +278,7 @@ export async function GET(request: Request) {
       formatDate(startDate),
       formatDate(now),
       ["sessions"],
-      ["sessionSource"]
+      ["sessionSource"],
     );
 
     // 일별 데이터
@@ -281,7 +288,7 @@ export async function GET(request: Request) {
       formatDate(startDate),
       formatDate(now),
       ["activeUsers", "sessions", "screenPageViews"],
-      ["date"]
+      ["date"],
     );
 
     // 데이터 파싱
@@ -323,7 +330,7 @@ export async function GET(request: Request) {
         previousValue: Math.round(parseValue(previousRow, 3) * 100),
         ...calculateChange(
           Math.round(parseValue(currentRow, 3) * 100),
-          Math.round(parseValue(previousRow, 3) * 100)
+          Math.round(parseValue(previousRow, 3) * 100),
         ),
       },
       avgSessionDuration: {
@@ -332,7 +339,7 @@ export async function GET(request: Request) {
         previousValue: Math.round(parseValue(previousRow, 4)),
         ...calculateChange(
           Math.round(parseValue(currentRow, 4)),
-          Math.round(parseValue(previousRow, 4))
+          Math.round(parseValue(previousRow, 4)),
         ),
       },
       newUsers: {
@@ -346,26 +353,22 @@ export async function GET(request: Request) {
     // 인기 페이지 파싱
     const totalSessions = metrics.sessions.value || 1;
     const topPages =
-      topPagesData.rows
-        ?.slice(0, 10)
-        .map((row: any) => ({
-          path: row.dimensionValues?.[0]?.value || "/",
-          pageViews: Number(row.metricValues?.[0]?.value || 0),
-          avgTime: Math.round(Number(row.metricValues?.[1]?.value || 0)),
-        })) || [];
+      topPagesData.rows?.slice(0, 10).map((row: any) => ({
+        path: row.dimensionValues?.[0]?.value || "/",
+        pageViews: Number(row.metricValues?.[0]?.value || 0),
+        avgTime: Math.round(Number(row.metricValues?.[1]?.value || 0)),
+      })) || [];
 
     // 트래픽 소스 파싱
     const trafficSources =
-      trafficData.rows
-        ?.slice(0, 5)
-        .map((row: any) => {
-          const sessions = Number(row.metricValues?.[0]?.value || 0);
-          return {
-            source: row.dimensionValues?.[0]?.value || "direct",
-            sessions,
-            percentage: Math.round((sessions / totalSessions) * 100),
-          };
-        }) || [];
+      trafficData.rows?.slice(0, 5).map((row: any) => {
+        const sessions = Number(row.metricValues?.[0]?.value || 0);
+        return {
+          source: row.dimensionValues?.[0]?.value || "direct",
+          sessions,
+          percentage: Math.round((sessions / totalSessions) * 100),
+        };
+      }) || [];
 
     // 일별 데이터 파싱
     const dailyParsed =
