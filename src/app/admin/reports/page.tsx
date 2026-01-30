@@ -8,6 +8,7 @@ import {
   ChevronRight,
   DollarSign,
   Target,
+  LayoutDashboard,
   type LucideIcon,
 } from "lucide-react";
 import { type ReactNode } from "react";
@@ -47,6 +48,21 @@ export default function ReportsPage() {
   };
 
   const reportCards: ReportCard[] = [
+    {
+      href: "/admin/reports/dashboard",
+      icon: (
+        <IconWrapper
+          icon={LayoutDashboard}
+          color="text-purple-400"
+          bg="bg-purple-400/15"
+          bgHover="group-hover:bg-purple-400/25"
+        />
+      ),
+      title: "통합 대시보드",
+      description:
+        "달력 기반 일정 관리, KPI 현황, 매출 트렌드, GitHub 이슈를 한눈에 확인할 수 있습니다.",
+      footer: "전체 비즈니스 현황 대시보드",
+    },
     {
       href: "/admin/reports/po",
       icon: (

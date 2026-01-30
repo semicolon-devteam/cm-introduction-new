@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
   const protectedRoutes = ["/dashboard", "/profile", "/settings", "/admin"];
   const authRoutes = ["/auth/login", "/auth/register", "/auth/callback"];
   // 자체 인증을 사용하는 라우트 (Supabase 인증 제외)
-  const selfAuthRoutes = ["/admin/reports"];
+  const selfAuthRoutes = ["/admin/reports", "/dashboard"];
 
   const isSelfAuthRoute = selfAuthRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),

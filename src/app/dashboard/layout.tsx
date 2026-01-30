@@ -27,7 +27,7 @@ export default function ReportsLayout({ children }: ReportsLayoutProps) {
     setError("");
     setIsSubmitting(true);
 
-    fetch("/api/admin/reports/auth", {
+    fetch("/api/dashboard/auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
@@ -50,7 +50,7 @@ export default function ReportsLayout({ children }: ReportsLayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#0d0e12] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0e12] flex items-center justify-center">
         <div className="flex items-center gap-2 text-[#909296]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">로딩 중...</span>
@@ -61,7 +61,7 @@ export default function ReportsLayout({ children }: ReportsLayoutProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#0d0e12] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0d0e12] flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           {/* Mantine Card style */}
           <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] overflow-hidden">
@@ -125,9 +125,8 @@ export default function ReportsLayout({ children }: ReportsLayoutProps) {
     );
   }
 
-  // 상위 admin 레이아웃 스타일을 덮어쓰기 위해 전체 화면 컨테이너 사용
   return (
-    <div className="fixed inset-0 z-50 bg-[#0d0e12] overflow-auto">
+    <div className="min-h-screen bg-[#0d0e12]">
       {children}
     </div>
   );

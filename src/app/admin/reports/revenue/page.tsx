@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Calendar, DollarSign } from "lucide-react";
 import { ProjectTabs, ReportPreview, MilestoneCard, MILESTONE_STATUS } from "../_components";
 import type { MilestoneItem } from "../_components";
+import { useSyncMilestones, useSyncRevenue } from "../_hooks/useReportStorage";
 
 interface ProjectRevenue {
   id: string;
@@ -29,6 +30,21 @@ export default function RevenueSchedulePage() {
       notes: "",
     })),
   );
+
+  // 대시보드 동기화 훅
+  const { syncMilestones } = useSyncMilestones();
+  const { syncRevenue } = useSyncRevenue();
+
+  // 모든 프로젝트의 마일스톤과 수익을 대시보드에 동기화
+  useEffect(() => {
+    const allMilestones = projects.flatMap((p) => p.milestones);
+    syncMilestones(allMilestones);
+
+    // 총 수익 계산
+    const totalCurrent = projects.reduce((sum, p) => sum + (Number(p.currentRevenue) || 0), 0);
+    const totalTarget = projects.reduce((sum, p) => sum + (Number(p.targetRevenue) || 0), 0);
+    syncRevenue({ currentRevenue: totalCurrent, targetRevenue: totalTarget });
+  }, [projects, syncMilestones, syncRevenue]);
 
   const currentProject = projects.find((p) => p.projectName === selectedProject);
 

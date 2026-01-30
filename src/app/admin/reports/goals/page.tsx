@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Target, BarChart3, CheckCircle2 } from "lucide-react";
 
 import { ProjectTabs, ReportPreview, GoalCard, GOAL_CATEGORIES, GOAL_STATUS } from "../_components";
 import type { GoalItem } from "../_components";
+import { useSyncGoals } from "../_hooks/useReportStorage";
 
 interface ProjectGoals {
   id: string;
@@ -30,6 +31,15 @@ export default function ProjectGoalsPage() {
       notes: "",
     })),
   );
+
+  // 대시보드 동기화 훅
+  const { syncGoals } = useSyncGoals();
+
+  // 모든 프로젝트의 목표를 대시보드에 동기화
+  useEffect(() => {
+    const allGoals = projects.flatMap((p) => p.goals);
+    syncGoals(allGoals);
+  }, [projects, syncGoals]);
 
   const currentProject = projects.find((p) => p.projectName === selectedProject);
 
