@@ -148,7 +148,7 @@ export function LeadersSection() {
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex flex-col justify-center">
-        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+        <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
           {/* 타이틀 영역 */}
           <div className="mb-12">
             {/* 태그 */}

@@ -27,7 +27,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#3D3D3D]">
-      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+      <div className="mx-auto px-6 md:px-10 lg:mx-[350px]">
         <nav className="flex items-center justify-between h-[60px]">
           {/* Logo */}
           <Link href="/" className="flex items-center">

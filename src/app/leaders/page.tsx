@@ -85,7 +85,7 @@ export default function LeadersPage() {
         className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] pt-20 snap-start"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
-          <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
             <div className="text-center mb-16">
               <div
                 className={`opacity-0 translate-y-6 transition-all duration-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : ""}`}
@@ -121,6 +121,7 @@ export default function LeadersPage() {
                       key={index}
                       name={leader.name}
                       nickname={leader.nickname}
+                      slug={leader.slug}
                       image={leader.image}
                       roles={leader.roles}
                       delay={800 + index * 150}
@@ -159,7 +160,7 @@ export default function LeadersPage() {
         className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
-          <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
             <div className="text-center mb-16">
               <div
                 className={`opacity-0 translate-y-6 transition-all duration-700 ease-out ${isMemberVisible ? "opacity-100 translate-y-0" : ""}`}
@@ -216,7 +217,7 @@ export default function LeadersPage() {
         className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a14] to-[#000000] py-20 snap-start"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
-          <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
             <div
               className={`flex flex-col items-center mb-6 opacity-0 transition-all duration-700 ease-out ${isCultureVisible ? "opacity-100" : ""}`}
               style={{ transitionDelay: "100ms" }}
@@ -268,7 +269,7 @@ export default function LeadersPage() {
         className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
-          <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
             <div className="text-center">
               <div
                 className={`opacity-0 translate-y-6 transition-all duration-700 ease-out ${isContactVisible ? "opacity-100 translate-y-0" : ""}`}

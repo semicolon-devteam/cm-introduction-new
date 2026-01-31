@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 interface LeaderSliderCardProps {
   name: string;
   nickname: string;
+  slug: string;
   image: string;
   roles: string[];
   delay: number;
@@ -16,6 +18,7 @@ interface LeaderSliderCardProps {
 export function LeaderSliderCard({
   name,
   nickname,
+  slug,
   image,
   roles,
   delay,
@@ -25,8 +28,9 @@ export function LeaderSliderCard({
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div
-      className={`flex-shrink-0 w-[260px] opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer
+    <Link
+      href={`/leaders/${slug}`}
+      className={`flex-shrink-0 w-[260px] opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer block
         ${isVisible ? "opacity-100 translate-y-0" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -62,6 +66,6 @@ export function LeaderSliderCard({
           </div>
         ))}
       </div>
-    </div>
+    </Link>
   );
 }

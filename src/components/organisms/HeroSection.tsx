@@ -116,7 +116,7 @@ export function HeroSection() {
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex items-center">
-        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-20">
+        <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-20">
             {/* 좌측: 텍스트 영역 */}
             <div className="flex flex-col gap-6 lg:gap-8 lg:max-w-[500px]">
