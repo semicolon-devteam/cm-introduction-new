@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 "use client";
 
 import { useState, useMemo } from "react";
@@ -107,24 +108,32 @@ export function ReportGenerator({
       .map(([assignee, issues]) => `  - @${assignee}: ${issues.length}건`)
       .join("\n");
 
-    const newIssuesList = weeklyCreatedIssues.slice(0, 10)
-      .map((issue) => `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}`)
-      .join("\n") || "  - 이번 주 생성된 이슈 없음";
+    const newIssuesList =
+      weeklyCreatedIssues
+        .slice(0, 10)
+        .map(
+          (issue) => `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}`,
+        )
+        .join("\n") || "  - 이번 주 생성된 이슈 없음";
 
-    const inProgressIssues = githubIssues
-      .filter((issue) => issue.status === "작업중" || issue.status === "In Progress")
-      .slice(0, 10)
-      .map((issue) => {
-        const assignees = issue.assignees.length > 0 ? ` (@${issue.assignees.join(", @")})` : "";
-        return `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}${assignees}`;
-      })
-      .join("\n") || "  - 진행중인 이슈 없음";
+    const inProgressIssues =
+      githubIssues
+        .filter((issue) => issue.status === "작업중" || issue.status === "In Progress")
+        .slice(0, 10)
+        .map((issue) => {
+          const assignees = issue.assignees.length > 0 ? ` (@${issue.assignees.join(", @")})` : "";
+          return `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}${assignees}`;
+        })
+        .join("\n") || "  - 진행중인 이슈 없음";
 
-    const reviewIssues = githubIssues
-      .filter((issue) => issue.status === "검수대기" || issue.status === "In Review")
-      .slice(0, 10)
-      .map((issue) => `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}`)
-      .join("\n") || "  - 검수 대기 이슈 없음";
+    const reviewIssues =
+      githubIssues
+        .filter((issue) => issue.status === "검수대기" || issue.status === "In Review")
+        .slice(0, 10)
+        .map(
+          (issue) => `  - [${issue.repository || "N/A"}] #${issue.number || "N/A"}: ${issue.title}`,
+        )
+        .join("\n") || "  - 검수 대기 이슈 없음";
 
     return `# 주간 리포트
 기간: ${formatDate(weekStart)} ~ ${formatDate(weekEnd)}
@@ -301,9 +310,7 @@ ${monthlyThoughts || "(회고 및 생각을 입력해주세요)"}
           <FileText className="w-5 h-5 text-brand-primary" />
           리포트 생성
         </h2>
-        <p className="text-xs text-[#909296] mt-1">
-          GitHub 이슈 {issueStats.total}개 연동됨
-        </p>
+        <p className="text-xs text-[#909296] mt-1">GitHub 이슈 {issueStats.total}개 연동됨</p>
       </div>
 
       <div className="p-5 space-y-4">
@@ -369,7 +376,7 @@ ${monthlyThoughts || "(회고 및 생각을 입력해주세요)"}
         {/* 액션 버튼 */}
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={copyToClipboard}
+            onClick={() => void copyToClipboard()}
             className="inline-flex items-center gap-2 h-9 px-4 text-sm font-medium text-white bg-[#25262b] border border-[#373A40] rounded-md hover:bg-[#373A40] transition-all"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -383,20 +390,20 @@ ${monthlyThoughts || "(회고 및 생각을 입력해주세요)"}
             <span>다운로드</span>
           </button>
           <button
-            onClick={submitToGitHub}
+            onClick={() => void submitToGitHub()}
             disabled={isSubmitting || !githubConnected}
             className="inline-flex items-center gap-2 h-9 px-4 text-sm font-medium text-white bg-brand-primary rounded-md hover:bg-brand-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Github className="w-4 h-4" />}
+            {isSubmitting ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Github className="w-4 h-4" />
+            )}
             <span>{isSubmitting ? "제출중..." : "GitHub 이슈로 생성"}</span>
           </button>
         </div>
 
-        {!githubConnected && (
-          <p className="text-xs text-amber-400">
-            GitHub 연결이 필요합니다.
-          </p>
-        )}
+        {!githubConnected && <p className="text-xs text-amber-400">GitHub 연결이 필요합니다.</p>}
       </div>
     </div>
   );

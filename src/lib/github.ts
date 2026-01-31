@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * GitHub API 유틸리티
  * - Issue 생성
@@ -477,10 +478,11 @@ export async function getProjectItems(): Promise<ProjectItem[]> {
         status,
         priority,
         assignees: content.assignees?.nodes?.map((a: { login: string }) => a.login) || [],
-        labels: content.labels?.nodes?.map((l: { name: string; color: string }) => ({
-          name: l.name,
-          color: l.color,
-        })) || [],
+        labels:
+          content.labels?.nodes?.map((l: { name: string; color: string }) => ({
+            name: l.name,
+            color: l.color,
+          })) || [],
         repository: content.repository?.name || null,
         number: content.number || null,
         url: content.url || null,
@@ -512,7 +514,10 @@ export async function checkProjectConnection(): Promise<{
 }> {
   const config = getProjectConfig();
   if (!config) {
-    return { connected: false, error: "GitHub Project 설정이 누락되었습니다 (GITHUB_ORG, GITHUB_PROJECT_NUMBER)" };
+    return {
+      connected: false,
+      error: "GitHub Project 설정이 누락되었습니다 (GITHUB_ORG, GITHUB_PROJECT_NUMBER)",
+    };
   }
 
   const query = `

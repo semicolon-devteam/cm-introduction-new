@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 "use client";
 
 import { useState, useMemo } from "react";
@@ -69,7 +70,10 @@ function calculatePrediction(goal: GoalItem): GoalPrediction | null {
   const deadline = new Date(goal.deadline);
   const startDate = goal.startDate ? new Date(goal.startDate) : new Date(goal.createdAt || now);
 
-  const daysElapsed = Math.max(1, Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+  const daysElapsed = Math.max(
+    1,
+    Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+  );
   const daysRemaining = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
   const progressMade = current - start;
@@ -79,7 +83,8 @@ function calculatePrediction(goal: GoalItem): GoalPrediction | null {
   const currentDailyRate = progressMade / daysElapsed;
 
   // 목표 달성에 필요한 일일 진행률
-  const requiredDailyRate = daysRemaining > 0 ? remainingProgress / daysRemaining : remainingProgress;
+  const requiredDailyRate =
+    daysRemaining > 0 ? remainingProgress / daysRemaining : remainingProgress;
 
   // 예상 달성일 계산
   let estimatedDate: string | null = null;
@@ -120,7 +125,7 @@ function addHistoryEntry(
   field: string,
   oldValue: string,
   newValue: string,
-  reason?: string
+  reason?: string,
 ): GoalHistory {
   return {
     id: Date.now().toString(),
@@ -194,7 +199,11 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
   };
 
   // 진행률 기반 자동 상태 계산
-  const calculateAutoStatus = (current: string, target: string, deadline: string): GoalItem["status"] => {
+  const calculateAutoStatus = (
+    current: string,
+    target: string,
+    deadline: string,
+  ): GoalItem["status"] => {
     const curr = Number(current);
     const tgt = Number(target);
     if (!curr || !tgt) return "not_started";
@@ -230,7 +239,11 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
       }
     }
 
-    const autoStatus = calculateAutoStatus(editForm.currentValue, editForm.targetValue, editForm.deadline);
+    const autoStatus = calculateAutoStatus(
+      editForm.currentValue,
+      editForm.targetValue,
+      editForm.deadline,
+    );
     const updatedGoal = { ...editForm, status: autoStatus, history };
 
     onSave(goals.map((g) => (g.id === editForm.id ? updatedGoal : g)));
@@ -283,8 +296,12 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
 
     const updatedMilestones = goal.milestones.map((m) =>
       m.id === milestoneId
-        ? { ...m, completed: !m.completed, completedAt: !m.completed ? new Date().toISOString() : undefined }
-        : m
+        ? {
+            ...m,
+            completed: !m.completed,
+            completedAt: !m.completed ? new Date().toISOString() : undefined,
+          }
+        : m,
     );
 
     onSave(goals.map((g) => (g.id === goalId ? { ...g, milestones: updatedMilestones } : g)));
@@ -309,7 +326,9 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
             <button
               onClick={() => setProjectFilter("all")}
               className={`px-2.5 py-1 text-xs rounded transition-colors ${
-                projectFilter === "all" ? "bg-brand-primary text-white" : "text-[#909296] hover:text-white"
+                projectFilter === "all"
+                  ? "bg-brand-primary text-white"
+                  : "text-[#909296] hover:text-white"
               }`}
             >
               전체 ({projectCounts.all})
@@ -353,13 +372,18 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
               const isExpanded = expandedGoalId === goal.id;
 
               return (
-                <div key={goal.id} className="bg-[#25262b] rounded-lg border border-[#373A40] overflow-hidden">
+                <div
+                  key={goal.id}
+                  className="bg-[#25262b] rounded-lg border border-[#373A40] overflow-hidden"
+                >
                   {editingId === goal.id && editForm ? (
                     // 편집 모드
                     <div className="p-4 space-y-3">
                       <div className="grid grid-cols-3 gap-3">
                         <div className="col-span-2">
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">제목 *</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            제목 *
+                          </label>
                           <input
                             type="text"
                             value={editForm.title}
@@ -369,29 +393,41 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">프로젝트</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            프로젝트
+                          </label>
                           <select
                             value={editForm.project || "cm-land"}
                             onChange={(e) =>
-                              setEditForm({ ...editForm, project: e.target.value as Exclude<ProjectType, "all"> })
+                              setEditForm({
+                                ...editForm,
+                                project: e.target.value as Exclude<ProjectType, "all">,
+                              })
                             }
                             className="w-full h-9 px-3 bg-[#1a1b23] border border-[#373A40] rounded-md text-sm text-white focus:outline-none focus:border-brand-primary"
                           >
-                            {(Object.keys(PROJECT_INFO) as Array<Exclude<ProjectType, "all">>).map((project) => (
-                              <option key={project} value={project}>
-                                {PROJECT_INFO[project].label}
-                              </option>
-                            ))}
+                            {(Object.keys(PROJECT_INFO) as Array<Exclude<ProjectType, "all">>).map(
+                              (project) => (
+                                <option key={project} value={project}>
+                                  {PROJECT_INFO[project].label}
+                                </option>
+                              ),
+                            )}
                           </select>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">카테고리</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            카테고리
+                          </label>
                           <select
                             value={editForm.category}
                             onChange={(e) =>
-                              setEditForm({ ...editForm, category: e.target.value as GoalItem["category"] })
+                              setEditForm({
+                                ...editForm,
+                                category: e.target.value as GoalItem["category"],
+                              })
                             }
                             className="w-full h-9 px-3 bg-[#1a1b23] border border-[#373A40] rounded-md text-sm text-white focus:outline-none focus:border-brand-primary"
                           >
@@ -403,7 +439,9 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">마감일</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            마감일
+                          </label>
                           <input
                             type="date"
                             value={editForm.deadline}
@@ -414,37 +452,51 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                       </div>
                       <div className="grid grid-cols-4 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">시작값</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            시작값
+                          </label>
                           <input
                             type="number"
                             value={editForm.startValue || ""}
-                            onChange={(e) => setEditForm({ ...editForm, startValue: e.target.value })}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, startValue: e.target.value })
+                            }
                             placeholder="0"
                             className="w-full h-9 px-3 bg-[#1a1b23] border border-[#373A40] rounded-md text-sm text-white placeholder-[#5c5f66] focus:outline-none focus:border-brand-primary"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">현재값</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            현재값
+                          </label>
                           <input
                             type="number"
                             value={editForm.currentValue}
-                            onChange={(e) => setEditForm({ ...editForm, currentValue: e.target.value })}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, currentValue: e.target.value })
+                            }
                             placeholder="0"
                             className="w-full h-9 px-3 bg-[#1a1b23] border border-[#373A40] rounded-md text-sm text-white placeholder-[#5c5f66] focus:outline-none focus:border-brand-primary"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">목표값</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            목표값
+                          </label>
                           <input
                             type="number"
                             value={editForm.targetValue}
-                            onChange={(e) => setEditForm({ ...editForm, targetValue: e.target.value })}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, targetValue: e.target.value })
+                            }
                             placeholder="100"
                             className="w-full h-9 px-3 bg-[#1a1b23] border border-[#373A40] rounded-md text-sm text-white placeholder-[#5c5f66] focus:outline-none focus:border-brand-primary"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#909296] mb-1.5">단위</label>
+                          <label className="block text-xs font-medium text-[#909296] mb-1.5">
+                            단위
+                          </label>
                           <input
                             type="text"
                             value={editForm.unit}
@@ -474,13 +526,19 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs text-[#909296]">진행률</span>
                             <span className="text-sm font-medium text-brand-primary">
-                              {calculateProgress(editForm.currentValue, editForm.targetValue)?.toFixed(0)}%
+                              {calculateProgress(
+                                editForm.currentValue,
+                                editForm.targetValue,
+                              )?.toFixed(0)}
+                              %
                             </span>
                           </div>
                           <div className="h-2 bg-[#373A40] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-brand-primary rounded-full transition-all duration-300"
-                              style={{ width: `${calculateProgress(editForm.currentValue, editForm.targetValue)}%` }}
+                              style={{
+                                width: `${calculateProgress(editForm.currentValue, editForm.targetValue)}%`,
+                              }}
                             />
                           </div>
                         </div>
@@ -518,7 +576,9 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                                 </span>
                               )}
                               <span className="text-sm">{GOAL_CATEGORIES[goal.category].icon}</span>
-                              <span className="text-sm font-medium text-white">{goal.title || "(제목 없음)"}</span>
+                              <span className="text-sm font-medium text-white">
+                                {goal.title || "(제목 없음)"}
+                              </span>
                               <span
                                 className={`px-2 py-0.5 text-xs rounded ${GOAL_STATUS[goal.status].bg} ${GOAL_STATUS[goal.status].color}`}
                               >
@@ -531,9 +591,15 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                                 {goal.currentValue || 0}
                                 {goal.unit} / {goal.targetValue || 0}
                                 {goal.unit}
-                                {calculateProgress(goal.currentValue, goal.targetValue) !== null && (
+                                {calculateProgress(goal.currentValue, goal.targetValue) !==
+                                  null && (
                                   <span className="ml-1 text-brand-primary">
-                                    ({calculateProgress(goal.currentValue, goal.targetValue)?.toFixed(0)}%)
+                                    (
+                                    {calculateProgress(
+                                      goal.currentValue,
+                                      goal.targetValue,
+                                    )?.toFixed(0)}
+                                    %)
                                   </span>
                                 )}
                               </span>
@@ -550,36 +616,46 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                                         ? "bg-red-500"
                                         : "bg-brand-primary"
                                   }`}
-                                  style={{ width: `${calculateProgress(goal.currentValue, goal.targetValue)}%` }}
+                                  style={{
+                                    width: `${calculateProgress(goal.currentValue, goal.targetValue)}%`,
+                                  }}
                                 />
                               </div>
                             )}
                             {/* 예측 정보 */}
-                            {prediction && prediction.probability !== "high" && goal.status !== "achieved" && (
-                              <div className="mt-2 flex items-center gap-2 text-xs">
-                                {(() => {
-                                  const PredIcon = PREDICTION_STATUS[prediction.probability].icon;
-                                  return (
-                                    <>
-                                      <PredIcon
-                                        className={`w-3.5 h-3.5 ${PREDICTION_STATUS[prediction.probability].color}`}
-                                      />
-                                      <span className={PREDICTION_STATUS[prediction.probability].color}>
-                                        {PREDICTION_STATUS[prediction.probability].label}
-                                      </span>
-                                      {prediction.estimatedDate && (
-                                        <span className="text-[#909296]">
-                                          · 예상 달성일: {prediction.estimatedDate}
+                            {prediction &&
+                              prediction.probability !== "high" &&
+                              goal.status !== "achieved" && (
+                                <div className="mt-2 flex items-center gap-2 text-xs">
+                                  {(() => {
+                                    const PredIcon = PREDICTION_STATUS[prediction.probability].icon;
+                                    return (
+                                      <>
+                                        <PredIcon
+                                          className={`w-3.5 h-3.5 ${PREDICTION_STATUS[prediction.probability].color}`}
+                                        />
+                                        <span
+                                          className={
+                                            PREDICTION_STATUS[prediction.probability].color
+                                          }
+                                        >
+                                          {PREDICTION_STATUS[prediction.probability].label}
                                         </span>
-                                      )}
-                                      {prediction.daysRemaining > 0 && (
-                                        <span className="text-[#909296]">· {prediction.daysRemaining}일 남음</span>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            )}
+                                        {prediction.estimatedDate && (
+                                          <span className="text-[#909296]">
+                                            · 예상 달성일: {prediction.estimatedDate}
+                                          </span>
+                                        )}
+                                        {prediction.daysRemaining > 0 && (
+                                          <span className="text-[#909296]">
+                                            · {prediction.daysRemaining}일 남음
+                                          </span>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              )}
                             {/* 메모 미리보기 */}
                             {goal.memo && (
                               <div className="mt-2 text-xs text-[#5c5f66] truncate">
@@ -593,7 +669,11 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                               onClick={() => setExpandedGoalId(isExpanded ? null : goal.id)}
                               className="p-1.5 text-[#909296] hover:text-white hover:bg-white/5 rounded-md transition-all"
                             >
-                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              {isExpanded ? (
+                                <ChevronUp className="w-4 h-4" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
                             </button>
                             <button
                               onClick={() => startEdit(goal)}
@@ -640,7 +720,9 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                                 </div>
                                 <div className="bg-[#25262b] rounded p-2">
                                   <div className="text-[#5c5f66]">예상 달성일</div>
-                                  <div className="text-white font-medium">{prediction.estimatedDate || "-"}</div>
+                                  <div className="text-white font-medium">
+                                    {prediction.estimatedDate || "-"}
+                                  </div>
                                 </div>
                                 <div className="bg-[#25262b] rounded p-2">
                                   <div className="text-[#5c5f66]">남은 일수</div>
@@ -662,7 +744,11 @@ export function GoalManager({ goals, onSave }: GoalManagerProps) {
                                 마일스톤 ({goal.milestones?.length || 0})
                               </span>
                               <button
-                                onClick={() => setShowMilestoneInput(showMilestoneInput === goal.id ? null : goal.id)}
+                                onClick={() =>
+                                  setShowMilestoneInput(
+                                    showMilestoneInput === goal.id ? null : goal.id,
+                                  )
+                                }
                                 className="text-brand-primary hover:text-brand-primary/80"
                               >
                                 <Plus className="w-4 h-4" />

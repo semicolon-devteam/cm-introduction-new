@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { NextResponse } from "next/server";
 
 /**

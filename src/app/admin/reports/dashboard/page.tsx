@@ -54,7 +54,12 @@ export default function DashboardPage() {
 
   // 이벤트 클릭 핸들러
   const handleEventClick = useCallback((event: CalendarEvent) => {
-    if (event.type === "github_issue" && event.metadata && "html_url" in event.metadata && event.metadata.html_url) {
+    if (
+      event.type === "github_issue" &&
+      event.metadata &&
+      "html_url" in event.metadata &&
+      event.metadata.html_url
+    ) {
       window.open(event.metadata.html_url as string, "_blank");
     }
   }, []);
@@ -64,10 +69,14 @@ export default function DashboardPage() {
     if (!dateRange) return "";
     const formatDate = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`;
     switch (period) {
-      case "week": return `이번 주 (${formatDate(dateRange.start)} - ${formatDate(dateRange.end)})`;
-      case "month": return `이번 달 (${dateRange.start.getMonth() + 1}월)`;
-      case "quarter": return `이번 분기 (Q${Math.floor(dateRange.start.getMonth() / 3) + 1})`;
-      default: return "";
+      case "week":
+        return `이번 주 (${formatDate(dateRange.start)} - ${formatDate(dateRange.end)})`;
+      case "month":
+        return `이번 달 (${dateRange.start.getMonth() + 1}월)`;
+      case "quarter":
+        return `이번 분기 (Q${Math.floor(dateRange.start.getMonth() / 3) + 1})`;
+      default:
+        return "";
     }
   };
 
@@ -97,12 +106,17 @@ export default function DashboardPage() {
           {data.githubConnected ? (
             <div className="flex items-center gap-2 text-sm text-emerald-400">
               <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span>GitHub 프로젝트 연결됨: {data.githubProjectTitle} ({data.githubItemCount}개 아이템)</span>
+              <span>
+                GitHub 프로젝트 연결됨: {data.githubProjectTitle} ({data.githubItemCount}개 아이템)
+              </span>
             </div>
           ) : (
             <div className="flex items-center gap-2 text-sm text-amber-400">
               <div className="w-2 h-2 bg-amber-400 rounded-full" />
-              <span>GitHub 프로젝트 연결 안됨 - .env.local에 GITHUB_TOKEN, GITHUB_ORG, GITHUB_PROJECT_NUMBER 설정 필요</span>
+              <span>
+                GitHub 프로젝트 연결 안됨 - .env.local에 GITHUB_TOKEN, GITHUB_ORG,
+                GITHUB_PROJECT_NUMBER 설정 필요
+              </span>
             </div>
           )}
         </div>
@@ -141,7 +155,11 @@ export default function DashboardPage() {
             data={goalProgress.length > 0 ? goalProgress : []}
             isLoading={isLoading}
           />
-          <RevenueChart data={revenueData} projectRevenues={data.revenue.projectRevenues} isLoading={isLoading} />
+          <RevenueChart
+            data={revenueData}
+            projectRevenues={data.revenue.projectRevenues}
+            isLoading={isLoading}
+          />
         </div>
       </section>
 
@@ -150,7 +168,7 @@ export default function DashboardPage() {
         <GitHubIssuesList
           issues={filteredData.githubIssues}
           isLoading={isLoading}
-          onRefresh={refreshIssues}
+          onRefresh={() => void refreshIssues()}
           projectTitle={data.githubProjectTitle}
           periodLabel={getPeriodLabel()}
           totalCount={totalIssueCount}
@@ -220,7 +238,11 @@ export default function DashboardPage() {
               <MilestoneManager milestones={data.milestones} onSave={saveMilestones} />
             </div>
             <div className="space-y-6">
-              <RevenueChart data={revenueData} projectRevenues={data.revenue.projectRevenues} isLoading={isLoading} />
+              <RevenueChart
+                data={revenueData}
+                projectRevenues={data.revenue.projectRevenues}
+                isLoading={isLoading}
+              />
               {isLoading ? (
                 <CalendarViewSkeleton />
               ) : (

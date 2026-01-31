@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -106,7 +107,14 @@ function milestonesToEvents(milestones: MilestoneItem[]): CalendarEvent[] {
     type: "milestone" as const,
     title: m.title,
     date: m.date,
-    status: m.status === "achieved" ? "달성" : m.status === "in_progress" ? "진행중" : m.status === "delayed" ? "지연" : "예정",
+    status:
+      m.status === "achieved"
+        ? "달성"
+        : m.status === "in_progress"
+          ? "진행중"
+          : m.status === "delayed"
+            ? "지연"
+            : "예정",
     color: "emerald",
     metadata: m,
   }));
@@ -121,7 +129,14 @@ function goalsToEvents(goals: GoalItem[]): CalendarEvent[] {
       type: "goal" as const,
       title: g.title,
       date: g.deadline,
-      status: g.status === "achieved" ? "달성" : g.status === "in_progress" ? "진행중" : g.status === "at_risk" ? "위험" : "시작 전",
+      status:
+        g.status === "achieved"
+          ? "달성"
+          : g.status === "in_progress"
+            ? "진행중"
+            : g.status === "at_risk"
+              ? "위험"
+              : "시작 전",
       color: "amber",
       metadata: g,
     }));
@@ -146,9 +161,10 @@ function calculateKPIs(data: DashboardData): KPIMetric[] {
   const achievedGoals = data.goals.filter((g) => g.status === "achieved").length;
   const achievedRate = totalGoals > 0 ? Math.round((achievedGoals / totalGoals) * 100) : 0;
 
-  const revenueProgress = data.revenue.targetRevenue > 0
-    ? Math.round((data.revenue.currentRevenue / data.revenue.targetRevenue) * 100)
-    : 0;
+  const revenueProgress =
+    data.revenue.targetRevenue > 0
+      ? Math.round((data.revenue.currentRevenue / data.revenue.targetRevenue) * 100)
+      : 0;
 
   const openIssues = data.githubIssues.filter((i) => i.state === "open").length;
 
@@ -194,14 +210,16 @@ function calculateKPIs(data: DashboardData): KPIMetric[] {
 function calculateGoalProgress(goals: GoalItem[]) {
   const categories = ["revenue", "user", "performance", "feature", "other"] as const;
 
-  return categories.map((category) => {
-    const categoryGoals = goals.filter((g) => g.category === category);
-    const achieved = categoryGoals.filter((g) => g.status === "achieved").length;
-    const total = categoryGoals.length;
-    const percentage = total > 0 ? Math.round((achieved / total) * 100) : 0;
+  return categories
+    .map((category) => {
+      const categoryGoals = goals.filter((g) => g.category === category);
+      const achieved = categoryGoals.filter((g) => g.status === "achieved").length;
+      const total = categoryGoals.length;
+      const percentage = total > 0 ? Math.round((achieved / total) * 100) : 0;
 
-    return { category, achieved, total, percentage };
-  }).filter((item) => item.total > 0); // 목표가 있는 카테고리만
+      return { category, achieved, total, percentage };
+    })
+    .filter((item) => item.total > 0); // 목표가 있는 카테고리만
 }
 
 export function useDashboardData(period: PeriodFilter = "month") {
@@ -272,7 +290,7 @@ export function useDashboardData(period: PeriodFilter = "month") {
 
   // 초기 로드
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [loadData]);
 
   // 마일스톤 저장
@@ -333,21 +351,19 @@ export function useDashboardData(period: PeriodFilter = "month") {
   // 기간 필터링된 GitHub 이슈
   const filteredIssues = useMemo(() => {
     return data.githubIssues.filter((issue) =>
-      isDateInRange(issue.updated_at, dateRange.start, dateRange.end)
+      isDateInRange(issue.updated_at, dateRange.start, dateRange.end),
     );
   }, [data.githubIssues, dateRange]);
 
   // 기간 필터링된 마일스톤
   const filteredMilestones = useMemo(() => {
-    return data.milestones.filter((m) =>
-      isDateInRange(m.date, dateRange.start, dateRange.end)
-    );
+    return data.milestones.filter((m) => isDateInRange(m.date, dateRange.start, dateRange.end));
   }, [data.milestones, dateRange]);
 
   // 기간 필터링된 목표
   const filteredGoals = useMemo(() => {
-    return data.goals.filter((g) =>
-      g.deadline && isDateInRange(g.deadline, dateRange.start, dateRange.end)
+    return data.goals.filter(
+      (g) => g.deadline && isDateInRange(g.deadline, dateRange.start, dateRange.end),
     );
   }, [data.goals, dateRange]);
 
@@ -369,9 +385,10 @@ export function useDashboardData(period: PeriodFilter = "month") {
   const goalProgress = calculateGoalProgress(filteredGoals);
 
   // 매출 트렌드 데이터
-  const revenueData = data.revenue.monthlyData.length > 0
-    ? data.revenue.monthlyData
-    : generateDefaultRevenueData(data.revenue.currentRevenue, data.revenue.targetRevenue);
+  const revenueData =
+    data.revenue.monthlyData.length > 0
+      ? data.revenue.monthlyData
+      : generateDefaultRevenueData(data.revenue.currentRevenue, data.revenue.targetRevenue);
 
   return {
     isLoading,
