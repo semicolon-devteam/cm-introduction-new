@@ -28,6 +28,10 @@ export interface SEOProjectConfig {
     siteId?: string;
     enabled: boolean;
   };
+  gtm?: {
+    containerId?: string; // GTM Container ID (예: GTM-XXXXXXX)
+    enabled: boolean;
+  };
   icon?: string; // 이모지 또는 아이콘 이름
   color?: string; // 테마 색상
 }
@@ -70,6 +74,14 @@ export const SEO_PROJECTS: SEOProjectConfig[] = [
     analytics: {
       propertyId: "516515301",
       enabled: true,
+    },
+    naver: {
+      siteId: "jungchipan.net",
+      enabled: true,
+    },
+    gtm: {
+      containerId: "", // GTM Container ID 설정 필요
+      enabled: false,
     },
     icon: "🏛️",
     color: "#3B82F6", // blue
