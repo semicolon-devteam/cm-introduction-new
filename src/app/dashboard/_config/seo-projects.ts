@@ -32,6 +32,7 @@ export interface SEOProjectConfig {
     containerId?: string; // GTM Container ID (예: GTM-XXXXXXX)
     enabled: boolean;
   };
+  keywords?: string[]; // 타겟 SEO 키워드
   icon?: string; // 이모지 또는 아이콘 이름
   color?: string; // 테마 색상
 }
@@ -80,9 +81,10 @@ export const SEO_PROJECTS: SEOProjectConfig[] = [
       enabled: true,
     },
     gtm: {
-      containerId: "", // GTM Container ID 설정 필요
-      enabled: false,
+      containerId: "GTM-TJHH9X6N",
+      enabled: true,
     },
+    keywords: ["정치", "국회", "뉴스", "정책", "선거", "여론", "정당"],
     icon: "🏛️",
     color: "#3B82F6", // blue
   },
@@ -139,4 +141,12 @@ export function getActiveProjects(): SEOProjectConfig[] {
  */
 export function getAllProjects(): SEOProjectConfig[] {
   return SEO_PROJECTS;
+}
+
+/**
+ * 프로젝트 키워드 조회 (외부 API용)
+ */
+export function getProjectKeywords(projectId: string): string[] {
+  const project = SEO_PROJECTS.find((p) => p.id === projectId);
+  return project?.keywords || [];
 }

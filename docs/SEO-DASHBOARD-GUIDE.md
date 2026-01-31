@@ -7,9 +7,10 @@
 1. [개요](#개요)
 2. [GTM 설정](#gtm-설정)
 3. [웹훅 연동](#웹훅-연동)
-4. [IndexNow 색인 요청](#indexnow-색인-요청)
-5. [주간 SEO 리포트](#주간-seo-리포트)
-6. [환경 변수 설정](#환경-변수-설정)
+4. [키워드 API](#키워드-api)
+5. [IndexNow 색인 요청](#indexnow-색인-요청)
+6. [주간 SEO 리포트](#주간-seo-리포트)
+7. [환경 변수 설정](#환경-변수-설정)
 
 ---
 
@@ -138,7 +139,7 @@ POST https://www.semi-colon.space/api/dashboard/seo/webhook
 
 ### 프로젝트에서 웹훅 호출하기
 
-#### Next.js API Route에서 호출
+#### Next.js API Route에서 호출 (키워드 자동 조회)
 
 ```typescript
 // src/app/api/posts/route.ts
@@ -150,6 +151,11 @@ export async function POST(request: Request) {
 
   // 2. SEO 웹훅 호출
   try {
+    // 키워드 자동 조회
+    const { keywords } = await fetch(
+      "https://www.semi-colon.space/api/dashboard/seo/keywords?projectId=jungchipan",
+    ).then((r) => r.json());
+
     await fetch("https://www.semi-colon.space/api/dashboard/seo/webhook", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -158,7 +164,7 @@ export async function POST(request: Request) {
         host: "jungchipan.net",
         title: post.title,
         content: post.excerpt || post.content.slice(0, 500),
-        keywords: post.tags || [],
+        keywords, // 자동 조회된 키워드
         autoIndexNow: true,
         autoMetaTags: true,
       }),
@@ -194,6 +200,63 @@ headers: {
     { "action": "indexnow_bing", "success": true, "data": { "status": 200 } },
     { "action": "meta_tags", "success": true, "data": { ... } }
   ]
+}
+```
+
+---
+
+## 키워드 API
+
+외부 프로젝트에서 대시보드에 설정된 키워드를 자동으로 조회할 수 있습니다.
+
+### Endpoint
+
+```
+GET https://www.semi-colon.space/api/dashboard/seo/keywords?projectId=jungchipan
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "projectId": "jungchipan",
+  "domain": "jungchipan.net",
+  "keywords": ["정치", "국회", "뉴스", "정책", "선거", "여론", "정당"]
+}
+```
+
+### 사용 예시
+
+```typescript
+// 외부 프로젝트에서 키워드 자동 조회
+const response = await fetch(
+  "https://www.semi-colon.space/api/dashboard/seo/keywords?projectId=jungchipan",
+);
+const { keywords } = await response.json();
+
+// 웹훅 호출 시 사용
+await fetch("https://www.semi-colon.space/api/dashboard/seo/webhook", {
+  method: "POST",
+  body: JSON.stringify({
+    url: "...",
+    host: "jungchipan.net",
+    keywords, // 자동 조회된 키워드
+  }),
+});
+```
+
+### 키워드 설정 위치
+
+키워드는 `src/app/dashboard/_config/seo-projects.ts`에서 관리됩니다:
+
+```typescript
+{
+  id: "jungchipan",
+  name: "정치판",
+  domain: "jungchipan.net",
+  keywords: ["정치", "국회", "뉴스", "정책", "선거"],
+  // ...
 }
 ```
 

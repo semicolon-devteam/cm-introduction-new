@@ -14,6 +14,13 @@
 
 ```typescript
 // 글 발행 API에 추가
+
+// 1. 키워드 자동 조회
+const { keywords } = await fetch(
+  "https://www.semi-colon.space/api/dashboard/seo/keywords?projectId=jungchipan",
+).then((r) => r.json());
+
+// 2. 웹훅 호출
 await fetch("https://www.semi-colon.space/api/dashboard/seo/webhook", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -21,6 +28,7 @@ await fetch("https://www.semi-colon.space/api/dashboard/seo/webhook", {
     url: "https://도메인/posts/슬러그",
     host: "도메인",
     title: "글제목",
+    keywords, // 자동으로 가져온 키워드
   }),
 });
 ```
@@ -62,13 +70,14 @@ GROQ_API_KEY=...
 
 ## API 엔드포인트
 
-| 기능           | Method | URL                                |
-| -------------- | ------ | ---------------------------------- |
-| 웹훅           | POST   | `/api/dashboard/seo/webhook`       |
-| IndexNow       | POST   | `/api/dashboard/seo/indexnow`      |
-| GTM 코드 생성  | POST   | `/api/dashboard/seo/gtm-tags`      |
-| 주간 리포트    | POST   | `/api/dashboard/seo/weekly-report` |
-| Search Console | GET    | `/api/dashboard/search-console`    |
+| 기능           | Method | URL                                      |
+| -------------- | ------ | ---------------------------------------- |
+| 웹훅           | POST   | `/api/dashboard/seo/webhook`             |
+| IndexNow       | POST   | `/api/dashboard/seo/indexnow`            |
+| GTM 코드 생성  | POST   | `/api/dashboard/seo/gtm-tags`            |
+| 주간 리포트    | POST   | `/api/dashboard/seo/weekly-report`       |
+| 키워드 조회    | GET    | `/api/dashboard/seo/keywords?projectId=` |
+| Search Console | GET    | `/api/dashboard/search-console`          |
 
 ---
 
