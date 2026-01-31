@@ -115,7 +115,7 @@ POST https://www.semi-colon.space/api/dashboard/seo/webhook
 
 ```json
 {
-  "url": "https://jungchipan.net/posts/new-article",
+  "url": "https://jungchipan.net/community/123",
   "host": "jungchipan.net",
   "title": "새 글 제목",
   "content": "글 내용 요약 (메타태그 생성용, 선택)",
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        url: `https://jungchipan.net/posts/${post.slug}`,
+        url: `https://jungchipan.net/community/${post.id}`,
         host: "jungchipan.net",
         title: post.title,
         content: post.excerpt || post.content.slice(0, 500),
@@ -194,7 +194,7 @@ headers: {
 {
   "success": true,
   "message": "웹훅 처리 완료",
-  "url": "https://jungchipan.net/posts/new-article",
+  "url": "https://jungchipan.net/community/123",
   "results": [
     { "action": "indexnow_naver", "success": true, "data": { "status": 202 } },
     { "action": "indexnow_bing", "success": true, "data": { "status": 200 } },

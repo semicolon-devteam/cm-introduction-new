@@ -20,13 +20,13 @@ const { keywords } = await fetch(
   "https://www.semi-colon.space/api/dashboard/seo/keywords?projectId=jungchipan",
 ).then((r) => r.json());
 
-// 2. 웹훅 호출
+// 2. 웹훅 호출 (URL은 프로젝트의 실제 라우팅 구조에 맞게 설정)
 await fetch("https://www.semi-colon.space/api/dashboard/seo/webhook", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    url: "https://도메인/posts/슬러그",
-    host: "도메인",
+    url: "https://jungchipan.net/community/게시글ID", // 실제 URL 구조
+    host: "jungchipan.net",
     title: "글제목",
     keywords, // 자동으로 가져온 키워드
   }),
