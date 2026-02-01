@@ -42,6 +42,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  Legend,
 } from "recharts";
 import { getProjectConfig, type SEOProjectConfig } from "@/app/dashboard/_config/seo-projects";
 
@@ -931,6 +932,12 @@ export default function SEOProjectDetailPage() {
                               typeof value === "number" ? value.toLocaleString() : String(value),
                               "",
                             ]}
+                          />
+                          <Legend
+                            wrapperStyle={{ paddingTop: 10 }}
+                            formatter={(value) => (
+                              <span style={{ color: "#9CA3AF", fontSize: 12 }}>{value}</span>
+                            )}
                           />
                           <Line
                             yAxisId="left"
