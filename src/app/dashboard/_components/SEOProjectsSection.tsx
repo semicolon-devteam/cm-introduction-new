@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChartNoAxesCombined, Settings, Plus } from "lucide-react";
+import { ChartNoAxesCombined, Settings, Plus, ArrowRight } from "lucide-react";
 import { SEOProjectCard, SEOProjectCardSkeleton } from "./SEOProjectCard";
 import { getAllProjects } from "../_config/seo-projects";
 
@@ -20,6 +20,13 @@ export function SEOProjectsSection() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href="/dashboard/seo"
+            className="flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20"
+          >
+            SEO 대시보드
+            <ArrowRight className="w-4 h-4" />
+          </Link>
           <Link
             href="/dashboard/seo/settings"
             className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-[#25262b]"
