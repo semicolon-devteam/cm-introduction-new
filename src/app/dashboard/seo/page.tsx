@@ -26,6 +26,7 @@ import {
   SEOPlatformComparison,
   WeeklyMissionCard,
   KeywordRankingTracker,
+  CompetitorAnalysis,
   type SEOTrendData,
 } from "../_components";
 
@@ -487,6 +488,12 @@ function SEOInsightsTab({
           </div>
         </div>
       </div>
+
+      {/* 경쟁사 분석 */}
+      <CompetitorAnalysis
+        myDomain="jungchipan.net"
+        myKeywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
+      />
     </div>
   );
 }
