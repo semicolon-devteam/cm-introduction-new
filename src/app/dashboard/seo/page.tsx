@@ -28,6 +28,7 @@ import {
   KeywordRankingTracker,
   CompetitorAnalysis,
   NaverSEOChecklist,
+  ImageSEOAudit,
   type SEOTrendData,
 } from "../_components";
 
@@ -501,6 +502,9 @@ function SEOInsightsTab({
         myDomain="jungchipan.net"
         myKeywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
       />
+
+      {/* 이미지 SEO 진단 */}
+      <ImageSEOAudit domain="jungchipan.net" keywords={["정치판", "정치 뉴스", "국회"]} />
     </div>
   );
 }
