@@ -11,10 +11,10 @@ import {
   ExternalLink,
   Loader2,
 } from "lucide-react";
-import type { SEOProjectConfig } from "../_config/seo-projects";
+import type { SEOSite } from "../_lib/seo-sites";
 
 interface SEOProjectCardProps {
-  project: SEOProjectConfig;
+  project: SEOSite;
 }
 
 interface SearchConsoleMetric {
@@ -39,8 +39,12 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const scEnabled = project.searchConsole?.enabled ?? false;
+  const scSiteUrl = project.searchConsole?.siteUrl ?? "";
+  const gaEnabled = project.analytics?.enabled ?? false;
+
   useEffect(() => {
-    if (!project.searchConsole.enabled) {
+    if (!scEnabled || !scSiteUrl) {
       setLoading(false);
       return;
     }
@@ -48,7 +52,7 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/dashboard/search-console?period=7days&siteUrl=${encodeURIComponent(project.searchConsole.siteUrl)}`,
+          `/api/dashboard/search-console?period=7days&siteUrl=${encodeURIComponent(scSiteUrl)}`,
         );
         if (!response.ok) throw new Error("Failed to fetch data");
         const result: SearchConsoleResponse = await response.json();
@@ -67,7 +71,7 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
     };
 
     void fetchData();
-  }, [project.searchConsole.enabled, project.searchConsole.siteUrl]);
+  }, [scEnabled, scSiteUrl]);
 
   const getTrend = (current: number, previous: number | undefined) => {
     if (!previous) return "neutral";
@@ -88,12 +92,12 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
     return <Minus className="w-4 h-4 text-gray-500" />;
   };
 
-  const isActive = project.searchConsole.enabled || project.analytics.enabled;
+  const isActive = scEnabled || gaEnabled;
 
   return (
     <div
       className="relative rounded-xl border border-[#373A40] bg-[#1a1b23] p-4 hover:border-[#4a4d55] transition-colors"
-      style={{ borderLeftColor: project.color, borderLeftWidth: "3px" }}
+      style={{ borderLeftColor: project.color ?? "#3B82F6", borderLeftWidth: "3px" }}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
@@ -118,9 +122,7 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
       <div className="flex gap-2 mb-3">
         <span
           className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 ${
-            project.searchConsole.enabled
-              ? "bg-blue-500/20 text-blue-400"
-              : "bg-gray-700 text-gray-500"
+            scEnabled ? "bg-blue-500/20 text-blue-400" : "bg-gray-700 text-gray-500"
           }`}
         >
           <Search className="w-3 h-3" />
@@ -128,9 +130,7 @@ export function SEOProjectCard({ project }: SEOProjectCardProps) {
         </span>
         <span
           className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 ${
-            project.analytics.enabled
-              ? "bg-orange-500/20 text-orange-400"
-              : "bg-gray-700 text-gray-500"
+            gaEnabled ? "bg-orange-500/20 text-orange-400" : "bg-gray-700 text-gray-500"
           }`}
         >
           <BarChart3 className="w-3 h-3" />

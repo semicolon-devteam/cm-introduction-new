@@ -7,6 +7,8 @@ export interface SEOSite {
   name: string;
   domain: string;
   icon: string;
+  color?: string;
+  description?: string;
   searchConsole?: {
     enabled: boolean;
     siteUrl: string;
@@ -15,6 +17,11 @@ export interface SEOSite {
     enabled: boolean;
     propertyId: string;
   };
+  gtm?: {
+    containerId: string;
+    enabled: boolean;
+  };
+  keywords?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +41,7 @@ const STATS_KEY = "seo-sites-stats";
 
 /**
  * 기본 사이트 목록 (마이그레이션용)
+ * 기존 seo-projects.ts와 통합
  */
 const DEFAULT_SITES: SEOSite[] = [
   {
@@ -41,6 +49,8 @@ const DEFAULT_SITES: SEOSite[] = [
     name: "정치판",
     domain: "jungchipan.net",
     icon: "🏛️",
+    color: "#3B82F6",
+    description: "정치 뉴스 및 여론 분석 플랫폼",
     searchConsole: {
       enabled: true,
       siteUrl: "sc-domain:jungchipan.net",
@@ -48,6 +58,47 @@ const DEFAULT_SITES: SEOSite[] = [
     analytics: {
       enabled: true,
       propertyId: "516515301",
+    },
+    gtm: {
+      containerId: "GTM-TJHH9X6N",
+      enabled: true,
+    },
+    keywords: ["정치", "국회", "뉴스", "정책", "선거", "여론", "정당"],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "land",
+    name: "랜드",
+    domain: "land.example.com",
+    icon: "🏠",
+    color: "#10B981",
+    description: "부동산 정보 서비스",
+    searchConsole: {
+      enabled: false,
+      siteUrl: "",
+    },
+    analytics: {
+      enabled: false,
+      propertyId: "",
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "office",
+    name: "오피스",
+    domain: "office.example.com",
+    icon: "🏢",
+    color: "#8B5CF6",
+    description: "사무실 관리 솔루션",
+    searchConsole: {
+      enabled: false,
+      siteUrl: "",
+    },
+    analytics: {
+      enabled: false,
+      propertyId: "",
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

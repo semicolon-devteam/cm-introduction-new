@@ -2,8 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { Plus, X, Sparkles, Loader2, TrendingUp } from "lucide-react";
-
 import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
+import { KeywordsSuggestionSection } from "./KeywordsSuggestionSection";
+import { KeywordsTrendSection } from "./KeywordsTrendSection";
+
+interface KeywordSuggestion {
+  keyword: string;
+  searchVolume: "high" | "medium" | "low";
+  difficulty: "easy" | "medium" | "hard";
+  relevance: number;
+  reason: string;
+  type: "related" | "longtail" | "question" | "trending";
+}
 
 interface Keyword {
   id: string;
@@ -12,12 +22,15 @@ interface Keyword {
   createdAt: string;
 }
 
+interface TrendData {
+  keyword: string;
+  period: string;
+  ratio: number;
+  change: number;
+}
+
 interface SearchConsoleData {
-  topQueries?: Array<{
-    query: string;
-    clicks: number;
-    impressions: number;
-  }>;
+  topQueries?: Array<{ query: string; clicks: number; impressions: number }>;
 }
 
 interface KeywordsTabProps {
@@ -27,76 +40,64 @@ interface KeywordsTabProps {
   searchConsoleData: SearchConsoleData | null;
 }
 
-export function KeywordsTab({
-  site,
-  keywords: _keywords,
-  setKeywords,
-  searchConsoleData,
-}: KeywordsTabProps) {
+export function KeywordsTab({ site, setKeywords, searchConsoleData }: KeywordsTabProps) {
   const [keywordItems, setKeywordItems] = useState<Keyword[]>([]);
   const [newKeyword, setNewKeyword] = useState("");
   const [aiOptimizing, setAiOptimizing] = useState(false);
   const [aiResult, setAiResult] = useState<string | null>(null);
+  const [aiSuggesting, setAiSuggesting] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<KeywordSuggestion[]>([]);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [trendData, setTrendData] = useState<TrendData[]>([]);
+  const [trendLoading, setTrendLoading] = useState(false);
+  const [trendSource, setTrendSource] = useState<"naver" | "mock" | null>(null);
+  const [relatedKeywords, setRelatedKeywords] = useState<string[]>([]);
 
-  // Load keywords from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`seo-keywords-${site.id}`);
-    if (saved) {
-      setKeywordItems(JSON.parse(saved));
-    }
+    if (saved) setKeywordItems(JSON.parse(saved));
   }, [site.id]);
 
-  // Save keywords
   const saveKeywords = (items: Keyword[]) => {
     setKeywordItems(items);
     localStorage.setItem(`seo-keywords-${site.id}`, JSON.stringify(items));
     setKeywords(items.map((k) => k.text));
   };
 
-  // Add keyword
   const handleAddKeyword = () => {
     if (!newKeyword.trim()) return;
-
     const keyword: Keyword = {
       id: Date.now().toString(),
       text: newKeyword.trim(),
       type: "main",
       createdAt: new Date().toISOString(),
     };
-
     saveKeywords([...keywordItems, keyword]);
     setNewKeyword("");
   };
 
-  // Remove keyword
   const handleRemoveKeyword = (id: string) => {
     saveKeywords(keywordItems.filter((k) => k.id !== id));
   };
 
-  // Add recommended keyword
   const handleAddRecommended = (query: string) => {
     if (keywordItems.some((k) => k.text === query)) return;
-
     const keyword: Keyword = {
       id: Date.now().toString(),
       text: query,
       type: "sub",
       createdAt: new Date().toISOString(),
     };
-
     saveKeywords([...keywordItems, keyword]);
   };
 
-  // AI Optimize
   const handleAiOptimize = async () => {
     if (keywordItems.length === 0) {
       alert("키워드를 먼저 등록해주세요.");
       return;
     }
-
     setAiOptimizing(true);
     setAiResult(null);
-
     try {
       const response = await fetch("/api/dashboard/seo/ai-optimize", {
         method: "POST",
@@ -107,14 +108,8 @@ export function KeywordsTab({
           keywords: keywordItems.map((k) => k.text),
         }),
       });
-
       const data = await response.json();
-
-      if (data.success) {
-        setAiResult(data.result);
-      } else {
-        setAiResult(`오류: ${data.error}`);
-      }
+      setAiResult(data.success ? data.result : `오류: ${data.error}`);
     } catch {
       setAiResult("AI 최적화 실행 중 오류가 발생했습니다.");
     } finally {
@@ -122,7 +117,78 @@ export function KeywordsTab({
     }
   };
 
-  // Get recommended keywords from Search Console
+  const handleAiSuggest = async () => {
+    if (keywordItems.length === 0) {
+      alert("키워드를 먼저 등록해주세요.");
+      return;
+    }
+    setAiSuggesting(true);
+    setAiSuggestions([]);
+    setAiAnalysis(null);
+    try {
+      const response = await fetch("/api/dashboard/seo/keyword-suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domain: site.domain,
+          keywords: keywordItems.map((k) => k.text),
+          searchConsoleData,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAiSuggestions(data.suggestions);
+        setAiAnalysis(data.analysis);
+      } else {
+        alert(`오류: ${data.error}`);
+      }
+    } catch {
+      alert("AI 키워드 추천 중 오류가 발생했습니다.");
+    } finally {
+      setAiSuggesting(false);
+    }
+  };
+
+  const handleAddSuggested = (keywordText: string) => {
+    if (keywordItems.some((k) => k.text.toLowerCase() === keywordText.toLowerCase())) return;
+    const keyword: Keyword = {
+      id: Date.now().toString(),
+      text: keywordText,
+      type: "sub",
+      createdAt: new Date().toISOString(),
+    };
+    saveKeywords([...keywordItems, keyword]);
+    setAiSuggestions((prev) => prev.filter((s) => s.keyword !== keywordText));
+  };
+
+  const handleFetchTrends = async () => {
+    if (keywordItems.length === 0) {
+      alert("키워드를 먼저 등록해주세요.");
+      return;
+    }
+    setTrendLoading(true);
+    setTrendData([]);
+    try {
+      const response = await fetch("/api/dashboard/seo/trends", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keywords: keywordItems.map((k) => k.text) }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTrendData(data.trends);
+        setTrendSource(data.source);
+        setRelatedKeywords(data.relatedKeywords || []);
+      } else {
+        alert(`오류: ${data.error}`);
+      }
+    } catch {
+      alert("트렌드 데이터 조회 중 오류가 발생했습니다.");
+    } finally {
+      setTrendLoading(false);
+    }
+  };
+
   const recommendedKeywords =
     searchConsoleData?.topQueries
       ?.filter((q) => !keywordItems.some((k) => k.text.toLowerCase() === q.query.toLowerCase()))
@@ -133,7 +199,6 @@ export function KeywordsTab({
       {/* 키워드 입력 */}
       <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
         <h3 className="text-white font-medium mb-4">키워드 관리</h3>
-
         <div className="flex gap-2 mb-4">
           <input
             type="text"
@@ -150,8 +215,6 @@ export function KeywordsTab({
             <Plus className="w-5 h-5" />
           </button>
         </div>
-
-        {/* 등록된 키워드 */}
         <div className="flex flex-wrap gap-2">
           {keywordItems.map((keyword) => (
             <div
@@ -176,6 +239,26 @@ export function KeywordsTab({
           )}
         </div>
       </div>
+
+      <KeywordsSuggestionSection
+        aiSuggesting={aiSuggesting}
+        aiSuggestions={aiSuggestions}
+        aiAnalysis={aiAnalysis}
+        disabled={keywordItems.length === 0}
+        onSuggest={() => void handleAiSuggest()}
+        onAddSuggested={handleAddSuggested}
+      />
+
+      <KeywordsTrendSection
+        trendData={trendData}
+        trendLoading={trendLoading}
+        trendSource={trendSource}
+        relatedKeywords={relatedKeywords}
+        disabled={keywordItems.length === 0}
+        existingKeywords={keywordItems.map((k) => k.text)}
+        onFetchTrends={() => void handleFetchTrends()}
+        onAddKeyword={handleAddSuggested}
+      />
 
       {/* AI SEO 최적화 */}
       <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
@@ -202,13 +285,11 @@ export function KeywordsTab({
             )}
           </button>
         </div>
-
         {aiResult && (
           <div className="bg-[#25262b] rounded-lg p-4">
             <pre className="text-sm text-[#909296] whitespace-pre-wrap font-sans">{aiResult}</pre>
           </div>
         )}
-
         {!aiResult && !aiOptimizing && (
           <p className="text-sm text-[#5c5f66]">
             등록된 키워드를 기반으로 AI가 SEO 최적화 추천을 제공합니다.
@@ -223,7 +304,6 @@ export function KeywordsTab({
             <TrendingUp className="w-5 h-5 text-emerald-400" />
             <h3 className="text-white font-medium">Search Console 추천 키워드</h3>
           </div>
-
           <div className="space-y-2">
             {recommendedKeywords.map((query, idx) => (
               <div
