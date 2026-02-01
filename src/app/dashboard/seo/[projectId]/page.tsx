@@ -250,7 +250,17 @@ export default function SiteSEOPage() {
             analyticsData={analyticsData}
           />
         )}
-        {activeTab === "tools" && <ToolsTab site={site} keywords={keywords} />}
+        {activeTab === "tools" && (
+          <ToolsTab
+            site={site}
+            keywords={keywords}
+            onAddKeyword={(keyword) => {
+              if (!keywords.includes(keyword)) {
+                setKeywords([...keywords, keyword]);
+              }
+            }}
+          />
+        )}
         {activeTab === "analysis" && (
           <AnalysisTab
             site={site}
