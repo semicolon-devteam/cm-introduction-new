@@ -33,14 +33,32 @@ interface SearchConsoleData {
   topQueries?: Array<{ query: string; clicks: number; impressions: number }>;
 }
 
+interface AnalyticsData {
+  connected: boolean;
+  metrics?: {
+    activeUsers: { value: number; changePercent?: number };
+    sessions: { value: number; changePercent?: number };
+    bounceRate: { value: number; changePercent?: number };
+    avgSessionDuration?: { value: number; changePercent?: number };
+  };
+  topPages?: Array<{ path: string; pageViews: number; avgTime: number }>;
+  trafficSources?: Array<{ source: string; sessions: number; percentage: number }>;
+}
+
 interface KeywordsTabProps {
   site: SEOSite;
   keywords: string[];
   setKeywords: (keywords: string[]) => void;
   searchConsoleData: SearchConsoleData | null;
+  analyticsData: AnalyticsData | null;
 }
 
-export function KeywordsTab({ site, setKeywords, searchConsoleData }: KeywordsTabProps) {
+export function KeywordsTab({
+  site,
+  setKeywords,
+  searchConsoleData,
+  analyticsData,
+}: KeywordsTabProps) {
   const [keywordItems, setKeywordItems] = useState<Keyword[]>([]);
   const [newKeyword, setNewKeyword] = useState("");
   const [aiOptimizing, setAiOptimizing] = useState(false);
@@ -133,6 +151,13 @@ export function KeywordsTab({ site, setKeywords, searchConsoleData }: KeywordsTa
           domain: site.domain,
           keywords: keywordItems.map((k) => k.text),
           searchConsoleData,
+          analyticsData: analyticsData?.connected
+            ? {
+                metrics: analyticsData.metrics,
+                topPages: analyticsData.topPages?.slice(0, 10),
+                trafficSources: analyticsData.trafficSources,
+              }
+            : null,
         }),
       });
       const data = await response.json();

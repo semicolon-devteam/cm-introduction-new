@@ -247,6 +247,7 @@ export default function SiteSEOPage() {
             keywords={keywords}
             setKeywords={setKeywords}
             searchConsoleData={searchConsoleData}
+            analyticsData={analyticsData}
           />
         )}
         {activeTab === "tools" && <ToolsTab site={site} keywords={keywords} />}

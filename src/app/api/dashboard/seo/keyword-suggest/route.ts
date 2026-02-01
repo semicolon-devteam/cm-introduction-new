@@ -34,12 +34,22 @@ export async function POST(request: NextRequest) {
     const groq = new Groq({ apiKey });
 
     const body = await request.json();
-    const { domain, keywords, searchConsoleData } = body as {
+    const { domain, keywords, searchConsoleData, analyticsData } = body as {
       domain: string;
       keywords: string[];
       searchConsoleData?: {
         topQueries?: { query: string; clicks: number; impressions: number }[];
       };
+      analyticsData?: {
+        metrics?: {
+          activeUsers?: { value: number; changePercent?: number };
+          sessions?: { value: number; changePercent?: number };
+          bounceRate?: { value: number; changePercent?: number };
+          avgSessionDuration?: { value: number; changePercent?: number };
+        };
+        topPages?: { path: string; pageViews: number; avgTime: number }[];
+        trafficSources?: { source: string; sessions: number; percentage: number }[];
+      } | null;
     };
 
     if (!keywords || keywords.length === 0) {
@@ -56,6 +66,25 @@ export async function POST(request: NextRequest) {
         .map((q) => q.query)
         .join(", ") || "없음";
 
+    // Google Analytics 데이터 포맷팅
+    const gaMetricsText = analyticsData?.metrics
+      ? `- 활성 사용자: ${analyticsData.metrics.activeUsers?.value || 0}명
+- 세션 수: ${analyticsData.metrics.sessions?.value || 0}회
+- 이탈률: ${analyticsData.metrics.bounceRate?.value || 0}%
+- 평균 체류 시간: ${Math.round((analyticsData.metrics.avgSessionDuration?.value || 0) / 60)}분`
+      : "데이터 없음";
+
+    const gaTopPagesText = analyticsData?.topPages?.length
+      ? analyticsData.topPages
+          .slice(0, 5)
+          .map((p) => `- ${p.path}: ${p.pageViews}뷰, 평균 ${Math.round(p.avgTime / 60)}분 체류`)
+          .join("\n")
+      : "데이터 없음";
+
+    const gaTrafficText = analyticsData?.trafficSources?.length
+      ? analyticsData.trafficSources.map((t) => `- ${t.source}: ${t.percentage}%`).join("\n")
+      : "데이터 없음";
+
     const prompt = `당신은 한국 SEO 키워드 전문가입니다. 사용자의 현재 키워드를 분석하고 추가로 타겟팅하면 좋을 키워드를 추천해주세요.
 
 ## 사이트 정보
@@ -67,8 +96,22 @@ ${keywords.map((k, i) => `${i + 1}. ${k}`).join("\n")}
 ## Search Console에서 유입된 검색어 (참고용)
 ${scQueries}
 
+## Google Analytics 사이트 현황
+### 전체 지표
+${gaMetricsText}
+
+### 인기 페이지 (트래픽 많은 페이지)
+${gaTopPagesText}
+
+### 트래픽 유입 경로
+${gaTrafficText}
+
 ## 요청사항
-위 키워드들을 분석하고 SEO에 도움이 될 새로운 키워드 8-12개를 추천해주세요.
+위 키워드와 사이트 데이터를 종합적으로 분석하고 SEO에 도움이 될 새로운 키워드 8-12개를 추천해주세요.
+특히 인기 페이지와 이탈률을 참고하여:
+- 이탈률이 높으면 검색 의도에 맞는 롱테일 키워드 추천
+- 인기 페이지의 주제와 연관된 키워드 추천
+- 체류 시간이 긴 콘텐츠의 키워드 확장 추천
 
 다음 JSON 형식으로만 응답하세요:
 
