@@ -25,6 +25,7 @@ import {
   SEOTrendChart,
   SEOPlatformComparison,
   WeeklyMissionCard,
+  KeywordRankingTracker,
   type SEOTrendData,
 } from "../_components";
 
@@ -302,6 +303,12 @@ function SEOOverviewTab({
         }
       />
 
+      {/* 키워드 순위 추적 */}
+      <KeywordRankingTracker
+        projectId="global"
+        keywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
+      />
+
       {/* Analytics + Search Console */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <GoogleAnalyticsCard />
@@ -367,6 +374,12 @@ function SEOTasksTab() {
         projectId="global"
         domain="jungchipan.net"
         keywords={["정치판", "정치 뉴스", "국회"]}
+      />
+
+      {/* 키워드 순위 추적 */}
+      <KeywordRankingTracker
+        projectId="global"
+        keywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

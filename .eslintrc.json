@@ -146,6 +146,7 @@
         "src/app/dashboard/_components/SEOTaskManager.tsx",
         "src/app/dashboard/_components/SEOInsightEngine.tsx",
         "src/app/dashboard/_components/WeeklyMissionCard.tsx",
+        "src/app/dashboard/_components/KeywordRankingTracker.tsx",
         "src/app/dashboard/seo/page.tsx"
       ],
       "rules": {

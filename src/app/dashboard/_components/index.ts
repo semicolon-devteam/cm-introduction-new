@@ -24,3 +24,4 @@ export * from "./SEOTaskManager";
 export * from "./SEOInsightEngine";
 export * from "./SEOTrendChart";
 export * from "./WeeklyMissionCard";
+export * from "./KeywordRankingTracker";
