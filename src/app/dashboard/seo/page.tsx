@@ -27,6 +27,7 @@ import {
   WeeklyMissionCard,
   KeywordRankingTracker,
   CompetitorAnalysis,
+  NaverSEOChecklist,
   type SEOTrendData,
 } from "../_components";
 
@@ -380,6 +381,12 @@ function SEOTasksTab() {
       {/* 키워드 순위 추적 */}
       <KeywordRankingTracker
         projectId="global"
+        keywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
+      />
+
+      {/* 네이버 SEO 체크리스트 */}
+      <NaverSEOChecklist
+        domain="jungchipan.net"
         keywords={["정치판", "정치 뉴스", "국회", "정치", "선거", "여론"]}
       />
 

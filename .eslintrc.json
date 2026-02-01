@@ -148,7 +148,9 @@
         "src/app/dashboard/_components/WeeklyMissionCard.tsx",
         "src/app/dashboard/_components/KeywordRankingTracker.tsx",
         "src/app/dashboard/_components/CompetitorAnalysis.tsx",
-        "src/app/dashboard/seo/page.tsx"
+        "src/app/dashboard/_components/NaverSEOChecklist.tsx",
+        "src/app/dashboard/seo/page.tsx",
+        "src/app/api/dashboard/seo/naver-checklist/route.ts"
       ],
       "rules": {
         "max-lines": "off"
