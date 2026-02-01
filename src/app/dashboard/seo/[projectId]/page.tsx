@@ -505,6 +505,13 @@ export default function SEOProjectDetailPage() {
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               새로고침
             </button>
+            <Link
+              href={`/dashboard/seo/${projectId}/keywords`}
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 rounded-lg transition-colors"
+            >
+              <Zap className="w-4 h-4" />
+              키워드 설정
+            </Link>
           </div>
         </div>
 

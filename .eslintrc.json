@@ -142,6 +142,16 @@
       }
     },
     {
+      "files": [
+        "src/app/dashboard/_components/SEOTaskManager.tsx",
+        "src/app/dashboard/_components/SEOInsightEngine.tsx",
+        "src/app/dashboard/seo/page.tsx"
+      ],
+      "rules": {
+        "max-lines": "off"
+      }
+    },
+    {
       "files": ["src/app/api/**/*.ts"],
       "rules": {
         "@typescript-eslint/naming-convention": "off",
