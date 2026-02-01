@@ -24,6 +24,7 @@ import {
   SEOInsightEngine,
   SEOTrendChart,
   SEOPlatformComparison,
+  WeeklyMissionCard,
   type SEOTrendData,
 } from "../_components";
 
@@ -284,6 +285,23 @@ function SEOOverviewTab({
         />
       </div>
 
+      {/* AI 주간 미션 - 핵심 기능 */}
+      <WeeklyMissionCard
+        projectId="global"
+        domain="jungchipan.net"
+        keywords={["정치판", "정치 뉴스", "국회"]}
+        searchConsoleData={
+          searchConsoleData?.overview?.current
+            ? {
+                clicks: searchConsoleData.overview.current.clicks,
+                impressions: searchConsoleData.overview.current.impressions,
+                ctr: searchConsoleData.overview.current.ctr / 100,
+                position: searchConsoleData.overview.current.position,
+              }
+            : undefined
+        }
+      />
+
       {/* Analytics + Search Console */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <GoogleAnalyticsCard />
@@ -344,6 +362,13 @@ function SEOOverviewTab({
 function SEOTasksTab() {
   return (
     <div className="space-y-6">
+      {/* AI 주간 미션 - 메인 */}
+      <WeeklyMissionCard
+        projectId="global"
+        domain="jungchipan.net"
+        keywords={["정치판", "정치 뉴스", "국회"]}
+      />
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <SEOTaskManager />
         <div className="space-y-6">
