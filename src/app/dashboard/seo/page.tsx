@@ -16,6 +16,7 @@ import {
   BarChart3,
   RefreshCw,
   ExternalLink,
+  GraduationCap,
 } from "lucide-react";
 import {
   GoogleAnalyticsCard,
@@ -29,10 +30,13 @@ import {
   CompetitorAnalysis,
   NaverSEOChecklist,
   ImageSEOAudit,
+  SEOOnboardingWizard,
+  SEOGlossary,
+  SEOTutorial,
   type SEOTrendData,
 } from "../_components";
 
-type SEOTab = "overview" | "tasks" | "insights" | "reports" | "settings";
+type SEOTab = "overview" | "tasks" | "insights" | "reports" | "learn" | "settings";
 
 interface SearchConsoleData {
   connected: boolean;
@@ -188,6 +192,17 @@ export default function SEODashboardPage() {
             리포트
           </button>
           <button
+            onClick={() => setActiveTab("learn")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-colors ${
+              activeTab === "learn"
+                ? "bg-brand-primary text-white"
+                : "text-[#909296] hover:text-white"
+            }`}
+          >
+            <GraduationCap className="w-4 h-4" />
+            학습
+          </button>
+          <button
             onClick={() => setActiveTab("settings")}
             className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-colors ${
               activeTab === "settings"
@@ -219,6 +234,7 @@ export default function SEODashboardPage() {
           />
         )}
         {activeTab === "reports" && <SEOReportsTab />}
+        {activeTab === "learn" && <SEOLearnTab />}
         {activeTab === "settings" && <SEOSettingsTab />}
       </main>
     </div>
@@ -253,6 +269,9 @@ function SEOOverviewTab({
 
   return (
     <div className="space-y-6">
+      {/* 온보딩 위자드 */}
+      <SEOOnboardingWizard />
+
       {/* 빠른 현황 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <QuickStatCard
@@ -553,6 +572,80 @@ function SEOReportsTab() {
             <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">준비 중입니다</p>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 학습 탭
+function SEOLearnTab() {
+  return (
+    <div className="space-y-6">
+      {/* 온보딩 위자드 (전체 보기) */}
+      <SEOOnboardingWizard />
+
+      {/* 튜토리얼 + 용어사전 */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <SEOTutorial />
+        <SEOGlossary />
+      </div>
+
+      {/* 추가 리소스 */}
+      <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <ExternalLink className="w-5 h-5 text-cyan-400" />
+          <span className="font-medium text-white">추가 학습 리소스</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <a
+            href="https://developers.google.com/search/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-3 bg-[#25262b] rounded-lg hover:bg-[#2a2b33] transition-colors"
+          >
+            <span className="text-xl">🔍</span>
+            <div>
+              <p className="text-sm font-medium text-white">Google SEO 가이드</p>
+              <p className="text-xs text-gray-500">공식 문서</p>
+            </div>
+          </a>
+          <a
+            href="https://searchadvisor.naver.com/guide"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-3 bg-[#25262b] rounded-lg hover:bg-[#2a2b33] transition-colors"
+          >
+            <span className="text-xl">🌐</span>
+            <div>
+              <p className="text-sm font-medium text-white">네이버 SEO 가이드</p>
+              <p className="text-xs text-gray-500">서치어드바이저</p>
+            </div>
+          </a>
+          <a
+            href="https://web.dev/learn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-3 bg-[#25262b] rounded-lg hover:bg-[#2a2b33] transition-colors"
+          >
+            <span className="text-xl">⚡</span>
+            <div>
+              <p className="text-sm font-medium text-white">Web.dev 학습</p>
+              <p className="text-xs text-gray-500">성능 최적화</p>
+            </div>
+          </a>
+          <a
+            href="https://schema.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-3 bg-[#25262b] rounded-lg hover:bg-[#2a2b33] transition-colors"
+          >
+            <span className="text-xl">📊</span>
+            <div>
+              <p className="text-sm font-medium text-white">Schema.org</p>
+              <p className="text-xs text-gray-500">구조화 데이터</p>
+            </div>
+          </a>
         </div>
       </div>
     </div>
