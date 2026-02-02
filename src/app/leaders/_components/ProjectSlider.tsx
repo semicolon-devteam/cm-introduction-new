@@ -95,29 +95,33 @@ export function ProjectSlider({ projects, delay = 0, isVisible = true }: Project
           })}
         </div>
 
-        {/* Navigation Buttons */}
-        <button
-          onClick={handlePrev}
-          disabled={activeIndex === 0}
-          className={`absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${
-            activeIndex === 0
-              ? "bg-gray-800/50 cursor-not-allowed"
-              : "bg-gray-800/80 hover:bg-gray-700"
-          }`}
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={activeIndex === projects.length - 1}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${
-            activeIndex === projects.length - 1
-              ? "bg-gray-800/50 cursor-not-allowed"
-              : "bg-[#068FFF] hover:bg-[#068FFF]/80"
-          }`}
-        >
-          <ChevronRight className="w-6 h-6 text-white" />
-        </button>
+        {/* Navigation Buttons - 3개 미만일 때 숨김 */}
+        {projects.length >= 3 && (
+          <>
+            <button
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              className={`absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${
+                activeIndex === 0
+                  ? "bg-gray-800/50 cursor-not-allowed"
+                  : "bg-gray-800/80 hover:bg-gray-700"
+              }`}
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={activeIndex === projects.length - 1}
+              className={`absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${
+                activeIndex === projects.length - 1
+                  ? "bg-gray-800/50 cursor-not-allowed"
+                  : "bg-[#068FFF] hover:bg-[#068FFF]/80"
+              }`}
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Active Project Info - 12px gap from image */}

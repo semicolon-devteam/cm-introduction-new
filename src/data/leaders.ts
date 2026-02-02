@@ -40,18 +40,6 @@ export const leaders: Leader[] = [
           "세미콜론 서비스의 핵심 인프라 및 서버 아키텍처 설계. 안정적인 운영 환경과 확장 가능한 시스템 구축을 총괄",
         thumbnail: "/images/projects/semicolon-infrastructure.png",
       },
-      {
-        year: "2024",
-        name: "실시간 모니터링 시스템",
-        tags: ["Grafana", "Prometheus", "Docker"],
-        description: "대규모 인프라 모니터링 및 알림 시스템 구축",
-      },
-      {
-        year: "2023",
-        name: "데이터 파이프라인",
-        tags: ["Airflow", "Spark", "AWS"],
-        description: "대용량 데이터 ETL 파이프라인 설계 및 구현",
-      },
     ],
     isActive: true,
     displayOrder: 1,
@@ -89,21 +77,11 @@ export const leaders: Leader[] = [
     projects: [
       {
         year: "2025",
-        name: "팀 소개 사이트",
-        tags: ["Next.js", "Tailwind CSS", "Figma"],
-        description: "Semicolon 팀을 소개하는 공식 웹사이트 프론트엔드 개발 및 인터랙션 구현",
-      },
-      {
-        year: "2024",
-        name: "커뮤니티 대시보드",
-        tags: ["React", "Chart.js", "Recoil"],
-        description: "실시간 데이터 시각화 대시보드 및 관리자 페이지 구현",
-      },
-      {
-        year: "2023",
-        name: "이커머스 플랫폼",
-        tags: ["Next.js", "Redux", "Stripe"],
-        description: "결제 시스템 통합 및 상품 관리 프론트엔드 아키텍처 설계",
+        name: "SEMO",
+        tags: ["TypeScript", "AI Agent", "Orchestration"],
+        description:
+          "AI 에이전트 오케스트레이션 프레임워크. 복잡한 워크플로우를 자동화하고 팀 협업을 혁신하는 모노레포 기반 시스템",
+        thumbnail: "/images/projects/semo-orchestration.png",
       },
     ],
     isActive: true,
@@ -140,22 +118,12 @@ export const leaders: Leader[] = [
     ],
     projects: [
       {
-        year: "2025",
-        name: "커뮤니티 그로스 전략",
-        tags: ["Product", "A/B Test", "Funnel"],
-        description: "사용자 여정 분석을 통한 전환율 40% 개선 프로젝트 총괄",
-      },
-      {
-        year: "2024",
-        name: "사용자 참여 플랫폼",
-        tags: ["Analytics", "Retention", "Growth"],
-        description: "사용자 참여도를 3배 향상시킨 커뮤니티 기능 기획 및 론칭",
-      },
-      {
-        year: "2023",
-        name: "신규 서비스 런칭",
-        tags: ["GTM", "User Research", "MVP"],
-        description: "신규 서비스 PMF 검증 및 초기 사용자 1만 명 확보 전략 수립",
+        year: "2026",
+        name: "정치판",
+        tags: ["React", "Node.js", "Data Analytics"],
+        description:
+          "정치 정보 플랫폼. 국회의원 활동, 법안 현황, 정당 분석 등 시민들이 쉽게 정치 정보에 접근할 수 있도록 서비스 기획 및 운영",
+        thumbnail: "/images/projects/jungchipan.png",
       },
     ],
     isActive: true,
@@ -194,21 +162,11 @@ export const leaders: Leader[] = [
     projects: [
       {
         year: "2025",
-        name: "API Gateway 고도화",
-        tags: ["Spring Cloud", "Kong", "OAuth2"],
-        description: "마이크로서비스 간 통신 최적화 및 인증/인가 시스템 재설계",
-      },
-      {
-        year: "2024",
-        name: "실시간 알림 시스템",
-        tags: ["Spring Boot", "Redis", "WebSocket"],
-        description: "100만 사용자를 위한 실시간 알림 시스템 구축 및 운영",
-      },
-      {
-        year: "2023",
-        name: "결제 시스템 리팩토링",
-        tags: ["Java", "PostgreSQL", "Kafka"],
-        description: "레거시 결제 시스템을 이벤트 기반 아키텍처로 전환",
+        name: "Core Community Package",
+        tags: ["TypeScript", "Node.js", "npm"],
+        description:
+          "커뮤니티 서비스의 핵심 기능을 모듈화한 노드 패키지. 인증, 게시판, 댓글 등 재사용 가능한 백엔드 컴포넌트 제공",
+        thumbnail: "/images/projects/core-community.png",
       },
     ],
     isActive: true,
@@ -247,21 +205,11 @@ export const leaders: Leader[] = [
     projects: [
       {
         year: "2025",
-        name: "팀 소개 사이트 디자인",
-        tags: ["Figma", "UI/UX", "Branding"],
-        description: "Semicolon 브랜드 아이덴티티와 웹사이트 전체 디자인 총괄",
-      },
-      {
-        year: "2024",
-        name: "디자인 시스템 구축",
-        tags: ["Design System", "Storybook", "Tokens"],
-        description: "일관된 사용자 경험을 위한 컴포넌트 기반 디자인 시스템 구축",
-      },
-      {
-        year: "2023",
-        name: "모바일 앱 리디자인",
-        tags: ["Mobile", "Prototyping", "User Test"],
-        description: "사용성 테스트 기반 모바일 앱 UI/UX 개선 및 전환율 25% 향상",
+        name: "Semicolon Design System",
+        tags: ["Figma", "UI/UX", "Design System"],
+        description:
+          "세미콜론 서비스 전반에 적용되는 통합 디자인 시스템. 일관된 사용자 경험과 효율적인 디자인 협업을 위한 컴포넌트 라이브러리 구축",
+        thumbnail: "/images/projects/semicolon-design-system.png",
       },
     ],
     isActive: true,
