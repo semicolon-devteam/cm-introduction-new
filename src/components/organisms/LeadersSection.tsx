@@ -124,10 +124,11 @@ export function LeadersSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxScrollOffset, setMaxScrollOffset] = useState(0);
 
-  // 카드 크기 및 간격
+  // 카드 크기 및 간격 (리더 카드 5개 + 더보기 버튼 1개)
   const cardWidth = 260;
   const gap = 24;
-  const totalContentWidth = leaders.length * cardWidth + (leaders.length - 1) * gap;
+  const totalItems = leaders.length + 1; // 리더 카드 + 더보기 버튼
+  const totalContentWidth = totalItems * cardWidth + (totalItems - 1) * gap;
 
   // 스크롤 오프셋 계산 (마지막 위치에서 오른쪽 정렬)
   const maxIndex = 1; // 시작과 끝 두 위치만
@@ -182,46 +183,33 @@ export function LeadersSection() {
       <div className="relative z-10 flex-1 flex flex-col justify-center">
         <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
           {/* 타이틀 영역 */}
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              {/* 태그 */}
-              <div
-                className={`opacity-0 translate-y-6 transition-all duration-700 ease-out
-                  ${isVisible ? "opacity-100 translate-y-0" : ""}`}
-                style={{ transitionDelay: "200ms" }}
-              >
-                <span className="text-[#068FFF] text-base font-medium">Leaders</span>
-              </div>
-
-              {/* 헤드라인 */}
-              <h2
-                className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mt-4 opacity-0 translate-y-6 transition-all duration-700 ease-out
-                  ${isVisible ? "opacity-100 translate-y-0" : ""}`}
-                style={{ transitionDelay: "400ms" }}
-              >
-                세미콜론을 이끄는 <span className="text-[#068FFF]">리더들</span>
-              </h2>
-
-              {/* 설명 */}
-              <p
-                className={`text-base text-gray-400 mt-4 opacity-0 translate-y-6 transition-all duration-700 ease-out
-                  ${isVisible ? "opacity-100 translate-y-0" : ""}`}
-                style={{ transitionDelay: "600ms" }}
-              >
-                세미콜론의 리더들은 각자의 전문성으로 회사의 비전을 실현하고 있습니다.
-              </p>
+          <div className="mb-12">
+            {/* 태그 */}
+            <div
+              className={`opacity-0 translate-y-6 transition-all duration-700 ease-out
+                ${isVisible ? "opacity-100 translate-y-0" : ""}`}
+              style={{ transitionDelay: "200ms" }}
+            >
+              <span className="text-[#068FFF] text-base font-medium">Leaders</span>
             </div>
 
-            {/* 팀 소개 버튼 */}
-            <Link
-              href="/leaders"
-              className={`hidden md:inline-flex items-center gap-2 px-6 py-3 bg-[#068FFF] text-white text-sm font-medium rounded-lg hover:bg-[#0570CC] transition-colors opacity-0 translate-y-6
+            {/* 헤드라인 */}
+            <h2
+              className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mt-4 opacity-0 translate-y-6 transition-all duration-700 ease-out
                 ${isVisible ? "opacity-100 translate-y-0" : ""}`}
               style={{ transitionDelay: "400ms" }}
             >
-              팀 소개 보기
-              <ArrowRight size={18} />
-            </Link>
+              세미콜론을 이끄는 <span className="text-[#068FFF]">리더들</span>
+            </h2>
+
+            {/* 설명 */}
+            <p
+              className={`text-base text-gray-400 mt-4 opacity-0 translate-y-6 transition-all duration-700 ease-out
+                ${isVisible ? "opacity-100 translate-y-0" : ""}`}
+              style={{ transitionDelay: "600ms" }}
+            >
+              세미콜론의 리더들은 각자의 전문성으로 회사의 비전을 실현하고 있습니다.
+            </p>
           </div>
 
           {/* 리더 슬라이더 */}
@@ -243,6 +231,17 @@ export function LeadersSection() {
                     isVisible={isVisible}
                   />
                 ))}
+                {/* 팀 소개 보기 버튼 */}
+                <Link
+                  href="/leaders"
+                  className={`flex-shrink-0 w-[260px] flex items-center justify-center opacity-0 translate-y-8 transition-all duration-700 ease-out
+                    ${isVisible ? "opacity-100 translate-y-0" : ""}`}
+                  style={{ transitionDelay: `${800 + leaders.length * 150}ms` }}
+                >
+                  <div className="w-20 h-20 rounded-full border-2 border-[#068FFF] flex items-center justify-center hover:bg-[#068FFF]/20 transition-colors">
+                    <ArrowRight size={32} className="text-[#068FFF]" />
+                  </div>
+                </Link>
               </div>
             </div>
 

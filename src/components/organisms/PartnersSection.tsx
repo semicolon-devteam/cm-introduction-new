@@ -5,16 +5,13 @@ import Image from "next/image";
 
 // 파트너 데이터
 const partners = [
-  { name: "메리츠화재", logo: "/images/partners/meritz.png" },
-  { name: "희림", logo: "/images/partners/heerim.png" },
-  { name: "AhnLab", logo: "/images/partners/ahnlab.png" },
-  { name: "Smilegate Holdings", logo: "/images/partners/smilegate.png" },
-  { name: "대우건설", logo: "/images/partners/daewoo.png" },
-  { name: "HDC 아이파크몰", logo: "/images/partners/hdc.png" },
-  { name: "SeAH", logo: "/images/partners/seah.png" },
-  { name: "Salesinsight", logo: "/images/partners/salesinsight.png" },
-  { name: "일신화학공업주식회사", logo: "/images/partners/ilshin.png" },
-  { name: "everon", logo: "/images/partners/everon.png" },
+  { name: "정치판", logo: "/images/partners/jungchipan.png" },
+  { name: "링크타", logo: "/images/partners/linkta.png" },
+  { name: "PS", logo: "/images/partners/ps-logo.png" },
+  { name: "Keep", logo: "/images/partners/keep-logo.png" },
+  { name: "민주노총", logo: "/images/partners/minjunochong.png" },
+  { name: "차곡", logo: "/images/partners/chagok.png" },
+  { name: "Coin Talk", logo: "/images/partners/cointalk.png" },
 ];
 
 // 파트너 로고 컴포넌트
@@ -22,18 +19,18 @@ function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="flex-shrink-0 w-[180px] h-[60px] flex items-center justify-center px-6">
+    <div className="flex-shrink-0 h-[96px] flex items-center justify-center bg-white/90 px-6">
       {!imageError ? (
         <Image
           src={logo}
           alt={name}
           width={150}
-          height={40}
-          className="object-contain max-h-[40px] w-auto opacity-70 hover:opacity-100 transition-opacity"
+          height={48}
+          className="object-contain max-h-[48px] w-auto"
           onError={() => setImageError(true)}
         />
       ) : (
-        <span className="text-gray-400 text-sm whitespace-nowrap">{name}</span>
+        <span className="text-gray-600 text-sm whitespace-nowrap">{name}</span>
       )}
     </div>
   );
@@ -76,9 +73,9 @@ export function PartnersSection() {
     const animate = () => {
       scrollPositionRef.current += speed;
 
-      // 절반 지점에서 리셋 (무한 스크롤 효과)
-      const halfWidth = scrollContainer.scrollWidth / 2;
-      if (scrollPositionRef.current >= halfWidth) {
+      // 1/4 지점에서 리셋 (무한 스크롤 효과)
+      const resetPoint = scrollContainer.scrollWidth / 4;
+      if (scrollPositionRef.current >= resetPoint) {
         scrollPositionRef.current = 0;
       }
 
@@ -91,8 +88,8 @@ export function PartnersSection() {
     return () => cancelAnimationFrame(animationId);
   }, [isVisible, isPaused]);
 
-  // 파트너 목록 복제 (무한 스크롤용)
-  const duplicatedPartners = [...partners, ...partners];
+  // 파트너 목록 복제 (무한 스크롤용 - 4배 복제로 매끄러운 연결)
+  const duplicatedPartners = [...partners, ...partners, ...partners, ...partners];
 
   return (
     <section
@@ -141,10 +138,7 @@ export function PartnersSection() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div
-            ref={scrollRef}
-            className="flex items-center gap-8 py-8 border-t border-b border-gray-800/50"
-          >
+          <div ref={scrollRef} className="flex items-center border-t border-b border-gray-800/50">
             {duplicatedPartners.map((partner, index) => (
               <PartnerLogo
                 key={`${partner.name}-${index}`}

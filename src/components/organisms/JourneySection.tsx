@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 // 연혁 데이터
 const journeyData = [
   {
-    year: "2023",
+    year: "2025",
     events: [
       {
         title: "세미콜론 설립",
@@ -15,27 +15,22 @@ const journeyData = [
         title: "첫 프로젝트 수주",
         description: "A 대학교 커뮤니티 플랫폼 구축으로\n10만 사용자 확보 경험",
       },
-    ],
-  },
-  {
-    year: "2024",
-    events: [
       {
         title: "팀 확장",
         description: "파트타임 전문가 6명 합류,\n다양한 분야의 역량 강화",
       },
+    ],
+  },
+  {
+    year: "2026",
+    events: [
       {
         title: "기술 혁신",
         description: "AI 기반 추천 시스템 개발로\n고객사 매출 35% 증가 달성",
       },
-    ],
-  },
-  {
-    year: "2025",
-    events: [
       {
-        title: "50+ 고객사 돌파",
-        description: "다양한 산업군의 50개 이상의 고객사와 함께 성장",
+        title: "10+ 고객사 돌파",
+        description: "다양한 산업군의 10개 이상의 고객사와 함께 성장",
       },
     ],
   },
