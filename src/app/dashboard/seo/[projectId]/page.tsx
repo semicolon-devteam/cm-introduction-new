@@ -21,8 +21,14 @@ import {
   getSiteKeywords,
   saveSiteStats,
   type SEOSite,
-} from "@app/dashboard/_lib/seo-sites";
-import { type SEOTrendData } from "@app/dashboard/_components";
+} from "@/app/dashboard/_lib/seo-sites";
+
+interface SEOTrendData {
+  date: string;
+  clicks: number;
+  impressions: number;
+  position: number;
+}
 
 // 탭 컴포넌트 임포트 (분리된 파일)
 import { OverviewTab } from "./_components/OverviewTab";

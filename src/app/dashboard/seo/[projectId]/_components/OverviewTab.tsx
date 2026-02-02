@@ -1,17 +1,16 @@
 "use client";
 
 import { TrendingUp, Target, Activity, AlertCircle } from "lucide-react";
+import { WeeklyMissionCard } from "./WeeklyMissionCard";
+import { RankChecker } from "./RankChecker";
+import type { SEOSite } from "@/app/dashboard/_lib/seo-sites";
 
-import {
-  GoogleAnalyticsCard,
-  SearchConsoleCard,
-  SEOTrendChart,
-  WeeklyMissionCard,
-  KeywordRankingTracker,
-  type SEOTrendData,
-} from "@app/dashboard/_components";
-
-import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
+interface SEOTrendData {
+  date: string;
+  clicks: number;
+  impressions: number;
+  position: number;
+}
 
 interface SearchConsoleData {
   connected: boolean;
@@ -92,33 +91,10 @@ export function OverviewTab({
       </div>
 
       {/* AI 주간 미션 */}
-      <WeeklyMissionCard
-        projectId={site.id}
-        domain={site.domain}
-        keywords={keywords}
-        searchConsoleData={
-          searchConsoleData?.overview?.current
-            ? {
-                clicks: searchConsoleData.overview.current.clicks,
-                impressions: searchConsoleData.overview.current.impressions,
-                ctr: searchConsoleData.overview.current.ctr / 100,
-                position: searchConsoleData.overview.current.position,
-              }
-            : undefined
-        }
-      />
+      <WeeklyMissionCard domain={site.domain} keywords={keywords} />
 
       {/* 키워드 순위 추적 */}
-      <KeywordRankingTracker projectId={site.id} keywords={keywords} />
-
-      {/* Analytics + Search Console */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <GoogleAnalyticsCard />
-        <SearchConsoleCard />
-      </div>
-
-      {/* 트렌드 차트 */}
-      {trendData.length > 0 && <SEOTrendChart data={trendData} title="SEO 성과 트렌드" />}
+      <RankChecker domain={site.domain} keywords={keywords} />
     </div>
   );
 }
