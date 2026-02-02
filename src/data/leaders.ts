@@ -34,10 +34,11 @@ export const leaders: Leader[] = [
     projects: [
       {
         year: "2025",
-        name: "커뮤니티 플랫폼",
+        name: "Semicolon Infrastructure",
         tags: ["Supabase", "Next.js", "TypeScript"],
         description:
-          "우리는 AI를 적극 활용해 일반 팀 대비 3-5배 빠른 개발 속도를 자랑합니다. 하지만 속도만으로는 부족합니다. AI 도구가 해결하지 못하는 복잡한 아키텍처 문제, 예상치 못한 버그, 성능 최적화... 이런 순간에 필요한 것은 검증된 기술력입니다.",
+          "세미콜론 서비스의 핵심 인프라 및 서버 아키텍처 설계. 안정적인 운영 환경과 확장 가능한 시스템 구축을 총괄",
+        thumbnail: "/images/projects/semicolon-infrastructure.png",
       },
       {
         year: "2024",
