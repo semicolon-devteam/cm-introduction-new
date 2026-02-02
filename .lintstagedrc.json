@@ -1,5 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/lintstagedrc.schema.json",
   "*.{ts,tsx}": ["npx tsc-files --noEmit", "npx eslint --fix --quiet", "npx prettier --write"],
   "*.{js,jsx}": ["npx eslint --fix --quiet", "npx prettier --write"],
-  "*.{json,md,css,scss}": ["npx prettier --write"]
+  "!(.*rc).{json,md,css,scss}": ["npx prettier --write"]
 }

@@ -43,7 +43,7 @@ export function getSemoDbPool(): Pool {
  */
 export async function querySemoDb<T extends QueryResultRow = QueryResultRow>(
   text: string,
-  params?: unknown[]
+  params?: unknown[],
 ): Promise<QueryResult<T>> {
   const pool = getSemoDbPool();
   const start = Date.now();
@@ -52,7 +52,9 @@ export async function querySemoDb<T extends QueryResultRow = QueryResultRow>(
     const result = await pool.query<T>(text, params);
     const duration = Date.now() - start;
 
-    if (process.env.NODE_ENV === "development") {
+    // Debug logging disabled in production builds
+    if (process.env.NODE_ENV === "development" && typeof window === "undefined") {
+      // eslint-disable-next-line no-console
       console.log("[SEMO DB] Query executed", {
         text: text.substring(0, 100),
         duration: `${duration}ms`,
@@ -71,7 +73,7 @@ export async function querySemoDb<T extends QueryResultRow = QueryResultRow>(
  * SEMO DB 트랜잭션 실행
  */
 export async function withSemoDbTransaction<T>(
-  callback: (client: PoolClient) => Promise<T>
+  callback: (client: PoolClient) => Promise<T>,
 ): Promise<T> {
   const pool = getSemoDbPool();
   const client = await pool.connect();

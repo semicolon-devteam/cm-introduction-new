@@ -1,6 +1,9 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 
+// 모든 admin 페이지는 동적 렌더링 (React Query 사용)
+export const dynamic = "force-dynamic";
+
 interface AdminLayoutProps {
   children: ReactNode;
 }

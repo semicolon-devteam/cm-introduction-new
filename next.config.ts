@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   // 배포/도커
   output: "standalone",
 
+  // ESLint - 빌드 시 경고를 에러로 처리하지 않음
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // 런타임 최적화
   reactStrictMode: true,
   poweredByHeader: false,

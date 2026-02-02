@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-
 import { Menu, X } from "lucide-react";
 
 const navigation = [
   { name: "홈", href: "/" },
   { name: "팀", href: "/leaders" },
-  { name: "기술력", href: "/tech" },
+  { name: "기술력", href: "/skills" },
   { name: "문의하기", href: "/contacts" },
 ];
 

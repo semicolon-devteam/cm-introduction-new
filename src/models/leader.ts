@@ -26,4 +26,7 @@ export interface LeaderProject {
   name: string;
   tags: string[];
   description: string;
+  thumbnail?: string;
+  images?: string[]; // 프로젝트 이미지 캐러셀용
+  link?: string;
 }

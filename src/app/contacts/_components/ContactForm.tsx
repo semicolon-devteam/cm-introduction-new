@@ -102,7 +102,6 @@ export function ContactForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -124,6 +123,12 @@ export function ContactForm() {
       </div>
     );
   }
+
+  const inputBase =
+    "w-full px-4 py-3 bg-[#12131A] border border-white/10 rounded-lg text-white placeholder-gray-500";
+  const inputFocus =
+    "focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/50";
+  const inputError = "border-red-500 focus:border-red-500 focus:ring-red-500/50";
 
   return (
     <form onSubmit={handleSubmit}>
