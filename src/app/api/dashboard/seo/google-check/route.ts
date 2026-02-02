@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
+
 import {
   checkHTTPS,
   checkSitemap,
@@ -65,10 +66,21 @@ export async function POST(request: NextRequest) {
     const analyticsConnected = false;
 
     // Google API 인증 정보 확인
+    // 방법 1: 개별 환경 변수 (Vercel 권장)
+    const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+    // 방법 2: 전체 JSON (로컬 개발용)
     const googleCredentials = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    if (googleCredentials) {
+
+    const hasCredentials = (clientEmail && privateKey) || googleCredentials;
+
+    if (hasCredentials) {
       try {
-        const credentials = JSON.parse(googleCredentials);
+        const credentials =
+          clientEmail && privateKey
+            ? { client_email: clientEmail, private_key: privateKey }
+            : JSON.parse(googleCredentials!);
+
         const auth = new google.auth.GoogleAuth({
           credentials,
           scopes: [
