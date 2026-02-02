@@ -21,18 +21,38 @@ export default function LeadersPage() {
   const [visibleCategories, setVisibleCategories] = useState(0);
   const [isCultureVisible, setIsCultureVisible] = useState(false);
   const [isContactVisible, setIsContactVisible] = useState(false);
+  const [maxScrollOffset, setMaxScrollOffset] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const memberSectionRef = useRef<HTMLElement>(null);
   const cultureSectionRef = useRef<HTMLElement>(null);
   const contactSectionRef = useRef<HTMLElement>(null);
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
 
-  const visibleCards = 4;
-  const maxIndex = Math.max(0, leaders.length - visibleCards);
+  // 카드 크기 및 간격
+  const cardWidth = 260;
+  const gap = 24;
+  const totalContentWidth = leaders.length * cardWidth + (leaders.length - 1) * gap;
+  const maxIndex = 1; // 시작과 끝 두 위치만
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // 컨테이너 너비 측정 및 최대 스크롤 오프셋 계산
+  useEffect(() => {
+    const calculateMaxScroll = () => {
+      if (sliderContainerRef.current) {
+        const containerWidth = sliderContainerRef.current.offsetWidth;
+        const maxOffset = totalContentWidth - containerWidth;
+        setMaxScrollOffset(Math.max(0, maxOffset));
+      }
+    };
+
+    calculateMaxScroll();
+    window.addEventListener("resize", calculateMaxScroll);
+    return () => window.removeEventListener("resize", calculateMaxScroll);
+  }, [totalContentWidth]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -110,11 +130,13 @@ export default function LeadersPage() {
                 회사의 비전을 실현하고 있습니다.
               </p>
             </div>
-            <div className="relative overflow-x-clip">
+            <div ref={sliderContainerRef} className="relative overflow-x-clip">
               <div className="pb-2">
                 <div
                   className="flex gap-6 transition-transform duration-500 ease-out"
-                  style={{ transform: `translateX(-${currentIndex * 284}px)` }}
+                  style={{
+                    transform: `translateX(-${currentIndex === 0 ? 0 : maxScrollOffset}px)`,
+                  }}
                 >
                   {leaders.map((leader, index) => (
                     <LeaderSliderCard

@@ -30,7 +30,7 @@ export function LeaderSliderCard({
   return (
     <Link
       href={`/leaders/${slug}`}
-      className={`flex-shrink-0 w-[260px] opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer block
+      className={`flex-shrink-0 w-[260px] opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer group block
         ${isVisible ? "opacity-100 translate-y-0" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -40,7 +40,7 @@ export function LeaderSliderCard({
             src={image}
             alt={name}
             fill
-            className="object-cover z-10"
+            className="object-cover z-10 group-hover:scale-105 transition-transform duration-300"
             onLoad={() => setImageLoaded(true)}
             onError={() => setImageError(true)}
           />
@@ -56,7 +56,10 @@ export function LeaderSliderCard({
           <span className="text-lg font-bold text-white">{name}</span>
           <span className="text-sm text-gray-500">| {nickname}</span>
         </div>
-        <ArrowRight size={20} className="text-[#068FFF]" />
+        <ArrowRight
+          size={20}
+          className="text-[#068FFF] group-hover:translate-x-1 transition-transform duration-150"
+        />
       </div>
       <div className="space-y-1">
         {roles.map((role, index) => (
