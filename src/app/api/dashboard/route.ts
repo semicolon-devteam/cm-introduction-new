@@ -19,8 +19,14 @@ export async function GET() {
     if (connectionStatus.connected) {
       try {
         const items = await getProjectItems();
+        // 버그 라벨이 있는 이슈만 필터링
         issues = items
-          .filter((item) => item.type === "ISSUE")
+          .filter((item) => {
+            if (item.type !== "ISSUE") return false;
+            // "bug" 또는 "Bug" 라벨이 있는지 확인
+            const hasBugLabel = item.labels.some((label) => label.name.toLowerCase() === "bug");
+            return hasBugLabel;
+          })
           .map((item) => ({
             id: item.id,
             title: item.title,
