@@ -3,7 +3,7 @@
  * seo-sites.ts의 서버사이드 버전
  */
 
-export interface ProjectConfig {
+export interface SEOProjectConfig {
   id: string;
   name: string;
   domain: string;
@@ -25,7 +25,7 @@ export interface ProjectConfig {
   keywords?: string[];
 }
 
-const SEO_PROJECTS: ProjectConfig[] = [
+const SEO_PROJECTS: SEOProjectConfig[] = [
   {
     id: "jungchipan",
     name: "정치판",
@@ -84,7 +84,7 @@ const SEO_PROJECTS: ProjectConfig[] = [
 /**
  * 프로젝트 설정 조회
  */
-export function getProjectConfig(projectId: string): ProjectConfig | null {
+export function getProjectConfig(projectId: string): SEOProjectConfig | null {
   return SEO_PROJECTS.find((p) => p.id === projectId) || null;
 }
 
@@ -99,6 +99,6 @@ export function getProjectKeywords(projectId: string): string[] {
 /**
  * 모든 프로젝트 조회
  */
-export function getAllProjects(): ProjectConfig[] {
+export function getAllProjects(): SEOProjectConfig[] {
   return SEO_PROJECTS;
 }
