@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
-import type { PeriodFilter } from "./types";
+
+type PeriodFilter = "week" | "month" | "quarter";
 
 interface DashboardHeaderProps {
   period: PeriodFilter;

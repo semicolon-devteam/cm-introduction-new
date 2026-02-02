@@ -1,7 +1,9 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+
 interface AICaseCardProps {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   title: string;
   description: string;
   badge: string;
