@@ -4,6 +4,7 @@ import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
 import { RankChecker } from "./RankChecker";
 import { PageAnalyzer } from "./PageAnalyzer";
 import { CompetitorAnalyzer } from "./CompetitorAnalyzer";
+import { SiteConfigValidator } from "./SiteConfigValidator";
 import { MetaTagGenerator } from "./MetaTagGenerator";
 import { GTMTagGenerator } from "./GTMTagGenerator";
 import { IndexNowSubmitter } from "./IndexNowSubmitter";
@@ -31,6 +32,9 @@ export function ToolsTab({ site, keywords, onAddKeyword }: ToolsTabProps) {
 
       {/* 경쟁사 분석 */}
       <CompetitorAnalyzer myKeywords={keywords} onAddKeyword={handleAddKeyword} />
+
+      {/* 사이트맵/Robots.txt 검증 */}
+      <SiteConfigValidator domain={site.domain} />
 
       {/* 기존 도구들 */}
       <MetaTagGenerator site={site} keywords={keywords} />
