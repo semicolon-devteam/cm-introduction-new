@@ -85,7 +85,7 @@ export function TechContactSection() {
               href="/leaders"
               className="inline-flex items-center gap-2 px-8 py-4 border border-gray-500 text-white font-medium rounded-lg hover:bg-white/10 transition-colors"
             >
-              기술력 살펴보기
+              리더 정보보기
             </Link>
           </div>
         </div>

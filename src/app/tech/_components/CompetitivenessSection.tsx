@@ -72,10 +72,14 @@ export function CompetitivenessSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
             {/* 중소기업 카드 */}
             <div
-              className={`bg-[#1E1E1E] border border-gray-700/50 rounded-2xl p-8 opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer
-              hover:bg-[#068FFF]/10 hover:border-[#068FFF]/30
-              ${isVisible ? "opacity-100 translate-y-0" : ""}`}
-              style={{ transitionDelay: "800ms" }}
+              className={`bg-[#1E1E1E] border border-gray-700/50 rounded-2xl p-8 cursor-pointer
+              hover:bg-[#068FFF]/10 hover:border-[#068FFF]/30 transition-colors duration-150
+              ${isVisible ? "" : "opacity-0 translate-y-8"}`}
+              style={{
+                transition:
+                  "opacity 700ms ease-out, transform 700ms ease-out, background-color 150ms, border-color 150ms",
+                transitionDelay: isVisible ? "0ms" : "800ms",
+              }}
             >
               <h3 className="text-xl font-bold text-white mb-6">
                 {comparisonData.smallCompany.title}
@@ -92,10 +96,14 @@ export function CompetitivenessSection() {
 
             {/* 대기업 카드 */}
             <div
-              className={`bg-[#1E1E1E] border border-gray-700/50 rounded-2xl p-8 opacity-0 translate-y-8 transition-all duration-700 ease-out cursor-pointer
-              hover:bg-[#068FFF]/10 hover:border-[#068FFF]/30
-              ${isVisible ? "opacity-100 translate-y-0" : ""}`}
-              style={{ transitionDelay: "900ms" }}
+              className={`bg-[#1E1E1E] border border-gray-700/50 rounded-2xl p-8 cursor-pointer
+              hover:bg-[#068FFF]/10 hover:border-[#068FFF]/30 transition-colors duration-150
+              ${isVisible ? "" : "opacity-0 translate-y-8"}`}
+              style={{
+                transition:
+                  "opacity 700ms ease-out, transform 700ms ease-out, background-color 150ms, border-color 150ms",
+                transitionDelay: isVisible ? "0ms" : "900ms",
+              }}
             >
               <h3 className="text-xl font-bold text-white mb-6">
                 {comparisonData.largeCompany.title}
