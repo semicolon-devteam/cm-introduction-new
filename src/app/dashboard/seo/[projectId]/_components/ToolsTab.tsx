@@ -11,6 +11,7 @@ import { GTMTagGenerator } from "./GTMTagGenerator";
 import { IndexNowSubmitter } from "./IndexNowSubmitter";
 import { WeeklyMissionCard } from "./WeeklyMissionCard";
 import { NaverSEOChecklist } from "./NaverSEOChecklist";
+import { GoogleSEOChecklist } from "./GoogleSEOChecklist";
 import { ImageSEOAudit } from "./ImageSEOAudit";
 import { OnboardingWizard } from "./OnboardingWizard";
 
@@ -82,8 +83,11 @@ export function ToolsTab({ site, keywords, onAddKeyword }: ToolsTabProps) {
         <CompetitorAnalyzer myKeywords={keywords} onAddKeyword={handleAddKeyword} />
       </div>
 
-      {/* 네이버 SEO 체크리스트 */}
-      <NaverSEOChecklist domain={site.domain} />
+      {/* 검색엔진별 SEO 체크리스트 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <GoogleSEOChecklist domain={site.domain} />
+        <NaverSEOChecklist domain={site.domain} />
+      </div>
 
       {/* 사이트맵/Robots.txt 검증 */}
       <div ref={siteConfigRef}>
