@@ -674,7 +674,7 @@ export function SemicolonHero() {
                     </p>
                     <div className="flex gap-4 pt-2">
                       <a
-                        href="/skills"
+                        href="/tech"
                         className="inline-flex items-center gap-2 bg-[#068FFF] hover:bg-[#068FFF]/90 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
                       >
                         우리의 기술력 보기 →
