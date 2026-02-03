@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Settings, Check, AlertCircle } from "lucide-react";
 
 import { updateSEOSite, type SEOSite } from "@app/dashboard/_lib/seo-sites";
@@ -9,27 +9,71 @@ interface SettingsTabProps {
   site: SEOSite;
 }
 
+interface AutomationSettings {
+  autoMetaTags: boolean;
+  autoIndexNow: boolean;
+  weeklyReport: boolean;
+}
+
+interface DBSettings {
+  auto_meta_tags?: boolean;
+  auto_index_now?: boolean;
+  weekly_report?: boolean;
+}
+
 export function SettingsTab({ site: initialSite }: SettingsTabProps) {
   const [site, setSite] = useState(initialSite);
   const [saved, setSaved] = useState(false);
 
   // Automation settings
-  const [automation, setAutomation] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(`seo-automation-${initialSite.id}`);
-      if (saved) return JSON.parse(saved);
-    }
-    return {
-      autoMetaTags: true,
-      autoIndexNow: true,
-      weeklyReport: false,
-    };
+  const [automation, setAutomation] = useState<AutomationSettings>({
+    autoMetaTags: true,
+    autoIndexNow: true,
+    weeklyReport: false,
   });
 
-  const handleSaveAutomation = () => {
-    localStorage.setItem(`seo-automation-${site.id}`, JSON.stringify(automation));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  // DB에서 설정 로드
+  const loadSettings = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/data?type=settings&domain=${encodeURIComponent(initialSite.domain)}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data) {
+        const settings = data.data as DBSettings;
+        setAutomation({
+          autoMetaTags: settings.auto_meta_tags ?? true,
+          autoIndexNow: settings.auto_index_now ?? true,
+          weeklyReport: settings.weekly_report ?? false,
+        });
+      }
+    } catch (error) {
+      console.error("설정 로드 실패:", error);
+    }
+  }, [initialSite.domain]);
+
+  useEffect(() => {
+    void loadSettings();
+  }, [loadSettings]);
+
+  const handleSaveAutomation = async () => {
+    try {
+      await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "settings",
+          domain: site.domain,
+          auto_meta_tags: automation.autoMetaTags,
+          auto_index_now: automation.autoIndexNow,
+          weekly_report: automation.weeklyReport,
+        }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (error) {
+      console.error("설정 저장 실패:", error);
+    }
   };
 
   const handleUpdateSite = (updates: Partial<SEOSite>) => {
@@ -134,7 +178,7 @@ export function SettingsTab({ site: initialSite }: SettingsTabProps) {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-medium">자동화 설정</h3>
           <button
-            onClick={handleSaveAutomation}
+            onClick={() => void handleSaveAutomation()}
             className="flex items-center gap-1 px-3 py-1.5 text-sm bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors"
           >
             {saved ? <Check className="w-4 h-4" /> : null}

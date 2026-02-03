@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Copy, Check, Loader2, Tag, ChevronDown, ChevronUp } from "lucide-react";
 
 import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
@@ -10,14 +10,35 @@ interface GTMTagGeneratorProps {
   keywords: string[];
 }
 
+interface SiteSettings {
+  gtm_container_id?: string;
+}
+
 export function GTMTagGenerator({ site, keywords }: GTMTagGeneratorProps) {
-  const [containerId, setContainerId] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(`seo-gtm-${site.id}`) || "";
-    }
-    return "";
-  });
+  const [containerId, setContainerId] = useState("");
   const [generating, setGenerating] = useState(false);
+
+  // DB에서 GTM Container ID 로드
+  const loadSettings = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/data?type=settings&domain=${encodeURIComponent(site.domain)}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data) {
+        const settings = data.data as SiteSettings;
+        if (settings.gtm_container_id) {
+          setContainerId(settings.gtm_container_id);
+        }
+      }
+    } catch (error) {
+      console.error("설정 로드 실패:", error);
+    }
+  }, [site.domain]);
+
+  useEffect(() => {
+    void loadSettings();
+  }, [loadSettings]);
   const [result, setResult] = useState<{
     scripts: { head: string; body: string };
     dataLayerEvents: string;
@@ -35,7 +56,21 @@ export function GTMTagGenerator({ site, keywords }: GTMTagGeneratorProps) {
       return;
     }
 
-    localStorage.setItem(`seo-gtm-${site.id}`, containerId);
+    // DB에 GTM Container ID 저장
+    try {
+      await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "settings",
+          domain: site.domain,
+          gtm_container_id: containerId.trim(),
+        }),
+      });
+    } catch (error) {
+      console.error("GTM ID 저장 실패:", error);
+    }
+
     setGenerating(true);
     setResult(null);
 

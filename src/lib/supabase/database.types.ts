@@ -212,6 +212,118 @@ export interface Database {
         };
         Relationships: [];
       };
+      // SEO Keywords
+      seo_keywords: {
+        Row: {
+          id: number;
+          domain: string;
+          keyword: string;
+          keyword_type: "main" | "sub";
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          domain: string;
+          keyword: string;
+          keyword_type?: "main" | "sub";
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          domain?: string;
+          keyword?: string;
+          keyword_type?: "main" | "sub";
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      // SEO Rank History
+      seo_rank_history: {
+        Row: {
+          id: number;
+          domain: string;
+          keyword: string;
+          rank: number;
+          checked_at: string;
+        };
+        Insert: {
+          id?: number;
+          domain: string;
+          keyword: string;
+          rank: number;
+          checked_at?: string;
+        };
+        Update: {
+          id?: number;
+          domain?: string;
+          keyword?: string;
+          rank?: number;
+          checked_at?: string;
+        };
+        Relationships: [];
+      };
+      // SEO Site Settings
+      seo_site_settings: {
+        Row: {
+          id: number;
+          domain: string;
+          gtm_container_id: string | null;
+          auto_meta_tags: boolean;
+          auto_index_now: boolean;
+          weekly_report: boolean;
+          created_at: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          domain: string;
+          gtm_container_id?: string | null;
+          auto_meta_tags?: boolean;
+          auto_index_now?: boolean;
+          weekly_report?: boolean;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          domain?: string;
+          gtm_container_id?: string | null;
+          auto_meta_tags?: boolean;
+          auto_index_now?: boolean;
+          weekly_report?: boolean;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      // SEO Onboarding
+      seo_onboarding: {
+        Row: {
+          id: number;
+          domain: string;
+          completed_steps: string[];
+          dismissed: boolean;
+          created_at: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          domain: string;
+          completed_steps?: string[];
+          dismissed?: boolean;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          domain?: string;
+          completed_steps?: string[];
+          dismissed?: boolean;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       // Legacy tables - loosely typed for compatibility
       posts: {
         Row: AnyRow;

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, X, Sparkles, Loader2, TrendingUp } from "lucide-react";
-import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
+import { useState, useEffect, useCallback } from "react";
+import { Plus, X, Sparkles, Loader2 } from "lucide-react";
+
 import { KeywordsSuggestionSection } from "./KeywordsSuggestionSection";
 import { KeywordsTrendSection } from "./KeywordsTrendSection";
+import { RecommendedKeywords } from "./RecommendedKeywords";
+
+import type { SEOSite } from "@app/dashboard/_lib/seo-sites";
 
 interface KeywordSuggestion {
   keyword: string;
@@ -20,6 +23,14 @@ interface Keyword {
   text: string;
   type: "main" | "sub";
   createdAt: string;
+}
+
+interface DBKeyword {
+  id: number;
+  domain: string;
+  keyword: string;
+  keyword_type: "main" | "sub";
+  created_at: string;
 }
 
 interface TrendData {
@@ -71,42 +82,86 @@ export function KeywordsTab({
   const [trendSource, setTrendSource] = useState<"naver" | "mock" | null>(null);
   const [relatedKeywords, setRelatedKeywords] = useState<string[]>([]);
 
+  // DB에서 키워드 로드
+  const loadKeywords = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/data?type=keywords&domain=${encodeURIComponent(site.domain)}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data) {
+        const items: Keyword[] = (data.data as DBKeyword[]).map((k) => ({
+          id: String(k.id),
+          text: k.keyword,
+          type: k.keyword_type,
+          createdAt: k.created_at,
+        }));
+        setKeywordItems(items);
+        setKeywords(items.map((k) => k.text));
+      }
+    } catch (error) {
+      console.error("키워드 로드 실패:", error);
+    }
+  }, [site.domain, setKeywords]);
+
   useEffect(() => {
-    const saved = localStorage.getItem(`seo-keywords-${site.id}`);
-    if (saved) setKeywordItems(JSON.parse(saved));
-  }, [site.id]);
+    void loadKeywords();
+  }, [loadKeywords]);
 
-  const saveKeywords = (items: Keyword[]) => {
-    setKeywordItems(items);
-    localStorage.setItem(`seo-keywords-${site.id}`, JSON.stringify(items));
-    setKeywords(items.map((k) => k.text));
-  };
-
-  const handleAddKeyword = () => {
+  // 키워드 추가 (DB 저장)
+  const handleAddKeyword = async () => {
     if (!newKeyword.trim()) return;
-    const keyword: Keyword = {
-      id: Date.now().toString(),
-      text: newKeyword.trim(),
-      type: "main",
-      createdAt: new Date().toISOString(),
-    };
-    saveKeywords([...keywordItems, keyword]);
-    setNewKeyword("");
+    try {
+      const res = await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "keywords",
+          domain: site.domain,
+          keyword: newKeyword.trim(),
+          keyword_type: "main",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNewKeyword("");
+        void loadKeywords();
+      }
+    } catch (error) {
+      console.error("키워드 추가 실패:", error);
+    }
   };
 
-  const handleRemoveKeyword = (id: string) => {
-    saveKeywords(keywordItems.filter((k) => k.id !== id));
+  // 키워드 삭제 (DB)
+  const handleRemoveKeyword = async (id: string) => {
+    try {
+      await fetch(
+        `/api/dashboard/seo/data?type=keywords&domain=${encodeURIComponent(site.domain)}&id=${id}`,
+        { method: "DELETE" },
+      );
+      void loadKeywords();
+    } catch (error) {
+      console.error("키워드 삭제 실패:", error);
+    }
   };
 
-  const handleAddRecommended = (query: string) => {
+  const handleAddRecommended = async (query: string) => {
     if (keywordItems.some((k) => k.text === query)) return;
-    const keyword: Keyword = {
-      id: Date.now().toString(),
-      text: query,
-      type: "sub",
-      createdAt: new Date().toISOString(),
-    };
-    saveKeywords([...keywordItems, keyword]);
+    try {
+      await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "keywords",
+          domain: site.domain,
+          keyword: query,
+          keyword_type: "sub",
+        }),
+      });
+      void loadKeywords();
+    } catch (error) {
+      console.error("키워드 추가 실패:", error);
+    }
   };
 
   const handleAiOptimize = async () => {
@@ -174,16 +229,27 @@ export function KeywordsTab({
     }
   };
 
-  const handleAddSuggested = (keywordText: string) => {
+  const handleAddSuggested = async (keywordText: string) => {
     if (keywordItems.some((k) => k.text.toLowerCase() === keywordText.toLowerCase())) return;
-    const keyword: Keyword = {
-      id: Date.now().toString(),
-      text: keywordText,
-      type: "sub",
-      createdAt: new Date().toISOString(),
-    };
-    saveKeywords([...keywordItems, keyword]);
-    setAiSuggestions((prev) => prev.filter((s) => s.keyword !== keywordText));
+    try {
+      const res = await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "keywords",
+          domain: site.domain,
+          keyword: keywordText,
+          keyword_type: "sub",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        void loadKeywords();
+        setAiSuggestions((prev) => prev.filter((s) => s.keyword !== keywordText));
+      }
+    } catch (error) {
+      console.error("추천 키워드 추가 실패:", error);
+    }
   };
 
   const handleFetchTrends = async () => {
@@ -229,12 +295,12 @@ export function KeywordsTab({
             type="text"
             value={newKeyword}
             onChange={(e) => setNewKeyword(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAddKeyword()}
+            onKeyDown={(e) => e.key === "Enter" && void handleAddKeyword()}
             placeholder="새 키워드 입력"
             className="flex-1 px-3 py-2 bg-[#25262b] border border-[#373A40] rounded-lg text-white placeholder-[#5c5f66] focus:outline-none focus:border-brand-primary"
           />
           <button
-            onClick={handleAddKeyword}
+            onClick={() => void handleAddKeyword()}
             className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors"
           >
             <Plus className="w-5 h-5" />
@@ -252,7 +318,7 @@ export function KeywordsTab({
             >
               <span>{keyword.text}</span>
               <button
-                onClick={() => handleRemoveKeyword(keyword.id)}
+                onClick={() => void handleRemoveKeyword(keyword.id)}
                 className="text-current opacity-60 hover:opacity-100 transition-opacity"
               >
                 <X className="w-3.5 h-3.5" />
@@ -271,7 +337,7 @@ export function KeywordsTab({
         aiAnalysis={aiAnalysis}
         disabled={keywordItems.length === 0}
         onSuggest={() => void handleAiSuggest()}
-        onAddSuggested={handleAddSuggested}
+        onAddSuggested={(kw) => void handleAddSuggested(kw)}
       />
 
       <KeywordsTrendSection
@@ -282,7 +348,7 @@ export function KeywordsTab({
         disabled={keywordItems.length === 0}
         existingKeywords={keywordItems.map((k) => k.text)}
         onFetchTrends={() => void handleFetchTrends()}
-        onAddKeyword={handleAddSuggested}
+        onAddKeyword={(kw) => void handleAddSuggested(kw)}
       />
 
       {/* AI SEO 최적화 */}
@@ -322,37 +388,10 @@ export function KeywordsTab({
         )}
       </div>
 
-      {/* 추천 키워드 */}
-      {recommendedKeywords.length > 0 && (
-        <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-white font-medium">Search Console 추천 키워드</h3>
-          </div>
-          <div className="space-y-2">
-            {recommendedKeywords.map((query, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 bg-[#25262b] rounded-lg"
-              >
-                <div>
-                  <span className="text-white text-sm">{query.query}</span>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-[#5c5f66]">
-                    <span>클릭: {query.clicks}</span>
-                    <span>노출: {query.impressions}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleAddRecommended(query.query)}
-                  className="px-3 py-1.5 text-xs bg-brand-primary/20 text-brand-primary rounded hover:bg-brand-primary/30 transition-colors"
-                >
-                  추가
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <RecommendedKeywords
+        queries={recommendedKeywords}
+        onAdd={(query) => void handleAddRecommended(query)}
+      />
     </div>
   );
 }

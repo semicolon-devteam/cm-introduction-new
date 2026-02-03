@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Rocket,
   CheckCircle,
@@ -34,30 +34,55 @@ interface OnboardingWizardProps {
   onNavigateToTool?: (tool: string) => void;
 }
 
+interface DBOnboarding {
+  completed_steps?: string[];
+  dismissed?: boolean;
+}
+
 export function OnboardingWizard({ domain, onComplete, onNavigateToTool }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [isMinimized, setIsMinimized] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  const storageKey = `seo-onboarding-${domain}`;
+  // DB에서 온보딩 상태 로드
+  const loadOnboarding = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/data?type=onboarding&domain=${encodeURIComponent(domain)}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data) {
+        const onboarding = data.data as DBOnboarding;
+        setCompletedSteps(new Set(onboarding.completed_steps || []));
+        setDismissed(onboarding.dismissed || false);
+      }
+    } catch (error) {
+      console.error("온보딩 상태 로드 실패:", error);
+    }
+  }, [domain]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setCompletedSteps(new Set(parsed.completedSteps || []));
-      setDismissed(parsed.dismissed || false);
-    }
-  }, [storageKey]);
+    void loadOnboarding();
+  }, [loadOnboarding]);
 
-  const saveProgress = (newCompleted: Set<string>, newDismissed = dismissed) => {
+  const saveProgress = async (newCompleted: Set<string>, newDismissed = dismissed) => {
     setCompletedSteps(newCompleted);
     setDismissed(newDismissed);
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({ completedSteps: Array.from(newCompleted), dismissed: newDismissed }),
-    );
+    try {
+      await fetch("/api/dashboard/seo/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "onboarding",
+          domain,
+          completed_steps: Array.from(newCompleted),
+          dismissed: newDismissed,
+        }),
+      });
+    } catch (error) {
+      console.error("온보딩 상태 저장 실패:", error);
+    }
   };
 
   const steps: OnboardingStep[] = [
@@ -158,7 +183,7 @@ export function OnboardingWizard({ domain, onComplete, onNavigateToTool }: Onboa
     } else {
       newCompleted.add(stepId);
     }
-    saveProgress(newCompleted);
+    void saveProgress(newCompleted);
 
     if (newCompleted.size === steps.length) {
       onComplete?.();
@@ -166,7 +191,7 @@ export function OnboardingWizard({ domain, onComplete, onNavigateToTool }: Onboa
   };
 
   const handleDismiss = () => {
-    saveProgress(completedSteps, true);
+    void saveProgress(completedSteps, true);
   };
 
   const progress = (completedSteps.size / steps.length) * 100;
@@ -175,7 +200,7 @@ export function OnboardingWizard({ domain, onComplete, onNavigateToTool }: Onboa
   if (dismissed) {
     return (
       <button
-        onClick={() => saveProgress(completedSteps, false)}
+        onClick={() => void saveProgress(completedSteps, false)}
         className="fixed bottom-4 right-4 bg-violet-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-violet-700 flex items-center gap-2 z-50"
       >
         <Rocket className="w-4 h-4" />

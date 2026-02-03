@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -16,6 +16,14 @@ import { TrendingUp, TrendingDown, Minus, Calendar } from "lucide-react";
 interface RankHistoryEntry {
   date: string;
   [keyword: string]: string | number;
+}
+
+interface DBRankHistory {
+  id: number;
+  domain: string;
+  keyword: string;
+  rank: number;
+  checked_at: string;
 }
 
 interface RankHistoryChartProps {
@@ -40,25 +48,48 @@ export function RankHistoryChart({ domain, keywords }: RankHistoryChartProps) {
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
 
-  const storageKey = `seo-rank-history-${domain}`;
+  // DB에서 히스토리 데이터 로드
+  const loadRankHistory = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/data?type=rank_history&domain=${encodeURIComponent(domain)}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data) {
+        // DB 레코드를 차트 형식으로 변환
+        const dbRecords = data.data as DBRankHistory[];
+        const dateMap = new Map<string, RankHistoryEntry>();
 
-  // localStorage에서 히스토리 데이터 로드
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as RankHistoryEntry[];
-        setHistoryData(parsed);
-      } catch {
-        setHistoryData([]);
+        for (const record of dbRecords) {
+          const date = record.checked_at.split("T")[0];
+          if (!dateMap.has(date)) {
+            dateMap.set(date, { date });
+          }
+          const entry = dateMap.get(date)!;
+          entry[record.keyword] = record.rank;
+        }
+
+        // 날짜순 정렬
+        const entries = Array.from(dateMap.values()).sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
+        setHistoryData(entries);
       }
+    } catch (error) {
+      console.error("순위 이력 로드 실패:", error);
     }
+  }, [domain]);
 
-    // 기본 선택 키워드 설정
+  useEffect(() => {
+    void loadRankHistory();
+  }, [loadRankHistory]);
+
+  // 기본 선택 키워드 설정
+  useEffect(() => {
     if (keywords.length > 0 && selectedKeywords.length === 0) {
       setSelectedKeywords(keywords.slice(0, 3));
     }
-  }, [storageKey, keywords, selectedKeywords.length]);
+  }, [keywords, selectedKeywords.length]);
 
   // 기간에 따른 데이터 필터링
   const getFilteredData = () => {
