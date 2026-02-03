@@ -141,7 +141,7 @@ export default function SiteSEOPage() {
         scIndex++;
       }
 
-      if (site.analytics?.enabled) {
+      if (site.analytics?.enabled && site.analytics.propertyId) {
         setAnalyticsData(results[scIndex]);
       }
     } catch (error) {
