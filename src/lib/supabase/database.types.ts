@@ -4,12 +4,7 @@
  * Generated manually based on database schema
  */
 
-export type InquiryStatus =
-  | "NEW"
-  | "ACK"
-  | "IN_PROGRESS"
-  | "RESOLVED"
-  | "CLOSED";
+export type InquiryStatus = "NEW" | "ACK" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
 
 export type PostStatus = "draft" | "published" | "archived" | "deleted";
 
@@ -163,6 +158,55 @@ export interface Database {
           social_links?: SocialLinks;
           is_active?: boolean;
           display_order?: number;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      // SEO Weekly Missions
+      seo_weekly_missions: {
+        Row: {
+          id: number;
+          domain: string;
+          week_start: string;
+          title: string;
+          description: string;
+          category: "content" | "technical" | "link" | "image" | "meta";
+          priority: "high" | "medium" | "low";
+          status: "pending" | "in_progress" | "completed";
+          estimated_time: string;
+          ai_tip: string | null;
+          summary: string | null;
+          created_at: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          domain: string;
+          week_start: string;
+          title: string;
+          description: string;
+          category: "content" | "technical" | "link" | "image" | "meta";
+          priority?: "high" | "medium" | "low";
+          status?: "pending" | "in_progress" | "completed";
+          estimated_time: string;
+          ai_tip?: string | null;
+          summary?: string | null;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          domain?: string;
+          week_start?: string;
+          title?: string;
+          description?: string;
+          category?: "content" | "technical" | "link" | "image" | "meta";
+          priority?: "high" | "medium" | "low";
+          status?: "pending" | "in_progress" | "completed";
+          estimated_time?: string;
+          ai_tip?: string | null;
+          summary?: string | null;
           created_at?: string;
           updated_at?: string | null;
         };

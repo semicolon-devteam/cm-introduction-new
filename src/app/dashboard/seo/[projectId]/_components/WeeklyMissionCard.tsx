@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Target,
   Loader2,
@@ -13,6 +13,7 @@ import {
   Link,
   Image,
   Tag,
+  RefreshCw,
 } from "lucide-react";
 
 interface WeeklyAction {
@@ -29,7 +30,6 @@ interface WeeklyAction {
 interface WeeklyMissionCardProps {
   domain: string;
   keywords: string[];
-  seoIssues?: { type: string; message: string }[];
 }
 
 const categoryIcons = {
@@ -46,52 +46,84 @@ const priorityColors = {
   low: "text-blue-400",
 };
 
-export function WeeklyMissionCard({ domain, keywords, seoIssues }: WeeklyMissionCardProps) {
+export function WeeklyMissionCard({ domain, keywords }: WeeklyMissionCardProps) {
   const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [actions, setActions] = useState<WeeklyAction[]>([]);
   const [summary, setSummary] = useState<string>("");
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
-  const storageKey = `seo-weekly-actions-${domain}`;
+  // 초기 로드: DB에서 이번 주 미션 가져오기
+  const loadMissions = useCallback(async () => {
+    if (!domain) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/dashboard/seo/weekly-actions?domain=${encodeURIComponent(domain)}`,
+      );
+      const data = await res.json();
+      if (data.success) {
+        setActions(data.actions || []);
+        setSummary(data.summary || "");
+      }
+    } catch (error) {
+      console.error("미션 로드 실패:", error);
+    } finally {
+      setLoading(false);
+      setInitialLoaded(true);
+    }
+  }, [domain]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setActions(parsed.actions || []);
-      setSummary(parsed.summary || "");
-    }
-  }, [storageKey]);
+    void loadMissions();
+  }, [loadMissions]);
 
-  const saveActions = (newActions: WeeklyAction[], newSummary: string) => {
-    setActions(newActions);
-    setSummary(newSummary);
-    localStorage.setItem(storageKey, JSON.stringify({ actions: newActions, summary: newSummary }));
-  };
-
-  const handleGenerate = async () => {
-    setLoading(true);
+  // 새로운 미션 생성 (사이트 분석 기반)
+  const handleGenerate = async (forceRegenerate = false) => {
+    setGenerating(true);
     try {
       const response = await fetch("/api/dashboard/seo/weekly-actions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain, keywords, seoIssues }),
+        body: JSON.stringify({ domain, keywords, forceRegenerate }),
       });
       const data = await response.json();
       if (data.success) {
-        saveActions(data.actions || [], data.summary || "");
+        setActions(data.actions || []);
+        setSummary(data.summary || "");
       } else {
         alert(`오류: ${data.error}`);
       }
     } catch {
       alert("주간 액션 생성 중 오류가 발생했습니다.");
     } finally {
-      setLoading(false);
+      setGenerating(false);
     }
   };
 
-  const handleStatusChange = (id: string, newStatus: WeeklyAction["status"]) => {
+  // 미션 상태 변경 (DB 업데이트)
+  const handleStatusChange = async (id: string, newStatus: WeeklyAction["status"]) => {
+    // 낙관적 업데이트
     const updated = actions.map((a) => (a.id === id ? { ...a, status: newStatus } : a));
-    saveActions(updated, summary);
+    setActions(updated);
+
+    try {
+      const res = await fetch("/api/dashboard/seo/weekly-actions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        // 실패 시 롤백
+        setActions(actions);
+        console.error("상태 업데이트 실패:", data.error);
+      }
+    } catch (error) {
+      // 실패 시 롤백
+      setActions(actions);
+      console.error("상태 업데이트 오류:", error);
+    }
   };
 
   const completedCount = actions.filter((a) => a.status === "completed").length;
@@ -110,23 +142,40 @@ export function WeeklyMissionCard({ domain, keywords, seoIssues }: WeeklyMission
           <h3 className="text-white font-medium">이번 주 SEO 미션</h3>
           <span className="text-xs text-[#5c5f66]">{dateStr}</span>
         </div>
-        <button
-          onClick={() => void handleGenerate()}
-          disabled={loading}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs bg-rose-600 text-white rounded hover:bg-rose-700 disabled:opacity-50"
-        >
-          {loading ? (
-            <Loader2 className="w-3 h-3 animate-spin" />
-          ) : (
-            <Lightbulb className="w-3 h-3" />
+        <div className="flex items-center gap-2">
+          {actions.length > 0 && (
+            <button
+              onClick={() => void handleGenerate(true)}
+              disabled={generating}
+              className="flex items-center gap-1 px-2 py-1.5 text-xs text-[#909296] hover:text-white hover:bg-white/5 rounded transition-colors disabled:opacity-50"
+              title="사이트 재분석 후 미션 새로 생성"
+            >
+              <RefreshCw className={`w-3 h-3 ${generating ? "animate-spin" : ""}`} />
+            </button>
           )}
-          {actions.length > 0 ? "새로 생성" : "AI 미션 생성"}
-        </button>
+          <button
+            onClick={() => void handleGenerate(actions.length > 0)}
+            disabled={generating}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-rose-600 text-white rounded hover:bg-rose-700 disabled:opacity-50"
+          >
+            {generating ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Lightbulb className="w-3 h-3" />
+            )}
+            {generating ? "분석중..." : actions.length > 0 ? "새로 생성" : "AI 미션 생성"}
+          </button>
+        </div>
       </div>
 
       {summary && <p className="text-sm text-[#909296] mb-4 bg-[#25262b] rounded p-3">{summary}</p>}
 
-      {actions.length > 0 ? (
+      {loading && !initialLoaded ? (
+        <div className="text-center py-8 text-[#5c5f66]">
+          <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin opacity-50" />
+          <p className="text-sm">미션 불러오는 중...</p>
+        </div>
+      ) : actions.length > 0 ? (
         <>
           <div className="flex items-center gap-4 mb-4 text-xs text-[#5c5f66]">
             <span>
@@ -164,7 +213,7 @@ export function WeeklyMissionCard({ domain, keywords, seoIssues }: WeeklyMission
                             : action.status === "in_progress"
                               ? "completed"
                               : "pending";
-                        handleStatusChange(action.id, next);
+                        void handleStatusChange(action.id, next);
                       }}
                       className="mt-0.5 flex-shrink-0"
                     >

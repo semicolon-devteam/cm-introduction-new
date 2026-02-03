@@ -1,194 +1,284 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
-export interface WeeklyAction {
-  id: string;
-  title: string;
-  description: string;
-  category: "content" | "technical" | "link" | "image" | "meta";
-  priority: "high" | "medium" | "low";
-  status: "pending" | "in_progress" | "completed";
-  estimatedTime: string;
-  aiTip?: string;
+import { createServiceRoleClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/database.types";
+
+import { analyzeSite } from "./site-analyzer";
+import { generateActionsFromIssues } from "./action-generator";
+import type { WeeklyAction, WeeklyActionsResponse } from "./types";
+
+export type { WeeklyAction, WeeklyActionsResponse };
+
+// DB Row 타입
+type SEOWeeklyMissionRow = Database["public"]["Tables"]["seo_weekly_missions"]["Row"];
+
+// 이번 주 시작일 계산 (월요일 기준)
+function getWeekStart(): string {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() + diff);
+  weekStart.setHours(0, 0, 0, 0);
+  return weekStart.toISOString().split("T")[0];
 }
 
-export interface WeeklyActionsResponse {
-  success: boolean;
-  actions?: WeeklyAction[];
-  summary?: string;
-  error?: string;
+// Row를 WeeklyAction으로 변환
+function rowToAction(row: SEOWeeklyMissionRow): WeeklyAction {
+  return {
+    id: String(row.id),
+    title: row.title,
+    description: row.description,
+    category: row.category,
+    priority: row.priority,
+    status: row.status,
+    estimatedTime: row.estimated_time,
+    aiTip: row.ai_tip || undefined,
+  };
 }
 
+// GET: 이번 주 미션 조회
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const domain = searchParams.get("domain");
+
+    if (!domain) {
+      return NextResponse.json({ success: false, error: "도메인이 필요합니다." }, { status: 400 });
+    }
+
+    const weekStart = getWeekStart();
+    const supabase = await createServiceRoleClient();
+
+    const { data, error } = await supabase
+      .from("seo_weekly_missions")
+      .select("*")
+      .eq("domain", domain)
+      .eq("week_start", weekStart)
+      .order("priority", { ascending: true });
+
+    if (error) {
+      console.error("DB error:", error);
+      return NextResponse.json({ success: false, error: "미션 조회 실패" }, { status: 500 });
+    }
+
+    const typedData = data as SEOWeeklyMissionRow[] | null;
+    const summary = typedData?.[0]?.summary || null;
+    const actions = (typedData || []).map(rowToAction);
+
+    return NextResponse.json({ success: true, actions, summary });
+  } catch (error) {
+    console.error("GET error:", error);
+    return NextResponse.json({ success: false, error: "서버 오류" }, { status: 500 });
+  }
+}
+
+// POST: 새로운 미션 생성 (실제 사이트 분석 기반)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { domain, keywords, seoIssues, currentScore } = body as {
+    const { domain, keywords, forceRegenerate } = body as {
       domain: string;
       keywords: string[];
-      seoIssues?: { type: string; message: string }[];
-      currentScore?: number;
+      forceRegenerate?: boolean;
     };
 
     if (!domain) {
       return NextResponse.json({ success: false, error: "도메인이 필요합니다." }, { status: 400 });
     }
 
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      // API 키 없으면 기본 액션 반환
-      return NextResponse.json({
-        success: true,
-        actions: getDefaultActions(keywords, seoIssues),
-        summary: "기본 SEO 개선 액션을 생성했습니다.",
-      });
+    const weekStart = getWeekStart();
+    const supabase = await createServiceRoleClient();
+
+    // 이미 이번 주 미션이 있는지 확인
+    if (!forceRegenerate) {
+      const { data: existing } = await supabase
+        .from("seo_weekly_missions")
+        .select("id")
+        .eq("domain", domain)
+        .eq("week_start", weekStart)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        const { data } = await supabase
+          .from("seo_weekly_missions")
+          .select("*")
+          .eq("domain", domain)
+          .eq("week_start", weekStart)
+          .order("priority", { ascending: true });
+
+        const typedData = data as SEOWeeklyMissionRow[] | null;
+        return NextResponse.json({
+          success: true,
+          actions: (typedData || []).map(rowToAction),
+          summary: typedData?.[0]?.summary || "",
+          cached: true,
+        });
+      }
+    } else {
+      // 기존 미션 삭제
+      await supabase
+        .from("seo_weekly_missions")
+        .delete()
+        .eq("domain", domain)
+        .eq("week_start", weekStart);
     }
 
-    const groq = new Groq({ apiKey });
+    // 실제 사이트 분석
+    const { issues, pageData } = await analyzeSite(domain);
 
-    const issuesSummary =
-      seoIssues
-        ?.slice(0, 5)
-        .map((i) => `- ${i.message}`)
-        .join("\n") || "분석된 이슈 없음";
-    const keywordsList = keywords.slice(0, 5).join(", ") || "등록된 키워드 없음";
+    // AI로 맞춤 미션 생성
+    const apiKey = process.env.GROQ_API_KEY;
+    let actions: WeeklyAction[] = [];
+    let summary = "";
 
-    const prompt = `당신은 SEO 전문가입니다. 다음 사이트에 대해 이번 주에 실행해야 할 구체적인 SEO 액션 5가지를 추천해주세요.
+    if (apiKey && issues.length > 0) {
+      const groq = new Groq({ apiKey });
+      const issuesSummary = issues
+        .slice(0, 10)
+        .map((i) => `- [${i.priority}] ${i.message}`)
+        .join("\n");
+
+      const prompt = `당신은 SEO 전문가입니다. 다음 사이트 분석 결과를 바탕으로 이번 주에 반드시 해결해야 할 구체적인 SEO 액션 5가지를 추천해주세요.
 
 도메인: ${domain}
-타겟 키워드: ${keywordsList}
-현재 SEO 점수: ${currentScore || "미측정"}
-발견된 이슈:
+타겟 키워드: ${keywords.slice(0, 5).join(", ") || "미설정"}
+
+[실제 사이트 분석 결과]
+- 현재 Title: "${pageData.title || "없음"}"
+- 현재 Description: "${pageData.description || "없음"}"
+- H1 태그 수: ${pageData.h1Count}개
+- alt 없는 이미지: ${pageData.imgWithoutAlt}개
+
+[발견된 이슈]
 ${issuesSummary}
+
+위 실제 분석 결과를 바탕으로 가장 시급한 문제부터 해결하는 액션을 제안하세요.
 
 다음 JSON 형식으로만 응답하세요:
 {
-  "summary": "이번 주 SEO 개선 방향 요약 (1-2문장)",
+  "summary": "이번 주 핵심 개선 방향 (분석 결과 기반, 1-2문장)",
   "actions": [
     {
       "id": "action-1",
       "title": "구체적인 액션 제목",
-      "description": "상세 설명 및 실행 방법",
+      "description": "상세 설명 - 현재 문제점과 정확히 어떻게 수정해야 하는지",
       "category": "content|technical|link|image|meta 중 하나",
       "priority": "high|medium|low 중 하나",
-      "estimatedTime": "예상 소요 시간 (예: 30분, 1시간)",
-      "aiTip": "추가 팁이나 예시"
+      "estimatedTime": "예상 소요 시간",
+      "aiTip": "구체적인 실행 팁 (예: 현재 title을 어떻게 수정하면 좋을지)"
     }
   ]
 }
 
-한국어로 응답하고, 구체적이고 실행 가능한 액션을 제안하세요.`;
+중요: 발견된 이슈를 직접 해결하는 실질적인 액션만 제안하세요.`;
 
-    const completion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 1500,
-    });
+      try {
+        const completion = await groq.chat.completions.create({
+          messages: [{ role: "user", content: prompt }],
+          model: "llama-3.3-70b-versatile",
+          temperature: 0.5,
+          max_tokens: 2000,
+        });
 
-    const responseText = completion.choices[0]?.message?.content || "{}";
-    const cleaned = responseText
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-
-    try {
-      const parsed = JSON.parse(cleaned);
-      const actions = (parsed.actions || []).map((a: WeeklyAction) => ({
-        ...a,
-        status: "pending" as const,
-      }));
-
-      return NextResponse.json({
-        success: true,
-        actions,
-        summary: parsed.summary || "AI가 이번 주 SEO 액션을 생성했습니다.",
-      } as WeeklyActionsResponse);
-    } catch {
-      return NextResponse.json({
-        success: true,
-        actions: getDefaultActions(keywords, seoIssues),
-        summary: "기본 SEO 개선 액션을 생성했습니다.",
-      });
+        const responseText = completion.choices[0]?.message?.content || "{}";
+        const cleaned = responseText
+          .replace(/```json\n?/g, "")
+          .replace(/```\n?/g, "")
+          .trim();
+        const parsed = JSON.parse(cleaned);
+        summary = parsed.summary || "";
+        actions = (parsed.actions || []).map((a: WeeklyAction, idx: number) => ({
+          ...a,
+          id: `action-${idx + 1}`,
+          status: "pending" as const,
+        }));
+      } catch {
+        actions = generateActionsFromIssues(issues, keywords);
+        summary = `${domain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`;
+      }
+    } else {
+      actions = generateActionsFromIssues(issues, keywords);
+      summary =
+        issues.length > 0
+          ? `${domain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`
+          : "기본 SEO 개선 액션을 생성했습니다.";
     }
+
+    // DB에 저장
+    const insertData = actions.map((action) => ({
+      domain,
+      week_start: weekStart,
+      title: action.title,
+      description: action.description,
+      category: action.category,
+      priority: action.priority,
+      status: action.status,
+      estimated_time: action.estimatedTime,
+      ai_tip: action.aiTip || null,
+      summary,
+    }));
+
+    const { error: insertError } = await supabase.from("seo_weekly_missions").insert(insertData);
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
+    }
+
+    // 저장 후 ID 포함해서 다시 조회
+    const { data: savedData } = await supabase
+      .from("seo_weekly_missions")
+      .select("*")
+      .eq("domain", domain)
+      .eq("week_start", weekStart)
+      .order("priority", { ascending: true });
+
+    const typedSavedData = savedData as SEOWeeklyMissionRow[] | null;
+    const savedActions = (typedSavedData || []).map(rowToAction);
+
+    return NextResponse.json({
+      success: true,
+      actions: savedActions.length > 0 ? savedActions : actions,
+      summary,
+    } as WeeklyActionsResponse);
   } catch (error) {
-    console.error("Weekly actions error:", error);
+    console.error("POST error:", error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : "주간 액션 생성 실패" },
+      { success: false, error: error instanceof Error ? error.message : "미션 생성 실패" },
       { status: 500 },
     );
   }
 }
 
-function getDefaultActions(
-  keywords: string[],
-  seoIssues?: { type: string; message: string }[],
-): WeeklyAction[] {
-  const actions: WeeklyAction[] = [];
-  const keyword = keywords[0] || "메인 키워드";
+// PATCH: 미션 상태 업데이트
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, status } = body as { id: string; status: "pending" | "in_progress" | "completed" };
 
-  // 이슈 기반 액션
-  if (seoIssues?.some((i) => i.message.includes("alt"))) {
-    actions.push({
-      id: "action-img",
-      title: "이미지 alt 태그 추가",
-      description: "alt 속성이 없는 이미지에 설명적인 대체 텍스트를 추가하세요.",
-      category: "image",
-      priority: "high",
-      status: "pending",
-      estimatedTime: "30분",
-      aiTip: `"${keyword}" 키워드를 자연스럽게 포함시키세요.`,
-    });
+    if (!id || !status) {
+      return NextResponse.json(
+        { success: false, error: "id와 status가 필요합니다." },
+        { status: 400 },
+      );
+    }
+
+    const supabase = await createServiceRoleClient();
+
+    const { error } = await supabase
+      .from("seo_weekly_missions")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", parseInt(id, 10));
+
+    if (error) {
+      console.error("Update error:", error);
+      return NextResponse.json({ success: false, error: "상태 업데이트 실패" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("PATCH error:", error);
+    return NextResponse.json({ success: false, error: "서버 오류" }, { status: 500 });
   }
-
-  if (seoIssues?.some((i) => i.message.includes("내부 링크"))) {
-    actions.push({
-      id: "action-link",
-      title: "내부 링크 구조 개선",
-      description: "관련 페이지들 간의 내부 링크를 추가하여 사이트 구조를 강화하세요.",
-      category: "link",
-      priority: "medium",
-      status: "pending",
-      estimatedTime: "1시간",
-    });
-  }
-
-  // 기본 액션 추가
-  if (actions.length < 3) {
-    actions.push({
-      id: "action-content",
-      title: `"${keyword}" 관련 콘텐츠 작성`,
-      description: `타겟 키워드 "${keyword}"를 포함한 1,000자 이상의 고품질 콘텐츠를 작성하세요.`,
-      category: "content",
-      priority: "high",
-      status: "pending",
-      estimatedTime: "2시간",
-      aiTip: "제목, H2 태그, 첫 단락에 키워드를 자연스럽게 배치하세요.",
-    });
-  }
-
-  if (actions.length < 4) {
-    actions.push({
-      id: "action-meta",
-      title: "메타 태그 최적화",
-      description: "페이지별 고유한 title과 description 메타 태그를 작성하세요.",
-      category: "meta",
-      priority: "medium",
-      status: "pending",
-      estimatedTime: "30분",
-    });
-  }
-
-  if (actions.length < 5) {
-    actions.push({
-      id: "action-technical",
-      title: "페이지 속도 점검",
-      description: "Google PageSpeed Insights로 페이지 로딩 속도를 점검하고 개선하세요.",
-      category: "technical",
-      priority: "low",
-      status: "pending",
-      estimatedTime: "1시간",
-    });
-  }
-
-  return actions.slice(0, 5);
 }
