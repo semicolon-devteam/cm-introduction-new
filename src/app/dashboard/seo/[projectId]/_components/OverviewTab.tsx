@@ -45,15 +45,25 @@ export function OverviewTab({
   trendData,
   keywords,
 }: OverviewTabProps) {
+  // 변화율 계산 (current vs previous)
+  const currentClicks = searchConsoleData?.overview?.current?.clicks ?? 0;
+  const previousClicks = searchConsoleData?.overview?.previous?.clicks ?? 0;
+  const clicksChange =
+    previousClicks > 0 ? Math.round(((currentClicks - previousClicks) / previousClicks) * 100) : 0;
+
+  const currentPosition = searchConsoleData?.overview?.current?.position ?? 0;
+  const previousPosition = searchConsoleData?.overview?.previous?.position ?? 0;
+  const positionChange = currentPosition - previousPosition;
+
   const stats = {
-    totalClicks: searchConsoleData?.overview?.current.clicks || 0,
-    clicksChange: searchConsoleData?.overview?.change.clicks || 0,
-    avgPosition: searchConsoleData?.overview?.current.position || 0,
-    positionChange: searchConsoleData?.overview?.change.position || 0,
-    totalSessions: analyticsData?.metrics?.sessions.value || 0,
-    sessionsChange: analyticsData?.metrics?.sessions.changePercent || 0,
-    bounceRate: analyticsData?.metrics?.bounceRate.value || 0,
-    bounceChange: analyticsData?.metrics?.bounceRate.changePercent || 0,
+    totalClicks: currentClicks,
+    clicksChange,
+    avgPosition: currentPosition,
+    positionChange,
+    totalSessions: analyticsData?.metrics?.sessions?.value ?? 0,
+    sessionsChange: analyticsData?.metrics?.sessions?.changePercent ?? 0,
+    bounceRate: analyticsData?.metrics?.bounceRate?.value ?? 0,
+    bounceChange: analyticsData?.metrics?.bounceRate?.changePercent ?? 0,
   };
 
   return (
