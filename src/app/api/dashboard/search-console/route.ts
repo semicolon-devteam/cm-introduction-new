@@ -58,7 +58,8 @@ export async function GET(request: NextRequest) {
       const searchConsole = google.searchconsole({ version: "v1", auth });
 
       // 기간 설정
-      const days = period === "30days" ? 30 : period === "90days" ? 90 : 7;
+      const days =
+        period === "28days" ? 28 : period === "30days" ? 30 : period === "90days" ? 90 : 7;
       const now = new Date();
 
       // 현재 기간

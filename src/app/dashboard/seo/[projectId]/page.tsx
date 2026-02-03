@@ -113,8 +113,12 @@ export default function SiteSEOPage() {
         );
       }
 
-      if (site.analytics?.enabled) {
-        promises.push(fetch("/api/dashboard/analytics?period=30days"));
+      if (site.analytics?.enabled && site.analytics.propertyId) {
+        promises.push(
+          fetch(
+            `/api/dashboard/analytics?period=30days&propertyId=${encodeURIComponent(site.analytics.propertyId)}`,
+          ),
+        );
       }
 
       const responses = await Promise.all(promises);
