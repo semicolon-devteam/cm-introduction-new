@@ -78,6 +78,12 @@ export async function GET(request: NextRequest) {
         message: "검증할 미션이 없습니다",
         verified: 0,
         failed: 0,
+        debug: {
+          weekStart,
+          totalCompleted: allMissions.length,
+          alreadyVerified: allMissions.filter((m) => m.verification_status === "verified").length,
+          alreadyFailed: allMissions.filter((m) => m.verification_status === "failed").length,
+        },
       });
     }
 
