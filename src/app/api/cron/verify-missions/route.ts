@@ -13,15 +13,18 @@ interface MissionRow {
   verification_status?: string;
 }
 
-// Vercel Cron Secret 검증
+// Vercel Cron 요청 검증
 function verifyCronSecret(request: NextRequest): boolean {
+  // Vercel Cron은 자동으로 이 헤더를 포함
+  const isVercelCron = request.headers.get("x-vercel-cron") === "1";
+  if (isVercelCron) return true;
+
+  // 수동 호출 시 CRON_SECRET 검증
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  // CRON_SECRET이 설정되지 않은 경우 개발 환경으로 간주
-  if (!cronSecret) {
-    return process.env.NODE_ENV === "development";
-  }
+  // CRON_SECRET이 없으면 모든 요청 허용 (개발/테스트용)
+  if (!cronSecret) return true;
 
   return authHeader === `Bearer ${cronSecret}`;
 }
