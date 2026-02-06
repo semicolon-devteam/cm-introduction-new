@@ -18,6 +18,7 @@ interface KeywordsTrendSectionProps {
   existingKeywords: string[];
   onFetchTrends: () => void;
   onAddKeyword: (keyword: string) => void;
+  errorMessage?: string | null;
 }
 
 export function KeywordsTrendSection({
@@ -29,6 +30,7 @@ export function KeywordsTrendSection({
   existingKeywords,
   onFetchTrends,
   onAddKeyword,
+  errorMessage,
 }: KeywordsTrendSectionProps) {
   const getTrendIcon = (change: number) => {
     if (change > 5) return <ArrowUpRight className="w-4 h-4 text-emerald-400" />;
@@ -72,6 +74,12 @@ export function KeywordsTrendSection({
           )}
         </button>
       </div>
+
+      {errorMessage && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 mb-4">
+          <p className="text-sm text-amber-200">{errorMessage}</p>
+        </div>
+      )}
 
       {trendData.length > 0 && (
         <div className="space-y-3">

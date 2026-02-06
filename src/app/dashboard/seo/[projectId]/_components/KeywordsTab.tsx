@@ -81,6 +81,7 @@ export function KeywordsTab({
   const [trendLoading, setTrendLoading] = useState(false);
   const [trendSource, setTrendSource] = useState<"naver" | "mock" | null>(null);
   const [relatedKeywords, setRelatedKeywords] = useState<string[]>([]);
+  const [trendError, setTrendError] = useState<string | null>(null);
 
   // DB에서 키워드 로드
   const loadKeywords = useCallback(async () => {
@@ -166,7 +167,9 @@ export function KeywordsTab({
 
   const handleAiOptimize = async () => {
     if (keywordItems.length === 0) {
-      alert("키워드를 먼저 등록해주세요.");
+      setAiResult(
+        "⚠️ 키워드를 먼저 등록해주세요. 위 입력창에서 키워드를 추가한 후 다시 시도해주세요.",
+      );
       return;
     }
     setAiOptimizing(true);
@@ -192,7 +195,9 @@ export function KeywordsTab({
 
   const handleAiSuggest = async () => {
     if (keywordItems.length === 0) {
-      alert("키워드를 먼저 등록해주세요.");
+      setAiAnalysis(
+        "⚠️ 키워드를 먼저 등록해주세요. 위 입력창에서 키워드를 추가한 후 다시 시도해주세요.",
+      );
       return;
     }
     setAiSuggesting(true);
@@ -254,11 +259,12 @@ export function KeywordsTab({
 
   const handleFetchTrends = async () => {
     if (keywordItems.length === 0) {
-      alert("키워드를 먼저 등록해주세요.");
+      setTrendError("⚠️ 키워드를 먼저 등록해주세요.");
       return;
     }
     setTrendLoading(true);
     setTrendData([]);
+    setTrendError(null);
     try {
       const response = await fetch("/api/dashboard/seo/trends", {
         method: "POST",
@@ -271,10 +277,10 @@ export function KeywordsTab({
         setTrendSource(data.source);
         setRelatedKeywords(data.relatedKeywords || []);
       } else {
-        alert(`오류: ${data.error}`);
+        setTrendError(`오류: ${data.error}`);
       }
     } catch {
-      alert("트렌드 데이터 조회 중 오류가 발생했습니다.");
+      setTrendError("트렌드 데이터 조회 중 오류가 발생했습니다.");
     } finally {
       setTrendLoading(false);
     }
@@ -335,7 +341,7 @@ export function KeywordsTab({
         aiSuggesting={aiSuggesting}
         aiSuggestions={aiSuggestions}
         aiAnalysis={aiAnalysis}
-        disabled={keywordItems.length === 0}
+        disabled={false}
         onSuggest={() => void handleAiSuggest()}
         onAddSuggested={(kw) => void handleAddSuggested(kw)}
       />
@@ -345,10 +351,11 @@ export function KeywordsTab({
         trendLoading={trendLoading}
         trendSource={trendSource}
         relatedKeywords={relatedKeywords}
-        disabled={keywordItems.length === 0}
+        disabled={false}
         existingKeywords={keywordItems.map((k) => k.text)}
         onFetchTrends={() => void handleFetchTrends()}
         onAddKeyword={(kw) => void handleAddSuggested(kw)}
+        errorMessage={trendError}
       />
 
       {/* AI SEO 최적화 */}
@@ -360,7 +367,7 @@ export function KeywordsTab({
           </div>
           <button
             onClick={() => void handleAiOptimize()}
-            disabled={aiOptimizing || keywordItems.length === 0}
+            disabled={aiOptimizing}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {aiOptimizing ? (
