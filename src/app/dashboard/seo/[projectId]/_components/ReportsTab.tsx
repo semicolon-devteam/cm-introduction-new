@@ -16,13 +16,23 @@ interface SearchConsoleData {
   }>;
 }
 
+interface AnalyticsData {
+  connected: boolean;
+  metrics?: {
+    activeUsers: { value: number; changePercent?: number };
+    sessions: { value: number; changePercent?: number };
+    bounceRate: { value: number; changePercent?: number };
+  };
+}
+
 interface ReportsTabProps {
   site: SEOSite;
   keywords: string[];
   searchConsoleData: SearchConsoleData | null;
+  analyticsData: AnalyticsData | null;
 }
 
-export function ReportsTab({ site, keywords, searchConsoleData }: ReportsTabProps) {
+export function ReportsTab({ site, keywords, searchConsoleData, analyticsData }: ReportsTabProps) {
   const [generating, setGenerating] = useState(false);
   const [report, setReport] = useState<{
     markdown: string;
@@ -55,6 +65,14 @@ export function ReportsTab({ site, keywords, searchConsoleData }: ReportsTabProp
                 ctr: searchConsoleData.overview.current.ctr / 100,
                 position: searchConsoleData.overview.current.position,
                 topQueries: searchConsoleData.topQueries,
+              }
+            : null,
+          analyticsData: analyticsData?.metrics
+            ? {
+                users: analyticsData.metrics.activeUsers.value,
+                sessions: analyticsData.metrics.sessions.value,
+                pageviews: analyticsData.metrics.sessions.value, // sessions as proxy for pageviews
+                bounceRate: analyticsData.metrics.bounceRate.value,
               }
             : null,
         }),

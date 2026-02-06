@@ -264,12 +264,20 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // ID가 숫자형인지 확인 (DB 저장 후 조회하면 숫자 ID)
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      // 임시 ID (action-1 등)의 경우 - 아직 DB에 저장되지 않은 상태
+      // 에러를 반환하지 않고 성공으로 처리 (클라이언트 UI 상태만 변경)
+      return NextResponse.json({ success: true, message: "클라이언트 상태만 업데이트됨" });
+    }
+
     const supabase = await createServiceRoleClient();
 
     const { error } = await supabase
       .from("seo_weekly_missions")
       .update({ status, updated_at: new Date().toISOString() })
-      .eq("id", parseInt(id, 10));
+      .eq("id", numericId);
 
     if (error) {
       console.error("Update error:", error);

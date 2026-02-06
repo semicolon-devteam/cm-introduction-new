@@ -153,17 +153,23 @@ export async function POST(request: NextRequest) {
       case "settings": {
         const { gtm_container_id, auto_meta_tags, auto_index_now, weekly_report } = data;
 
-        const { error } = await supabase.from("seo_site_settings").upsert(
-          {
-            domain,
-            gtm_container_id,
-            auto_meta_tags,
-            auto_index_now,
-            weekly_report,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "domain" },
-        );
+        // undefined 필드는 제외하여 기존 값 보존
+        type SettingsUpdate = Partial<Omit<SEOSiteSettingsRow, "id" | "created_at">> & {
+          domain: string;
+          updated_at: string;
+        };
+        const settingsData: SettingsUpdate = {
+          domain,
+          updated_at: new Date().toISOString(),
+        };
+        if (gtm_container_id !== undefined) settingsData.gtm_container_id = gtm_container_id;
+        if (auto_meta_tags !== undefined) settingsData.auto_meta_tags = auto_meta_tags;
+        if (auto_index_now !== undefined) settingsData.auto_index_now = auto_index_now;
+        if (weekly_report !== undefined) settingsData.weekly_report = weekly_report;
+
+        const { error } = await supabase
+          .from("seo_site_settings")
+          .upsert(settingsData, { onConflict: "domain" });
 
         if (error) throw error;
         return NextResponse.json({ success: true });

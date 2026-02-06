@@ -64,7 +64,7 @@ export function NaverSEOChecklist({ domain }: NaverSEOChecklistProps) {
       case "fail":
         return <AlertCircle className="w-4 h-4 text-red-400" />;
       default:
-        return <HelpCircle className="w-4 h-4 text-[#5c5f66]" />;
+        return <HelpCircle className="w-4 h-4 text-blue-400" />;
     }
   };
 
@@ -123,9 +123,10 @@ export function NaverSEOChecklist({ domain }: NaverSEOChecklistProps) {
               <p className={`text-3xl font-bold ${getScoreColor(result.score)}`}>{result.score}</p>
             </div>
             <div className="text-right text-xs text-[#5c5f66]">
-              <p>통과: {result.items.filter((i) => i.status === "pass").length}</p>
-              <p>경고: {result.items.filter((i) => i.status === "warning").length}</p>
-              <p>실패: {result.items.filter((i) => i.status === "fail").length}</p>
+              <p>✓ 통과: {result.items.filter((i) => i.status === "pass").length}</p>
+              <p>⚠ 경고: {result.items.filter((i) => i.status === "warning").length}</p>
+              <p>✗ 실패: {result.items.filter((i) => i.status === "fail").length}</p>
+              <p>? 수동확인: {result.items.filter((i) => i.status === "unknown").length}</p>
             </div>
           </div>
 
@@ -161,13 +162,20 @@ export function NaverSEOChecklist({ domain }: NaverSEOChecklistProps) {
                             ? "bg-red-500/5 border-red-500/20"
                             : item.status === "warning"
                               ? "bg-amber-500/5 border-amber-500/20"
-                              : "bg-[#25262b] border-[#373A40]"
+                              : "bg-blue-500/5 border-blue-500/20"
                       }`}
                     >
                       <div className="flex items-start gap-2">
                         {getStatusIcon(item.status)}
                         <div className="flex-1">
-                          <p className="text-sm text-white">{item.title}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm text-white">{item.title}</p>
+                            {item.status === "unknown" && (
+                              <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
+                                수동 확인
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-[#909296] mt-0.5">{item.description}</p>
                           {item.howToFix && item.status !== "pass" && (
                             <div className="mt-2 text-xs">

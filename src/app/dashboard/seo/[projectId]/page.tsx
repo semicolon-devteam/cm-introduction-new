@@ -281,7 +281,12 @@ export default function SiteSEOPage() {
           />
         )}
         {activeTab === "reports" && (
-          <ReportsTab site={site} keywords={keywords} searchConsoleData={searchConsoleData} />
+          <ReportsTab
+            site={site}
+            keywords={keywords}
+            searchConsoleData={searchConsoleData}
+            analyticsData={analyticsData}
+          />
         )}
         {activeTab === "settings" && <SettingsTab site={site} />}
       </main>
