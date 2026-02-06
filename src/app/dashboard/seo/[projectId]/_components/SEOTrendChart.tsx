@@ -57,25 +57,30 @@ const METRIC_CONFIG = {
   },
 };
 
+// 데모용 샘플 데이터 (Search Console 미연결 시 표시)
+const generateSampleData = (): SEOTrendData[] => {
+  const data: SEOTrendData[] = [];
+  const today = new Date();
+  for (let i = 13; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    data.push({
+      date: date.toISOString().split("T")[0],
+      clicks: Math.floor(Math.random() * 150) + 50,
+      impressions: Math.floor(Math.random() * 2000) + 500,
+      position: Math.random() * 15 + 5,
+      ctr: Math.random() * 0.05 + 0.02,
+    });
+  }
+  return data;
+};
+
 export function SEOTrendChart({ trendData }: SEOTrendChartProps) {
   const [selectedMetrics, setSelectedMetrics] = useState<MetricType[]>(["clicks", "impressions"]);
   const [chartType, setChartType] = useState<"line" | "area">("area");
 
-  if (!trendData || trendData.length === 0) {
-    return (
-      <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="w-5 h-5 text-blue-400" />
-          <h3 className="text-white font-medium">Search Console 트렌드</h3>
-        </div>
-        <div className="text-center py-8 text-[#5c5f66]">
-          <BarChart3 className="w-10 h-10 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">Search Console 데이터가 없습니다</p>
-          <p className="text-xs mt-1">설정에서 Search Console을 연결해주세요</p>
-        </div>
-      </div>
-    );
-  }
+  const isDemo = !trendData || trendData.length === 0;
+  const displayData = isDemo ? generateSampleData() : trendData;
 
   const toggleMetric = (metric: MetricType) => {
     setSelectedMetrics((prev) =>
@@ -119,7 +124,7 @@ export function SEOTrendChart({ trendData }: SEOTrendChartProps) {
   };
 
   // 차트 데이터 포맷
-  const chartData = trendData.map((d) => ({
+  const chartData = displayData.map((d) => ({
     ...d,
     date: formatDate(d.date),
     ctr: d.ctr ?? 0,
@@ -135,6 +140,11 @@ export function SEOTrendChart({ trendData }: SEOTrendChartProps) {
         <div className="flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-blue-400" />
           <h3 className="text-white font-medium">Search Console 트렌드</h3>
+          {isDemo && (
+            <span className="px-2 py-0.5 text-xs bg-amber-500/20 text-amber-400 rounded">
+              샘플 데이터
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {/* 차트 타입 선택 */}
