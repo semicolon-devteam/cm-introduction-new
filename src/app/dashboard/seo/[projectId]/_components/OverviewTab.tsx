@@ -3,6 +3,7 @@
 import { TrendingUp, Target, Activity, AlertCircle } from "lucide-react";
 import { WeeklyMissionCard } from "./WeeklyMissionCard";
 import { RankChecker } from "./RankChecker";
+import { SEOTrendChart } from "./SEOTrendChart";
 import type { SEOSite } from "@/app/dashboard/_lib/seo-sites";
 
 interface SEOTrendData {
@@ -99,6 +100,9 @@ export function OverviewTab({
           trend={stats.bounceChange < 0 ? "up" : stats.bounceChange > 0 ? "down" : "neutral"}
         />
       </div>
+
+      {/* Search Console 트렌드 차트 */}
+      <SEOTrendChart trendData={trendData} />
 
       {/* AI 주간 미션 */}
       <WeeklyMissionCard domain={site.domain} keywords={keywords} />
