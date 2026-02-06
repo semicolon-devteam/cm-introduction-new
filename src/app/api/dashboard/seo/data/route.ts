@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createServiceRoleClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "도메인이 필요합니다." }, { status: 400 });
     }
 
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     switch (type) {
       case "keywords": {
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     switch (type) {
       case "keywords": {
@@ -216,7 +216,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     switch (type) {
       case "keywords": {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
-import { createServiceRoleClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 
 import { analyzeSite } from "./site-analyzer";
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     const weekStart = getWeekStart();
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     const { data, error } = await supabase
       .from("seo_weekly_missions")
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     const weekStart = getWeekStart();
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     // 이미 이번 주 미션이 있는지 확인
     if (!forceRegenerate) {
@@ -272,7 +272,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: true, message: "클라이언트 상태만 업데이트됨" });
     }
 
-    const supabase = await createServiceRoleClient();
+    const supabase = await createServerSupabaseClient();
 
     const { error } = await supabase
       .from("seo_weekly_missions")
