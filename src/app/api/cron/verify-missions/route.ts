@@ -124,16 +124,12 @@ export async function GET(request: NextRequest) {
             mission.description,
           );
 
-          // 검증 결과 DB 업데이트 (raw query로 새 컬럼 업데이트)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error: updateError } = await (supabase as any)
-            .from("seo_weekly_missions")
-            .update({
-              verification_status: result.verified ? "verified" : "failed",
-              verified_at: new Date().toISOString(),
-              verification_message: result.message,
-            })
-            .eq("id", mission.id);
+          // 검증 결과 DB 업데이트 (RPC 함수로 PostgREST 캐시 우회)
+          const { error: updateError } = await supabase.rpc("update_mission_verification", {
+            p_mission_id: mission.id,
+            p_status: result.verified ? "verified" : "failed",
+            p_message: result.message,
+          });
 
           if (updateError) {
             console.error(`Update error for mission ${mission.id}:`, updateError);
@@ -146,16 +142,12 @@ export async function GET(request: NextRequest) {
           }
         } catch (err) {
           console.error(`Verification error for mission ${mission.id}:`, err);
-          // 검증 실패 기록
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any)
-            .from("seo_weekly_missions")
-            .update({
-              verification_status: "failed",
-              verified_at: new Date().toISOString(),
-              verification_message: "검증 중 오류 발생",
-            })
-            .eq("id", mission.id);
+          // 검증 실패 기록 (RPC 함수로 PostgREST 캐시 우회)
+          await supabase.rpc("update_mission_verification", {
+            p_mission_id: mission.id,
+            p_status: "failed",
+            p_message: "검증 중 오류 발생",
+          });
           failedCount++;
         }
       }
