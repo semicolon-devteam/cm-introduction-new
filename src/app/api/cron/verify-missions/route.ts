@@ -54,21 +54,23 @@ export async function GET(request: NextRequest) {
     const supabase = await createServerSupabaseClient();
     const weekStart = getWeekStart();
 
-    // 이번 주 완료된 미션 중 아직 검증되지 않은 것들 조회
+    // 이번 주 완료된 미션 조회 (verification_status 필터는 코드에서 처리)
     const { data: completedMissions, error } = await supabase
       .from("seo_weekly_missions")
       .select("*")
       .eq("week_start", weekStart)
-      .eq("status", "completed")
-      .or("verification_status.is.null,verification_status.eq.pending");
+      .eq("status", "completed");
 
     if (error) {
       console.error("Query error:", error);
-      return NextResponse.json({ error: "DB 조회 실패" }, { status: 500 });
+      return NextResponse.json({ error: "DB 조회 실패", details: error.message }, { status: 500 });
     }
 
-    // 타입 캐스팅 (마이그레이션 전 호환성)
-    const missions = (completedMissions || []) as MissionRow[];
+    // 타입 캐스팅 및 아직 검증되지 않은 것만 필터
+    const allMissions = (completedMissions || []) as MissionRow[];
+    const missions = allMissions.filter(
+      (m) => !m.verification_status || m.verification_status === "pending",
+    );
 
     if (missions.length === 0) {
       return NextResponse.json({
