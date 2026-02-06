@@ -29,15 +29,23 @@ function verifyCronSecret(request: NextRequest): boolean {
   return authHeader === `Bearer ${cronSecret}`;
 }
 
-// 이번 주 시작일 계산 (월요일 기준)
+// 이번 주 시작일 계산 (월요일 기준, KST 시간대 사용)
 function getWeekStart(): string {
+  // Vercel 서버는 UTC로 실행되므로 KST(+9)로 변환
   const now = new Date();
-  const dayOfWeek = now.getDay();
+  const kstOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로
+  const kstNow = new Date(now.getTime() + kstOffset);
+
+  const dayOfWeek = kstNow.getUTCDay();
   const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() + diff);
-  weekStart.setHours(0, 0, 0, 0);
-  return weekStart.toISOString().split("T")[0];
+  const weekStart = new Date(kstNow);
+  weekStart.setUTCDate(kstNow.getUTCDate() + diff);
+
+  // YYYY-MM-DD 형식 반환
+  const year = weekStart.getUTCFullYear();
+  const month = String(weekStart.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(weekStart.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -73,13 +81,16 @@ export async function GET(request: NextRequest) {
     );
 
     if (missions.length === 0) {
+      const now = new Date();
       return NextResponse.json({
         success: true,
         message: "검증할 미션이 없습니다",
         verified: 0,
         failed: 0,
         debug: {
-          weekStart,
+          serverTimeUTC: now.toISOString(),
+          serverTimeKST: new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString(),
+          calculatedWeekStart: weekStart,
           totalCompleted: allMissions.length,
           alreadyVerified: allMissions.filter((m) => m.verification_status === "verified").length,
           alreadyFailed: allMissions.filter((m) => m.verification_status === "failed").length,
