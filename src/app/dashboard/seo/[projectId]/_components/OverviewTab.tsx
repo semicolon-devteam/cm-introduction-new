@@ -2,7 +2,6 @@
 
 import { TrendingUp, Target, Activity, AlertCircle } from "lucide-react";
 import { WeeklyMissionCard } from "./WeeklyMissionCard";
-import { RankChecker } from "./RankChecker";
 import { SEOTrendChart } from "./SEOTrendChart";
 import type { SEOSite } from "@/app/dashboard/_lib/seo-sites";
 
@@ -106,9 +105,6 @@ export function OverviewTab({
 
       {/* AI 주간 미션 */}
       <WeeklyMissionCard domain={site.domain} keywords={keywords} />
-
-      {/* 키워드 순위 추적 */}
-      <RankChecker domain={site.domain} keywords={keywords} />
     </div>
   );
 }

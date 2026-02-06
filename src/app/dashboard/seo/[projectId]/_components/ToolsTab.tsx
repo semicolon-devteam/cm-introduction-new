@@ -9,7 +9,6 @@ import { SiteConfigValidator } from "./SiteConfigValidator";
 import { MetaTagGenerator } from "./MetaTagGenerator";
 import { GTMTagGenerator } from "./GTMTagGenerator";
 import { IndexNowSubmitter } from "./IndexNowSubmitter";
-import { WeeklyMissionCard } from "./WeeklyMissionCard";
 import { NaverSEOChecklist } from "./NaverSEOChecklist";
 import { GoogleSEOChecklist } from "./GoogleSEOChecklist";
 import { ImageSEOAudit } from "./ImageSEOAudit";
@@ -33,7 +32,6 @@ export function ToolsTab({ site, keywords, onAddKeyword }: ToolsTabProps) {
   const competitorRef = useRef<HTMLDivElement>(null);
   const pageAnalyzerRef = useRef<HTMLDivElement>(null);
   const imageSeoRef = useRef<HTMLDivElement>(null);
-  const weeklyMissionRef = useRef<HTMLDivElement>(null);
 
   const handleAddKeyword = (keyword: string) => {
     if (onAddKeyword) {
@@ -47,7 +45,6 @@ export function ToolsTab({ site, keywords, onAddKeyword }: ToolsTabProps) {
       competitor: competitorRef,
       pageAnalyzer: pageAnalyzerRef,
       imageSeo: imageSeoRef,
-      weeklyMission: weeklyMissionRef,
     };
     const ref = refMap[tool];
     if (ref?.current) {
@@ -65,11 +62,6 @@ export function ToolsTab({ site, keywords, onAddKeyword }: ToolsTabProps) {
           onNavigateToTool={handleNavigateToTool}
         />
       )}
-
-      {/* 이번 주 SEO 미션 */}
-      <div ref={weeklyMissionRef}>
-        <WeeklyMissionCard domain={site.domain} keywords={keywords} />
-      </div>
 
       {/* 순위 추적 */}
       <RankChecker domain={site.domain} keywords={keywords} />

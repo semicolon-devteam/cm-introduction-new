@@ -47,7 +47,7 @@ const priorityColors = {
 };
 
 export function WeeklyMissionCard({ domain, keywords }: WeeklyMissionCardProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // 초기 로딩 상태
   const [generating, setGenerating] = useState(false);
   const [actions, setActions] = useState<WeeklyAction[]>([]);
   const [summary, setSummary] = useState<string>("");
@@ -129,10 +129,15 @@ export function WeeklyMissionCard({ domain, keywords }: WeeklyMissionCardProps) 
   const completedCount = actions.filter((a) => a.status === "completed").length;
   const inProgressCount = actions.filter((a) => a.status === "in_progress").length;
 
+  // 이번 주 월요일 ~ 일요일 계산
   const today = new Date();
+  const dayOfWeek = today.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
   const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() - today.getDay());
-  const dateStr = `${weekStart.getMonth() + 1}/${weekStart.getDate()} ~ ${today.getMonth() + 1}/${today.getDate()}`;
+  weekStart.setDate(today.getDate() + diffToMonday);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const dateStr = `${weekStart.getMonth() + 1}/${weekStart.getDate()} ~ ${weekEnd.getMonth() + 1}/${weekEnd.getDate()}`;
 
   return (
     <div className="bg-[#1a1b23] rounded-lg border border-[#373A40] p-5">
