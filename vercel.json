@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/verify-missions",
+      "schedule": "0 15 * * *"
+    }
+  ]
+}
