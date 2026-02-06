@@ -26,6 +26,8 @@ function getWeekStart(): string {
 
 // Row를 WeeklyAction으로 변환
 function rowToAction(row: SEOWeeklyMissionRow): WeeklyAction {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const anyRow = row as any;
   return {
     id: String(row.id),
     title: row.title,
@@ -35,6 +37,10 @@ function rowToAction(row: SEOWeeklyMissionRow): WeeklyAction {
     status: row.status,
     estimatedTime: row.estimated_time,
     aiTip: row.ai_tip || undefined,
+    // 검증 필드 (마이그레이션 전에는 undefined)
+    verificationStatus: anyRow.verification_status || undefined,
+    verifiedAt: anyRow.verified_at || undefined,
+    verificationMessage: anyRow.verification_message || undefined,
   };
 }
 

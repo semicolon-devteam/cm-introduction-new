@@ -11,6 +11,10 @@ export interface WeeklyAction {
   status: "pending" | "in_progress" | "completed";
   estimatedTime: string;
   aiTip?: string;
+  // 검증 관련 필드
+  verificationStatus?: "pending" | "verified" | "failed";
+  verifiedAt?: string;
+  verificationMessage?: string;
 }
 
 export interface WeeklyActionsResponse {

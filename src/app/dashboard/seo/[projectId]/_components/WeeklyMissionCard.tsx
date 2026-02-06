@@ -14,6 +14,8 @@ import {
   Image,
   Tag,
   RefreshCw,
+  BadgeCheck,
+  AlertTriangle,
 } from "lucide-react";
 
 interface WeeklyAction {
@@ -25,6 +27,10 @@ interface WeeklyAction {
   status: "pending" | "in_progress" | "completed";
   estimatedTime: string;
   aiTip?: string;
+  // 검증 관련 필드
+  verificationStatus?: "pending" | "verified" | "failed";
+  verifiedAt?: string;
+  verificationMessage?: string;
 }
 
 interface WeeklyMissionCardProps {
@@ -257,6 +263,37 @@ export function WeeklyMissionCard({ domain, keywords }: WeeklyMissionCardProps) 
                       {action.aiTip && (
                         <div className="mt-2 p-2 bg-[#1a1b23] rounded text-xs text-cyan-400">
                           💡 {action.aiTip}
+                        </div>
+                      )}
+                      {/* 검증 배지 - 완료된 미션에만 표시 */}
+                      {action.status === "completed" && action.verificationStatus && (
+                        <div
+                          className={`mt-2 flex items-center gap-1.5 text-xs ${
+                            action.verificationStatus === "verified"
+                              ? "text-emerald-400"
+                              : action.verificationStatus === "failed"
+                                ? "text-red-400"
+                                : "text-[#5c5f66]"
+                          }`}
+                        >
+                          {action.verificationStatus === "verified" ? (
+                            <>
+                              <BadgeCheck className="w-4 h-4" />
+                              <span>검증완료!</span>
+                            </>
+                          ) : action.verificationStatus === "failed" ? (
+                            <>
+                              <AlertTriangle className="w-4 h-4" />
+                              <span>구현이 안되었어요 ㅠ</span>
+                            </>
+                          ) : (
+                            <span>검증 대기중...</span>
+                          )}
+                          {action.verificationMessage && (
+                            <span className="text-[#5c5f66] ml-1">
+                              ({action.verificationMessage})
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
