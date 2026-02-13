@@ -56,6 +56,17 @@ export function Footer() {
             </a>
           </div>
 
+          {/* 법적 링크 */}
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <Link href="/privacy" className="hover:text-gray-300 transition-colors">
+              개인정보 처리방침
+            </Link>
+            <span>|</span>
+            <Link href="/terms" className="hover:text-gray-300 transition-colors">
+              이용약관
+            </Link>
+          </div>
+
           {/* 저작권 */}
           <p className="text-sm text-gray-500">Copy By © SEMICOLON. All rights reserved.</p>
         </div>
