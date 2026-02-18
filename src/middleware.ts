@@ -10,9 +10,14 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  // Supabase 환경변수가 없으면 미들웨어 스킵
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -37,12 +42,16 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // 보호된 라우트 정의
-  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
+  const protectedRoutes = ["/dashboard", "/profile", "/settings", "/admin"];
   const authRoutes = ["/auth/login", "/auth/register", "/auth/callback"];
+  // 자체 인증을 사용하는 라우트 (Supabase 인증 제외)
+  const selfAuthRoutes = ["/admin/reports", "/dashboard"];
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
+  const isSelfAuthRoute = selfAuthRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
+  const isProtectedRoute =
+    !isSelfAuthRoute && protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
   // 인증이 필요한 라우트에 미인증 사용자가 접근하는 경우

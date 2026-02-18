@@ -1,72 +1,74 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Mail } from "lucide-react";
+import { Logo } from "@/components/atoms/Logo";
+
+const navigation = [
+  { name: "홈", href: "/" },
+  { name: "팀", href: "/leaders" },
+  { name: "기술력", href: "/tech" },
+  { name: "문의하기", href: "/contacts" },
+];
+
 export function Footer() {
+  const pathname = usePathname();
+
   return (
-    <footer className="bg-brand-surface text-brand-white py-16">
-      <div className="max-w-screen-xl mx-auto px-6">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          {/* Column 1: About & Vision */}
-          <div className="space-y-4">
-            <h3 className="text-heading-3 font-bold mb-4">Semicolon</h3>
-            <p className="text-body-2 text-gray-light leading-relaxed">
-              당신의 커뮤니티; 우리의 솔루션;
-            </p>
-            <p className="text-caption text-gray-medium font-medium tracking-wide">
-              Start; Communicate;
-            </p>
-          </div>
+    <footer className="w-full bg-[#1a1a1a] py-8 snap-start">
+      <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
+        {/* 상단 영역: 로고 + 네비게이션 */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
+          {/* 로고 */}
+          <Link href="/">
+            <Logo size="sm" />
+          </Link>
 
-          {/* Column 2: Core Values */}
-          <div className="space-y-4">
-            <h4 className="text-body-1 font-bold mb-4">Core Values</h4>
-            <ul className="space-y-3 text-body-2 text-gray-light">
-              <li className="flex items-center gap-2">
-                <span className="text-lg">🤖</span>
-                <span>AI 친화</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-lg">⚡</span>
-                <span>압도적 속도</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-lg">🔨</span>
-                <span>과감한 혁신</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Contact */}
-          <div className="space-y-4">
-            <h4 className="text-body-1 font-bold mb-4">Contact</h4>
-            <div className="space-y-3 text-body-2 text-gray-light">
-              <div className="flex flex-col gap-1">
-                <span className="text-caption text-gray-medium">Email</span>
-                <a
-                  href="mailto:dev@team-semicolon.com"
-                  className="hover:text-brand-primary transition-colors"
-                >
-                  dev@team-semicolon.com
-                </a>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-caption text-gray-medium">GitHub</span>
-                <a
-                  href="https://github.com/semicolon-devteam"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-brand-primary transition-colors"
-                >
-                  github.com/semicolon-devteam
-                </a>
-              </div>
-            </div>
-          </div>
+          {/* 네비게이션 */}
+          <nav className="flex items-center gap-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`text-sm transition-colors ${
+                  pathname === item.href
+                    ? "text-[#068FFF] font-medium"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-medium/20 pt-8">
-          <p className="text-caption text-gray-medium text-center">
-            © 2025 Semicolon. All rights reserved.
-          </p>
+        {/* 하단 영역: 이메일 + 저작권 */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* 이메일 */}
+          <div className="flex items-center gap-2 text-gray-400">
+            <Mail size={16} />
+            <a
+              href="mailto:roki@semi-colon.space"
+              className="text-sm hover:text-white transition-colors"
+            >
+              roki@semi-colon.space
+            </a>
+          </div>
+
+          {/* 법적 링크 */}
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <Link href="/privacy" className="hover:text-gray-300 transition-colors">
+              개인정보 처리방침
+            </Link>
+            <span>|</span>
+            <Link href="/terms" className="hover:text-gray-300 transition-colors">
+              이용약관
+            </Link>
+          </div>
+
+          {/* 저작권 */}
+          <p className="text-sm text-gray-500">Copy By © SEMICOLON. All rights reserved.</p>
         </div>
       </div>
     </footer>

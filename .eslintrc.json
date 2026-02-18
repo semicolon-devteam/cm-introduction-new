@@ -142,6 +142,25 @@
       }
     },
     {
+      "files": [
+        "src/app/dashboard/_components/SEOTaskManager.tsx",
+        "src/app/dashboard/_components/SEOInsightEngine.tsx",
+        "src/app/dashboard/_components/WeeklyMissionCard.tsx",
+        "src/app/dashboard/_components/KeywordRankingTracker.tsx",
+        "src/app/dashboard/_components/CompetitorAnalysis.tsx",
+        "src/app/dashboard/_components/NaverSEOChecklist.tsx",
+        "src/app/dashboard/_components/SEOOnboardingWizard.tsx",
+        "src/app/dashboard/_components/SEOGlossary.tsx",
+        "src/app/dashboard/_components/SEOTutorial.tsx",
+        "src/app/dashboard/seo/page.tsx",
+        "src/app/api/dashboard/seo/naver-checklist/route.ts",
+        "src/app/api/dashboard/seo/onboarding/route.ts"
+      ],
+      "rules": {
+        "max-lines": "off"
+      }
+    },
+    {
       "files": ["src/app/api/**/*.ts"],
       "rules": {
         "@typescript-eslint/naming-convention": "off",

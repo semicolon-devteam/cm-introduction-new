@@ -1,9 +1,22 @@
-/**
- * Dashboard domain components barrel export
- */
-
-export { DashboardHeader } from './DashboardHeader';
-export { ProfileCard } from './ProfileCard';
-export { ActivityCard } from './ActivityCard';
-export { QuickActionsCard } from './QuickActionsCard';
-export { NewsCard } from './NewsCard';
+export * from "./types";
+export * from "./DashboardHeader";
+export * from "./DashboardTabs";
+export * from "./KPIProgressCard";
+export * from "./KPISummaryCards";
+export * from "./CalendarEvent";
+export * from "./CalendarCell";
+export { CalendarView, CalendarViewSkeleton } from "./CalendarView";
+export * from "./GoalProgressChart";
+export * from "./RevenueChart";
+export * from "./GitHubIssuesList";
+export * from "./MilestoneManager";
+export * from "./GoalManager";
+export * from "./GoalComparisonView";
+export * from "./RevenueManager";
+export * from "./OperationsManager";
+export * from "./POManager";
+export * from "./ReportGenerator";
+export * from "./GoogleAnalyticsCard";
+export * from "./SearchConsoleCard";
+export * from "./SEOProjectCard";
+export * from "./SEOProjectsSection";

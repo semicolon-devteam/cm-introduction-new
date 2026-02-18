@@ -87,106 +87,148 @@ function StarsBackground() {
   );
 }
 
-// Enhanced Comet with massive particle burst effect
+// Galaxy-inspired comet: Endless possibilities flowing like the Milky Way, then converging
+// Center must match logo semicolon position exactly where the 'I' dot appears
 function CometTrail({ progress, phase }: { progress: number; phase?: string }) {
-  const particles = useMemo(() => Array.from({ length: 800 }, (_, i) => i), []); // 800 particles for dense light effect!
+  // 600 particles for impressive visual effect
+  const particles = useMemo(() => Array.from({ length: 600 }, (_, i) => i), []);
 
-  // Adjusted center position to match semicolon symbol placement
-  const centerX = 48; // Slightly left for better alignment
-  const centerY = 42; // Slightly up for better alignment
+  // Center position - matches logo's semicolon dot at 26% viewport height
+  const centerX = 48.5;
+  const centerY = 26;
 
-  // Tail direction - particles scatter in opposite direction (upper-left)
-  const tailDirection = { x: -1, y: -0.6 };
+  // Animation phases:
+  // 0.0 - 0.37: Comet trail streams outward (like endless galaxy)
+  // 0.37 - 1.0: All particles converge back to center for logo reveal (longer converge)
+  const streamEnd = 0.37;
+  const convergeStart = 0.37;
 
-  // Fade out during formation phase
-  const opacity = phase === "formation" ? 0 : 1;
+  const isConverging = progress > convergeStart;
+  const convergeProgress = isConverging
+    ? Math.min((progress - convergeStart) / (1 - convergeStart), 1)
+    : 0;
+
+  // Easing function
+  const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+  // Seeded random function (consistent server/client)
+  const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
 
   return (
-    <>
-      {/* Comet head - stays at center, bright white core, fades out when semicolon appears */}
-      <motion.div
-        className="absolute w-3 h-3 md:w-5 md:h-5 rounded-full"
-        style={{
-          left: `${centerX}%`,
-          top: `${centerY}%`,
-          transform: "translate(-50%, -50%)",
-          background: COLORS.white,
-          boxShadow: `0 0 20px 10px ${COLORS.white}, 0 0 40px 20px ${COLORS.primary}`,
-          filter: "blur(1px)",
-          zIndex: 20,
-        }}
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: opacity,
-        }}
-        transition={{
-          duration: 0.4,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Continuous particle emission - particles spawn throughout animation */}
+    <div className="absolute inset-0 pointer-events-none">
+      {/* Galaxy stream particles - multi-layer effect */}
       {particles.map((i) => {
-        // Each particle has its own lifecycle timing
-        const particleSpawnTime = (i / particles.length) * 0.6; // Particles spawn only during first 60% (1.5s out of 2.5s)
-        const particleAge = Math.max(0, progress - particleSpawnTime); // How long this particle has existed
-        const particleLifetime = 0.6; // Each particle lives longer (60% = 1.5s) to fully disperse
-
-        // Particle visibility based on age
-        const isSpawned = progress >= particleSpawnTime;
-        const particleProgress = Math.min(particleAge / particleLifetime, 1);
-        const fadeIn = Math.min(particleProgress * 5, 1); // Quick fade in
-        const fadeOut = Math.max(0, 1 - (particleProgress - 0.5) * 2); // Start fading out after 50% of lifetime
-
-        // Hide all particles during formation phase (waiting period)
         if (phase === "formation") return null;
-        if (!isSpawned || particleProgress > 1) return null;
 
-        // Particle movement from center - travel faster and farther to leave screen
-        const travelDistance = particleAge * 250; // Increased from 150 to 250 for faster dispersion
-        const baseOpacity = 0.8;
+        // Unique properties per particle using seeded randomness
+        const seed1 = seededRandom(i * 127.1);
+        const seed2 = seededRandom(i * 269.5);
+        const seed3 = seededRandom(i * 183.3);
+        const seed4 = seededRandom(i * 311.7);
 
-        // Smaller particles for light effect (1-5px)
-        const sizeVariation = Math.sin(i * 0.5) * 1.5;
-        const size = Math.max(1, 3 - particleProgress * 2 + sizeVariation); // Shrink as they travel
+        // Particle spawn timing (staggered for stream effect)
+        const spawnTime = seed1 * streamEnd * 0.5;
+        const particleAge = Math.max(0, progress - spawnTime);
 
-        // Spread pattern - particles scatter in tail direction with variation
-        const spreadAngle = ((i % 20) - 10) * 0.05; // Slight angle variation
-        const randomSpread = Math.sin(i * 0.7) * 2;
+        // Don't show particles that haven't spawned yet (during stream phase only)
+        if (!isConverging && particleAge <= 0) return null;
 
-        // Calculate particle position - moving away from center
-        const particleX =
-          centerX + (tailDirection.x * travelDistance + randomSpread) * (1 + spreadAngle);
-        const particleY =
-          centerY + (tailDirection.y * travelDistance + (i % 7) * 0.5) * (1 + spreadAngle);
+        // Multi-directional stream - full 360 spread for galaxy explosion effect
+        // Spread particles in all directions from center
+        const angle = seed2 * Math.PI * 2; // Full 360 degrees
+
+        // Travel distance - varied for depth effect (moderate spread to stay visible)
+        const distanceLayer = seed4 < 0.3 ? 0.5 : seed4 < 0.7 ? 0.8 : 1.1; // Near, mid, far
+        const maxDistance = (40 + seed3 * 50) * distanceLayer; // 20-110% screen units (keep in view)
+        const streamProgress = Math.min(particleAge / (streamEnd - spawnTime + 0.01), 1);
+        const travelDistance = easeOutQuart(streamProgress) * maxDistance;
+
+        // Stream position - straight outward movement
+        const streamX = centerX + Math.cos(angle) * travelDistance;
+        const streamY = centerY + Math.sin(angle) * travelDistance * 0.65;
+
+        // Converge position - all rush back to center (faster with acceleration)
+        let particleX: number;
+        let particleY: number;
+
+        if (isConverging) {
+          // Faster easing with power of 4 for more dramatic convergence
+          const convergeEase = Math.pow(convergeProgress, 2.5);
+          // Variation in converge speed creates wave effect
+          const speedVar = 0.85 + seed1 * 0.3;
+          const adjustedEase = Math.min(convergeEase * speedVar, 1);
+
+          particleX = streamX + (centerX - streamX) * adjustedEase;
+          particleY = streamY + (centerY - streamY) * adjustedEase;
+        } else {
+          particleX = streamX;
+          particleY = streamY;
+        }
+
+        // Skip particles that are completely outside the viewport
+        if (particleX < -10 || particleX > 110 || particleY < -10 || particleY > 110) {
+          return null;
+        }
+
+        // Size - varied by layer, larger when converging
+        const distanceFromCenter = Math.sqrt(
+          Math.pow(particleX - centerX, 2) + Math.pow(particleY - centerY, 2),
+        );
+        const layerSize = seed4 < 0.3 ? 3 : seed4 < 0.7 ? 2 : 1.5;
+        const baseSize = layerSize + seed2 * 2;
+        const proximityBonus = Math.max(0, 1 - distanceFromCenter / 40) * 3;
+        const convergeGrow = isConverging ? convergeProgress * 5 : 0;
+        const size = Math.max(1, baseSize + proximityBonus + convergeGrow);
+
+        // Opacity - layered depth effect
+        const distanceFade = Math.max(0.15, 1 - streamProgress * 0.6);
+        const layerOpacity = seed4 < 0.3 ? 1 : seed4 < 0.7 ? 0.8 : 0.5;
+        const convergeBright = isConverging ? 0.7 + convergeProgress * 0.3 : 1;
+        const finalFade =
+          isConverging && convergeProgress > 0.85 ? 1 - (convergeProgress - 0.85) * 6.67 : 1;
+        const opacity = distanceFade * layerOpacity * convergeBright * finalFade;
+
+        // Glow effect - more particles with glow for impressive look
+        const hasGlow = i % 3 === 0;
+        const isBright = i % 8 === 0;
 
         return (
-          <motion.div
+          <div
             key={i}
             className="absolute rounded-full"
             style={{
               left: `${particleX}%`,
               top: `${particleY}%`,
-              transform: "translate(-50%, -50%)",
+              transform: "translate(-50%, -50%) translateZ(0)",
               width: `${size}px`,
               height: `${size}px`,
-              background: `radial-gradient(circle, ${COLORS.white} 0%, ${COLORS.primary} 40%, ${COLORS.primary}90 60%, transparent 80%)`,
-              opacity: baseOpacity * fadeIn * fadeOut, // Smooth fade in and out
-              filter: "blur(0.3px)",
-              boxShadow: `0 0 ${size * 3}px ${COLORS.primary}60, 0 0 ${size}px ${COLORS.white}80`,
+              background: isBright
+                ? COLORS.white
+                : hasGlow
+                  ? `radial-gradient(circle, ${COLORS.white} 0%, ${COLORS.primary} 50%, transparent 100%)`
+                  : COLORS.primary,
+              opacity,
+              boxShadow: isBright
+                ? `0 0 ${size * 3}px ${COLORS.white}, 0 0 ${size * 6}px ${COLORS.primary}`
+                : hasGlow
+                  ? `0 0 ${size * 2}px ${COLORS.primary}`
+                  : "none",
+              willChange: "left, top",
             }}
           />
         );
       })}
-    </>
+    </div>
   );
 }
 
 export function SemicolonHero() {
   const [animationPhase, setAnimationPhase] = useState<
     "space" | "bigbang" | "meteor" | "formation" | "complete"
-  >("space");
+  >("meteor"); // Start directly with meteor phase
   const [skipAnimation, setSkipAnimation] = useState(false);
   const [meteorProgress, setMeteorProgress] = useState(0);
 
@@ -204,23 +246,20 @@ export function SemicolonHero() {
     if (skipAnimation) return;
 
     const timers = [
-      setTimeout(() => setAnimationPhase("bigbang"), 1500), // 1.5s: Deep Space (shortened)
-      setTimeout(() => setAnimationPhase("meteor"), 2000), // 2s: Big Bang
       setTimeout(() => {
         setAnimationPhase("formation");
-        setMeteorProgress(1);
-      }, 5500), // 5.5s: Meteor finishes + wait for particles to clear
-      setTimeout(() => setAnimationPhase("complete"), 6500), // 6.5s: Formation (after particles clear)
+      }, 3700), // 3.7s: Particles have converged, show logo
+      setTimeout(() => setAnimationPhase("complete"), 4400), // 4.4s: Formation complete
     ];
 
     return () => timers.forEach(clearTimeout);
   }, [skipAnimation]);
 
-  // Animate meteor progress - tail extends to create movement illusion
+  // Animate meteor progress - burst out then converge back
   useEffect(() => {
     if (animationPhase === "meteor") {
       const startTime = Date.now();
-      const duration = 2500; // 2.5s: Original meteor movement duration
+      const duration = 3700; // 3.7s: Full cycle (scatter + hold + converge) (+1s)
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -230,7 +269,6 @@ export function SemicolonHero() {
         if (progress < 1) {
           requestAnimationFrame(animate);
         }
-        // After reaching 1.0, meteor stops but particles continue to disperse
       };
 
       requestAnimationFrame(animate);
@@ -264,7 +302,7 @@ export function SemicolonHero() {
               : { x: "0%", y: "0%" }
           }
           transition={{
-            duration: 2.5,
+            duration: 1.5,
             ease: [0.25, 0.1, 0.25, 1], // Custom easing for more dynamic movement
           }}
         >
@@ -284,74 +322,8 @@ export function SemicolonHero() {
         )}
       </AnimatePresence>
 
-      {/* Phase 2: Big Bang - Explosion flash that becomes comet */}
-      <AnimatePresence>
-        {(animationPhase === "bigbang" || animationPhase === "meteor") && (
-          <>
-            {/* Central flash point - matches comet position (48%, 42%) */}
-            <motion.div
-              className="absolute"
-              style={{
-                left: "48%",
-                top: "42%",
-                transform: "translate(-50%, -50%)",
-              }}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={
-                animationPhase === "bigbang"
-                  ? { scale: [0, 2, 1], opacity: [0, 1, 1] }
-                  : { scale: 0.5, opacity: 0 }
-              }
-              exit={{ opacity: 0 }}
-              transition={
-                animationPhase === "bigbang"
-                  ? { duration: 0.3 }
-                  : { duration: 0.5, ease: "easeOut" }
-              }
-            >
-              <div
-                className="w-3 h-3 md:w-5 md:h-5 rounded-full"
-                style={{
-                  background: COLORS.white,
-                  boxShadow: `0 0 60px 30px ${COLORS.white}, 0 0 100px 50px ${COLORS.primary}`,
-                }}
-              />
-            </motion.div>
-
-            {/* Radial burst effect - only during bigbang, centered at comet position */}
-            {animationPhase === "bigbang" && (
-              <>
-                <motion.div
-                  className="absolute w-[200vw] h-[200vw]"
-                  style={{
-                    left: "48%",
-                    top: "42%",
-                    transform: "translate(-50%, -50%)",
-                    background: `radial-gradient(circle, ${COLORS.white} 0%, ${COLORS.primary}40 10%, transparent 40%)`,
-                  }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: [0, 2, 1.5],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-
-                {/* Screen flash */}
-                <motion.div
-                  className="absolute inset-0 bg-white"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, 0.6, 0] }}
-                  transition={{ duration: 0.4 }}
-                />
-              </>
-            )}
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Phase 3: Meteor Speed - Fixed center with extending tail */}
-      {!skipAnimation && (animationPhase === "meteor" || animationPhase === "formation") && (
+      {/* Phase 2: Meteor Speed - Fixed center with extending tail */}
+      {!skipAnimation && animationPhase === "meteor" && (
         <CometTrail progress={meteorProgress} phase={animationPhase} />
       )}
 
@@ -669,9 +641,9 @@ export function SemicolonHero() {
                 </motion.div>
               </motion.div>
 
-              {/* Hero Text - Vision & Mission (CI Guideline) */}
+              {/* Hero Content - Final Layout */}
               <motion.div
-                className="text-center space-y-4 md:space-y-6 max-w-4xl"
+                className="w-full max-w-screen-xl mx-auto px-6"
                 initial={skipAnimation ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={
@@ -683,22 +655,68 @@ export function SemicolonHero() {
                       }
                 }
               >
-                {/* Vision - Korean */}
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">
-                  당신의 커뮤니티; 우리의 솔루션;
-                </h1>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                  {/* Left: Text Content */}
+                  <div className="space-y-6">
+                    <p className="text-gray-400 text-sm tracking-widest">SEMICOLON</p>
+                    <div>
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+                        당신의 커뮤니티
+                      </h1>
+                      <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#068FFF]">
+                        우리의 솔루션
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+                      연결과 소통을 통해 모두가 쉽게 참여할 수 있는
+                      <br />
+                      <span className="text-[#068FFF]">혁신적인 커뮤니티 생태계</span>를 만듭니다.
+                    </p>
+                    <div className="flex gap-4 pt-2">
+                      <a
+                        href="/tech"
+                        className="inline-flex items-center gap-2 bg-[#068FFF] hover:bg-[#068FFF]/90 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        우리의 기술력 보기 →
+                      </a>
+                      <a
+                        href="/contacts"
+                        className="inline-flex items-center gap-2 border border-gray-500 text-gray-300 hover:bg-white/10 px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        문의하기
+                      </a>
+                    </div>
+                  </div>
 
-                {/* Mission */}
-                <p className="text-base md:text-xl lg:text-2xl text-white/90 leading-relaxed">
-                  기술력으로 소통의 가치를 극대화하고,
-                  <br className="hidden md:block" />
-                  물리적·심리적 경계를 넘어선 진정한 연결 사회를 구현합니다.
-                </p>
+                  {/* Right: Logo + Stats */}
+                  <div className="flex flex-col items-center lg:items-end space-y-8">
+                    {/* SEMICOLON Logo */}
+                    <Image
+                      src="/images/main/Logo.svg"
+                      alt="SEMICOLON"
+                      width={330}
+                      height={80}
+                      className="h-16 md:h-20 w-auto"
+                    />
+                  </div>
+                </div>
+              </motion.div>
 
-                {/* Vision - English */}
-                <p className="text-sm md:text-lg text-white/70 font-medium tracking-wider">
-                  Start; Communicate;
-                </p>
+              {/* Scroll Indicator */}
+              <motion.div
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2.5, duration: 0.5 }}
+              >
+                <span className="text-xs text-gray-500 mb-2">SCROLL</span>
+                <div className="w-6 h-10 rounded-full border-2 border-gray-500 flex justify-center pt-2">
+                  <motion.div
+                    className="w-1.5 h-1.5 rounded-full bg-[#068FFF]"
+                    animate={{ y: [0, 12, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
               </motion.div>
             </motion.div>
           )}
