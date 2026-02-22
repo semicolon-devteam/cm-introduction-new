@@ -8,12 +8,26 @@ interface SearchConsoleMetric {
   position: number;
 }
 
+interface DailyData {
+  date: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
 interface SearchConsoleResponse {
   connected: boolean;
   overview?: {
     current: SearchConsoleMetric;
     previous: SearchConsoleMetric;
   };
+  dailyData?: DailyData[];
+  topQueries?: Array<{
+    query: string;
+    clicks: number;
+    impressions: number;
+  }>;
   error?: string;
 }
 
@@ -96,6 +110,17 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      // 일별 데이터 가져오기 (트렌드 차트용)
+      const dailyResponse = await searchConsole.searchanalytics.query({
+        siteUrl,
+        requestBody: {
+          startDate: currentStartDate.toISOString().split("T")[0],
+          endDate: currentEndDate.toISOString().split("T")[0],
+          dimensions: ["date"],
+          rowLimit: 500,
+        },
+      });
+
       // 집계 함수
       const aggregateMetrics = (rows: typeof currentData.data.rows): SearchConsoleMetric => {
         if (!rows || rows.length === 0) {
@@ -123,9 +148,32 @@ export async function GET(request: NextRequest) {
       const current = aggregateMetrics(currentData.data.rows);
       const previous = aggregateMetrics(previousData.data.rows);
 
+      // 일별 데이터 파싱
+      const dailyData: DailyData[] = (dailyResponse.data.rows || [])
+        .map((row) => ({
+          date: row.keys?.[0] ?? "",
+          clicks: row.clicks ?? 0,
+          impressions: row.impressions ?? 0,
+          ctr: row.ctr ?? 0,
+          position: row.position ?? 0,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      // 상위 쿼리 (클릭순 상위 10개)
+      const topQueries = (currentData.data.rows || [])
+        .map((row) => ({
+          query: row.keys?.[0] ?? "",
+          clicks: row.clicks ?? 0,
+          impressions: row.impressions ?? 0,
+        }))
+        .sort((a, b) => b.clicks - a.clicks)
+        .slice(0, 10);
+
       return NextResponse.json<SearchConsoleResponse>({
         connected: true,
         overview: { current, previous },
+        dailyData,
+        topQueries,
       });
     } catch (apiError) {
       console.error("Search Console API error:", apiError);
