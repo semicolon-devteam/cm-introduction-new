@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/database.types";
 
 import { analyzeSite } from "./site-analyzer";
 import { generateActionsFromIssues } from "./action-generator";
@@ -11,7 +10,24 @@ import type { WeeklyAction, WeeklyActionsResponse } from "./types";
 export type { WeeklyAction, WeeklyActionsResponse };
 
 // DB Row 타입
-type SEOWeeklyMissionRow = Database["public"]["Tables"]["seo_weekly_missions"]["Row"];
+interface SEOWeeklyMissionRow {
+  id: number;
+  domain: string;
+  week_start: string;
+  category: string;
+  title: string;
+  description: string;
+  priority: string;
+  status: string;
+  estimated_time: string | null;
+  ai_tip: string | null;
+  summary?: string | null;
+  verification_status: string | null;
+  verified_at: string | null;
+  verification_message: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 // 이번 주 시작일 계산 (월요일 기준)
 function getWeekStart(): string {
@@ -24,23 +40,28 @@ function getWeekStart(): string {
   return weekStart.toISOString().split("T")[0];
 }
 
+// 도메인 정규화
+function normalizeDomain(domain: string): string {
+  return domain
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/\/$/, "");
+}
+
 // Row를 WeeklyAction으로 변환
 function rowToAction(row: SEOWeeklyMissionRow): WeeklyAction {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const anyRow = row as any;
   return {
     id: String(row.id),
     title: row.title,
     description: row.description,
-    category: row.category,
-    priority: row.priority,
-    status: row.status,
-    estimatedTime: row.estimated_time,
+    category: row.category as WeeklyAction["category"],
+    priority: row.priority as WeeklyAction["priority"],
+    status: row.status as WeeklyAction["status"],
+    estimatedTime: row.estimated_time || "",
     aiTip: row.ai_tip || undefined,
-    // 검증 필드 (마이그레이션 전에는 undefined)
-    verificationStatus: anyRow.verification_status || undefined,
-    verifiedAt: anyRow.verified_at || undefined,
-    verificationMessage: anyRow.verification_message || undefined,
+    verificationStatus: row.verification_status as WeeklyAction["verificationStatus"],
+    verifiedAt: row.verified_at || undefined,
+    verificationMessage: row.verification_message || undefined,
   };
 }
 
@@ -54,13 +75,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "도메인이 필요합니다." }, { status: 400 });
     }
 
+    const normalizedDomain = normalizeDomain(domain);
     const weekStart = getWeekStart();
     const supabase = await createServerSupabaseClient();
 
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
       .from("seo_weekly_missions")
       .select("*")
-      .eq("domain", domain)
+      .eq("domain", normalizedDomain)
       .eq("week_start", weekStart)
       .order("priority", { ascending: true });
 
@@ -94,45 +117,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "도메인이 필요합니다." }, { status: 400 });
     }
 
+    const normalizedDomain = normalizeDomain(domain);
     const weekStart = getWeekStart();
     const supabase = await createServerSupabaseClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sbAny = supabase as any;
 
     // 이미 이번 주 미션이 있는지 확인
     if (!forceRegenerate) {
-      const { data: existing } = await supabase
+      const { data: existing } = await sbAny
         .from("seo_weekly_missions")
-        .select("id")
-        .eq("domain", domain)
+        .select("*")
+        .eq("domain", normalizedDomain)
         .eq("week_start", weekStart)
-        .limit(1);
+        .order("priority", { ascending: true });
 
       if (existing && existing.length > 0) {
-        const { data } = await supabase
-          .from("seo_weekly_missions")
-          .select("*")
-          .eq("domain", domain)
-          .eq("week_start", weekStart)
-          .order("priority", { ascending: true });
-
-        const typedData = data as SEOWeeklyMissionRow[] | null;
+        const typedData = existing as SEOWeeklyMissionRow[];
         return NextResponse.json({
           success: true,
-          actions: (typedData || []).map(rowToAction),
-          summary: typedData?.[0]?.summary || "",
+          actions: typedData.map(rowToAction),
+          summary: typedData[0]?.summary || "",
           cached: true,
         });
       }
     } else {
       // 기존 미션 삭제
-      await supabase
+      await sbAny
         .from("seo_weekly_missions")
         .delete()
-        .eq("domain", domain)
+        .eq("domain", normalizedDomain)
         .eq("week_start", weekStart);
     }
 
     // 실제 사이트 분석
-    const { issues, pageData } = await analyzeSite(domain);
+    const { issues, pageData } = await analyzeSite(normalizedDomain);
 
     // AI로 맞춤 미션 생성
     const apiKey = process.env.GROQ_API_KEY;
@@ -148,7 +167,7 @@ export async function POST(request: NextRequest) {
 
       const prompt = `당신은 SEO 전문가입니다. 다음 사이트 분석 결과를 바탕으로 이번 주에 반드시 해결해야 할 구체적인 SEO 액션 5가지를 추천해주세요.
 
-도메인: ${domain}
+도메인: ${normalizedDomain}
 타겟 키워드: ${keywords.slice(0, 5).join(", ") || "미설정"}
 
 [실제 사이트 분석 결과]
@@ -202,19 +221,19 @@ ${issuesSummary}
         }));
       } catch {
         actions = generateActionsFromIssues(issues, keywords);
-        summary = `${domain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`;
+        summary = `${normalizedDomain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`;
       }
     } else {
       actions = generateActionsFromIssues(issues, keywords);
       summary =
         issues.length > 0
-          ? `${domain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`
+          ? `${normalizedDomain}에서 ${issues.length}개의 SEO 이슈가 발견되었습니다.`
           : "기본 SEO 개선 액션을 생성했습니다.";
     }
 
     // DB에 저장
     const insertData = actions.map((action) => ({
-      domain,
+      domain: normalizedDomain,
       week_start: weekStart,
       title: action.title,
       description: action.description,
@@ -226,17 +245,18 @@ ${issuesSummary}
       summary,
     }));
 
-    const { error: insertError } = await supabase.from("seo_weekly_missions").insert(insertData);
+    const { error: insertError } = await sbAny.from("seo_weekly_missions").insert(insertData);
 
     if (insertError) {
       console.error("Insert error:", insertError);
+      return NextResponse.json({ success: false, error: "미션 저장 실패" }, { status: 500 });
     }
 
     // 저장 후 ID 포함해서 다시 조회
-    const { data: savedData } = await supabase
+    const { data: savedData } = await sbAny
       .from("seo_weekly_missions")
       .select("*")
-      .eq("domain", domain)
+      .eq("domain", normalizedDomain)
       .eq("week_start", weekStart)
       .order("priority", { ascending: true });
 
@@ -270,17 +290,15 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // ID가 숫자형인지 확인 (DB 저장 후 조회하면 숫자 ID)
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
-      // 임시 ID (action-1 등)의 경우 - 아직 DB에 저장되지 않은 상태
-      // 에러를 반환하지 않고 성공으로 처리 (클라이언트 UI 상태만 변경)
-      return NextResponse.json({ success: true, message: "클라이언트 상태만 업데이트됨" });
+      return NextResponse.json({ success: false, error: "유효하지 않은 ID" }, { status: 400 });
     }
 
     const supabase = await createServerSupabaseClient();
 
-    const { error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
       .from("seo_weekly_missions")
       .update({ status, updated_at: new Date().toISOString() })
       .eq("id", numericId);

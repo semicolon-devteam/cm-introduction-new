@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+import postgres from "postgres";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { verifyMission } from "@/app/api/dashboard/seo/weekly-actions/mission-verifier";
 
-// 미션 타입 (마이그레이션 전 타입 호환성을 위해 별도 정의)
+// 미션 타입 (site_id FK 포함)
 interface MissionRow {
   id: number;
+  site_id: string;
   domain: string;
   category: string;
   title: string;
   description: string;
   verification_status?: string;
+}
+
+// 직접 DB 연결 (PostgREST 캐시 우회)
+function getDirectDbConnection() {
+  const dbUrl = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+  if (!dbUrl) {
+    throw new Error("SUPABASE_DB_URL 환경변수가 필요합니다");
+  }
+  return postgres(dbUrl);
 }
 
 // Vercel Cron 요청 검증
@@ -58,12 +69,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let sql: ReturnType<typeof postgres> | null = null;
+
   try {
     const supabase = await createServerSupabaseClient();
     const weekStart = getWeekStart();
 
     // 이번 주 완료된 미션 조회 (verification_status 필터는 코드에서 처리)
-    const { data: completedMissions, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: completedMissions, error } = await (supabase as any)
       .from("seo_weekly_missions")
       .select("*")
       .eq("week_start", weekStart)
@@ -98,6 +112,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // 직접 DB 연결 (PostgREST 캐시 완전 우회)
+    sql = getDirectDbConnection();
+
     // 도메인별로 그룹화 (한 도메인에 대해 한 번만 사이트 분석)
     const domainGroups = missions.reduce(
       (acc, mission) => {
@@ -124,35 +141,35 @@ export async function GET(request: NextRequest) {
             mission.description,
           );
 
-          // 검증 결과 DB 업데이트 (RPC 함수로 PostgREST 캐시 우회)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error: updateError } = await (supabase.rpc as any)(
-            "update_mission_verification",
-            {
-              p_mission_id: mission.id,
-              p_status: result.verified ? "verified" : "failed",
-              p_message: result.message,
-            },
-          );
+          // 직접 SQL 실행 (postgres 패키지 - PostgREST 완전 우회)
+          const status = result.verified ? "verified" : "failed";
+          await sql`
+            UPDATE seo_weekly_missions
+            SET verification_status = ${status},
+                verification_message = ${result.message},
+                verified_at = NOW()
+            WHERE id = ${mission.id}
+          `;
 
-          if (updateError) {
-            console.error(`Update error for mission ${mission.id}:`, updateError);
+          if (result.verified) {
+            verifiedCount++;
           } else {
-            if (result.verified) {
-              verifiedCount++;
-            } else {
-              failedCount++;
-            }
+            failedCount++;
           }
         } catch (err) {
           console.error(`Verification error for mission ${mission.id}:`, err);
-          // 검증 실패 기록 (RPC 함수로 PostgREST 캐시 우회)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase.rpc as any)("update_mission_verification", {
-            p_mission_id: mission.id,
-            p_status: "failed",
-            p_message: "검증 중 오류 발생",
-          });
+          // 검증 실패 기록
+          try {
+            await sql`
+              UPDATE seo_weekly_missions
+              SET verification_status = 'failed',
+                  verification_message = '검증 중 오류 발생',
+                  verified_at = NOW()
+              WHERE id = ${mission.id}
+            `;
+          } catch {
+            // DB 연결 실패 시 무시
+          }
           failedCount++;
         }
       }
@@ -170,5 +187,10 @@ export async function GET(request: NextRequest) {
       { error: error instanceof Error ? error.message : "서버 오류" },
       { status: 500 },
     );
+  } finally {
+    // DB 연결 종료
+    if (sql) {
+      await sql.end();
+    }
   }
 }
