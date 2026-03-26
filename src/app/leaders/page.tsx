@@ -21,7 +21,7 @@ export default function LeadersPage() {
   const [visibleCategories, setVisibleCategories] = useState(0);
   const [isCultureVisible, setIsCultureVisible] = useState(false);
   const [isContactVisible, setIsContactVisible] = useState(false);
-  const [maxScrollOffset, setMaxScrollOffset] = useState(0);
+  const [maxIndex, setMaxIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const memberSectionRef = useRef<HTMLElement>(null);
   const cultureSectionRef = useRef<HTMLElement>(null);
@@ -31,28 +31,29 @@ export default function LeadersPage() {
   // 카드 크기 및 간격
   const cardWidth = 260;
   const gap = 24;
-  const totalContentWidth = leaders.length * cardWidth + (leaders.length - 1) * gap;
-  const maxIndex = 1; // 시작과 끝 두 위치만
+  const totalItems = leaders.length;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // 컨테이너 너비 측정 및 최대 스크롤 오프셋 계산
+  // 컨테이너 너비 측정 및 한 카드씩 이동하도록 maxIndex 계산
   useEffect(() => {
-    const calculateMaxScroll = () => {
+    const calculateMaxIndex = () => {
       if (sliderContainerRef.current) {
         const containerWidth = sliderContainerRef.current.offsetWidth;
-        const maxOffset = totalContentWidth - containerWidth;
-        setMaxScrollOffset(Math.max(0, maxOffset));
+        const visibleCards = Math.floor((containerWidth + gap) / (cardWidth + gap));
+        const max = Math.max(0, totalItems - visibleCards);
+        setMaxIndex(max);
+        setCurrentIndex((prev) => Math.min(prev, max));
       }
     };
 
-    calculateMaxScroll();
-    window.addEventListener("resize", calculateMaxScroll);
-    return () => window.removeEventListener("resize", calculateMaxScroll);
-  }, [totalContentWidth]);
+    calculateMaxIndex();
+    window.addEventListener("resize", calculateMaxIndex);
+    return () => window.removeEventListener("resize", calculateMaxIndex);
+  }, [totalItems]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -102,7 +103,7 @@ export default function LeadersPage() {
       {/* 첫 번째 섹션: 리더 소개 */}
       <section
         ref={sectionRef}
-        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] pt-20 snap-start"
+        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] pt-20 snap-start overflow-hidden"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
           <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
@@ -135,7 +136,7 @@ export default function LeadersPage() {
                 <div
                   className="flex gap-6 transition-transform duration-500 ease-out"
                   style={{
-                    transform: `translateX(-${currentIndex === 0 ? 0 : maxScrollOffset}px)`,
+                    transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
                   }}
                 >
                   {leaders.map((leader, index) => (
@@ -179,7 +180,7 @@ export default function LeadersPage() {
       {/* 두 번째 섹션: 참여 구성원 */}
       <section
         ref={memberSectionRef}
-        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start"
+        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start overflow-hidden"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
           <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
@@ -236,7 +237,7 @@ export default function LeadersPage() {
       {/* 세 번째 섹션: 문화 */}
       <section
         ref={cultureSectionRef}
-        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a14] to-[#000000] py-20 snap-start"
+        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a14] to-[#000000] py-20 snap-start overflow-hidden"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
           <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
@@ -288,7 +289,7 @@ export default function LeadersPage() {
       {/* 네 번째 섹션: Contact Us */}
       <section
         ref={contactSectionRef}
-        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start"
+        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] py-20 snap-start overflow-hidden"
       >
         <div className="relative z-10 flex-1 flex flex-col justify-center">
           <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">

@@ -154,7 +154,7 @@ export function JourneySection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a0a] to-[#141622] snap-start"
+      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a0a] to-[#141622] snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div ref={contentRef} className="relative z-10 flex-1 flex flex-col justify-center">

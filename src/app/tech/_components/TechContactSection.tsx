@@ -70,20 +70,20 @@ export function TechContactSection() {
 
           {/* CTA 버튼 */}
           <div
-            className={`flex items-center justify-center gap-4 mt-10 opacity-0 translate-y-6 transition-all duration-700 ease-out
+            className={`flex items-center justify-center gap-3 md:gap-4 mt-10 opacity-0 translate-y-6 transition-all duration-700 ease-out
               ${isVisible ? "opacity-100 translate-y-0" : ""}`}
             style={{ transitionDelay: "800ms" }}
           >
             <Link
               href="/contacts"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#068FFF] text-white font-medium rounded-lg hover:bg-[#0570CC] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 bg-[#068FFF] text-white text-sm md:text-base font-medium rounded-lg hover:bg-[#0570CC] transition-colors whitespace-nowrap"
             >
               무료상담 시작하기
-              <ArrowRight size={20} />
+              <ArrowRight size={18} className="md:w-5 md:h-5" />
             </Link>
             <Link
               href="/leaders"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-gray-500 text-white font-medium rounded-lg hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 border border-gray-500 text-white text-sm md:text-base font-medium rounded-lg hover:bg-white/10 transition-colors whitespace-nowrap"
             >
               리더 정보보기
             </Link>

@@ -77,7 +77,7 @@ export function ValueSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] snap-start"
+      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex items-center">
@@ -110,9 +110,9 @@ export function ValueSection() {
                 <span className="text-[#068FFF]">AI 시대</span>, 개발은 더 빨라져야 합니다.
               </p>
 
-              {/* 본문 텍스트 */}
+              {/* 본문 텍스트 - 모바일에서 숨김 */}
               <div
-                className={`space-y-4 text-sm md:text-base text-gray-400 leading-relaxed opacity-0 translate-y-6 transition-all duration-700 ease-out
+                className={`hidden md:block space-y-4 text-sm md:text-base text-gray-400 leading-relaxed opacity-0 translate-y-6 transition-all duration-700 ease-out
                   ${isVisible ? "opacity-100 translate-y-0" : ""}`}
                 style={{ transitionDelay: "600ms" }}
               >

@@ -53,16 +53,16 @@ function ValueCard({
 }) {
   return (
     <div
-      className={`p-6 bg-[#1E1E1E] border border-gray-700/50 rounded-2xl
+      className={`p-4 md:p-6 bg-[#1E1E1E] border border-gray-700/50 rounded-2xl
         opacity-0 translate-y-8 transition-all duration-700 ease-out
         ${isVisible ? "opacity-100 translate-y-0" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="flex items-center gap-3 mb-3">
-        <Icon size={24} className="text-gray-400" />
-        <h3 className="text-lg font-bold text-white">{title}</h3>
+      <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-3">
+        <Icon size={20} className="text-gray-400 md:w-6 md:h-6" />
+        <h3 className="text-base md:text-lg font-bold text-white">{title}</h3>
       </div>
-      <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+      <p className="text-xs md:text-sm text-gray-400 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -91,14 +91,14 @@ export function CoreValuesSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a0a] snap-start"
+      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a0a] snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex flex-col justify-center">
         <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
-          {/* 상단 장식 */}
+          {/* 상단 장식 - 모바일에서 숨김 */}
           <div
-            className={`flex flex-col items-center mb-6 opacity-0 transition-all duration-700 ease-out
+            className={`hidden md:flex flex-col items-center mb-6 opacity-0 transition-all duration-700 ease-out
               ${isVisible ? "opacity-100" : ""}`}
             style={{ transitionDelay: "200ms" }}
           >
@@ -107,7 +107,7 @@ export function CoreValuesSection() {
           </div>
 
           {/* 타이틀 영역 */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 md:mb-12">
             {/* 태그 */}
             <div
               className={`opacity-0 -translate-y-6 transition-all duration-700 ease-out
@@ -136,8 +136,8 @@ export function CoreValuesSection() {
             </p>
           </div>
 
-          {/* 가치 카드 그리드 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* 가치 카드 그리드 - 모바일 2열 */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {coreValues.map((value, index) => (
               <ValueCard
                 key={index}

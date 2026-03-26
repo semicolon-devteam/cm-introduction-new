@@ -122,32 +122,30 @@ export function LeadersSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [maxScrollOffset, setMaxScrollOffset] = useState(0);
+  const [maxIndex, setMaxIndex] = useState(0);
 
   // 카드 크기 및 간격 (리더 카드 5개 + 더보기 버튼 1개)
   const cardWidth = 260;
   const gap = 24;
   const totalItems = leaders.length + 1; // 리더 카드 + 더보기 버튼
-  const totalContentWidth = totalItems * cardWidth + (totalItems - 1) * gap;
 
-  // 스크롤 오프셋 계산 (마지막 위치에서 오른쪽 정렬)
-  const maxIndex = 1; // 시작과 끝 두 위치만
-
-  // 컨테이너 너비 측정 및 최대 스크롤 오프셋 계산
+  // 컨테이너 너비 측정 및 한 카드씩 이동하도록 maxIndex 계산
   useEffect(() => {
-    const calculateMaxScroll = () => {
+    const calculateMaxIndex = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        // 마지막 카드가 오른쪽 끝에 맞도록 오프셋 계산
-        const maxOffset = totalContentWidth - containerWidth;
-        setMaxScrollOffset(Math.max(0, maxOffset));
+        const visibleCards = Math.floor((containerWidth + gap) / (cardWidth + gap));
+        const max = Math.max(0, totalItems - visibleCards);
+        setMaxIndex(max);
+        // 현재 인덱스가 새 최대값을 넘으면 보정
+        setCurrentIndex((prev) => Math.min(prev, max));
       }
     };
 
-    calculateMaxScroll();
-    window.addEventListener("resize", calculateMaxScroll);
-    return () => window.removeEventListener("resize", calculateMaxScroll);
-  }, [totalContentWidth]);
+    calculateMaxIndex();
+    window.addEventListener("resize", calculateMaxIndex);
+    return () => window.removeEventListener("resize", calculateMaxIndex);
+  }, [totalItems]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -177,7 +175,7 @@ export function LeadersSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] snap-start"
+      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex flex-col justify-center">
@@ -217,7 +215,7 @@ export function LeadersSection() {
             <div className="pb-2">
               <div
                 className="flex gap-6 transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${currentIndex === 0 ? 0 : maxScrollOffset}px)` }}
+                style={{ transform: `translateX(-${currentIndex * (cardWidth + gap)}px)` }}
               >
                 {leaders.map((leader, index) => (
                   <LeaderCard
