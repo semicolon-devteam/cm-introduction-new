@@ -91,7 +91,7 @@ export function CoreValuesSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a0a] snap-start overflow-hidden"
+      className="relative min-h-screen md:h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a0a] md:snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex flex-col justify-center">

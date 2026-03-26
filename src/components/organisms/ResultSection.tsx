@@ -86,7 +86,7 @@ export function ResultSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-cover bg-center bg-no-repeat snap-start overflow-hidden"
+      className="relative min-h-screen md:h-screen w-full flex flex-col bg-cover bg-center bg-no-repeat md:snap-start overflow-hidden"
       style={{
         backgroundImage: "url('/images/main/contact-bg.png')",
       }}

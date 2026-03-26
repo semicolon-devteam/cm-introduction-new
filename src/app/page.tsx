@@ -10,7 +10,7 @@ import { Footer } from "@/components/organisms/Footer";
 
 export default function HomePage() {
   return (
-    <div className="h-screen overflow-y-auto snap-y snap-mandatory bg-black">
+    <div className="h-screen overflow-y-auto md:snap-y md:snap-mandatory bg-black">
       {/* 고정 헤더 */}
       <Header />
 

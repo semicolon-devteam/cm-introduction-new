@@ -39,14 +39,14 @@ function ValueCard({
 }) {
   return (
     <div
-      className={`p-6 bg-[#1E1E1E] border border-gray-700/50 rounded-2xl
+      className={`p-4 md:p-6 bg-[#1E1E1E] border border-gray-700/50 rounded-2xl
         opacity-0 translate-y-8 transition-all duration-700 ease-out
         ${isVisible ? "opacity-100 translate-y-0" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <h3 className="text-lg md:text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-sm text-gray-400 mb-4">{description}</p>
-      <span className="inline-block px-4 py-2 bg-[#068FFF]/20 text-[#068FFF] text-sm font-medium rounded-full border border-[#068FFF]/30">
+      <h3 className="text-base md:text-xl font-bold text-white mb-1 md:mb-2">{title}</h3>
+      <p className="text-xs md:text-sm text-gray-400 mb-2 md:mb-4">{description}</p>
+      <span className="inline-block px-3 py-1.5 md:px-4 md:py-2 bg-[#068FFF]/20 text-[#068FFF] text-xs md:text-sm font-medium rounded-full border border-[#068FFF]/30">
         {badge}
       </span>
     </div>
@@ -77,14 +77,14 @@ export function ValueSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] snap-start overflow-hidden"
+      className="relative min-h-screen md:h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] md:snap-start overflow-hidden"
     >
       {/* 콘텐츠 영역 */}
       <div className="relative z-10 flex-1 flex items-center">
         <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-20">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-20">
             {/* 좌측: 텍스트 영역 */}
-            <div className="flex flex-col gap-6 lg:gap-8 lg:max-w-[520px]">
+            <div className="flex flex-col gap-4 lg:gap-8 lg:max-w-[520px]">
               {/* 헤드라인 */}
               <div
                 className={`space-y-1 opacity-0 translate-y-6 transition-all duration-700 ease-out
@@ -170,7 +170,7 @@ export function ValueSection() {
             </div>
 
             {/* 우측: 가치 카드 영역 */}
-            <div className="flex flex-col gap-4 lg:w-[400px]">
+            <div className="flex flex-col gap-3 md:gap-4 lg:w-[400px]">
               {valueCards.map((card, index) => (
                 <ValueCard
                   key={index}

@@ -16,7 +16,7 @@ export function Footer() {
   const pathname = usePathname();
 
   return (
-    <footer className="w-full bg-[#1a1a1a] py-8 snap-start">
+    <footer className="w-full bg-[#1a1a1a] py-8 md:snap-start">
       <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
         {/* 상단 영역: 로고 + 네비게이션 */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
