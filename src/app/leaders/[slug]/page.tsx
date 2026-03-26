@@ -18,7 +18,7 @@ export default async function LeaderPage({ params }: LeaderPageProps) {
   }
 
   return (
-    <div className="h-screen overflow-y-auto snap-y snap-mandatory bg-gradient-to-b from-[#141622] to-[#000000]">
+    <div className="h-screen overflow-y-auto md:snap-y md:snap-mandatory bg-gradient-to-b from-[#141622] to-[#000000]">
       <Header />
       <LeaderDetailSection leader={leader} />
       <OtherLeadersSection currentSlug={slug} />

@@ -27,7 +27,7 @@ export function CompetitivenessSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-gradient-to-b from-[#141622] to-[#0a0a14] snap-start py-20"
+      className="relative w-full min-h-screen bg-gradient-to-b from-[#141622] to-[#0a0a14] md:snap-start py-20"
     >
       <div className="flex flex-col justify-center min-h-[calc(100vh-160px)]">
         <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">

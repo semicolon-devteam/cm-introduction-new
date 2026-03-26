@@ -22,7 +22,7 @@ export function LeaderDetailSection({ leader }: LeaderDetailSectionProps) {
   }, []);
 
   return (
-    <section className="min-h-screen pt-[120px] pb-12 snap-start">
+    <section className="min-h-screen pt-[120px] pb-12 md:snap-start">
       {/* 기존 organisms 패턴과 동일한 컨테이너 구조 */}
       <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">
         {/* Back Button Row - 별도 영역 */}

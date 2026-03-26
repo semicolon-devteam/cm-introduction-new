@@ -26,13 +26,13 @@ export default function TechPage() {
   }, []);
 
   return (
-    <div className="h-screen overflow-y-auto snap-y snap-mandatory bg-gradient-to-b from-[#141622] to-[#000000]">
+    <div className="h-screen overflow-y-auto md:snap-y md:snap-mandatory bg-gradient-to-b from-[#141622] to-[#000000]">
       <Header />
 
       {/* 첫 번째 섹션: Why Choose Semicolon */}
       <section
         ref={sectionRef}
-        className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] pt-20 snap-start"
+        className="relative min-h-screen md:h-screen w-full flex flex-col bg-gradient-to-b from-[#141622] to-[#000000] pt-20 md:snap-start"
       >
         <div className="relative z-10 flex-1 flex items-center">
           <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20">

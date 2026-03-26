@@ -28,7 +28,7 @@ export function DifferentiationSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col snap-start overflow-hidden"
+      className="relative min-h-screen md:h-screen w-full flex flex-col md:snap-start overflow-hidden"
     >
       {/* 배경 이미지 */}
       <div

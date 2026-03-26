@@ -28,7 +28,7 @@ export function SpecialOfferSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen w-full flex flex-col pt-[200px] pb-20 snap-start overflow-hidden"
+      className="relative min-h-screen w-full flex flex-col pt-[200px] pb-20 md:snap-start overflow-hidden"
     >
       {/* 배경 이미지 */}
       <div

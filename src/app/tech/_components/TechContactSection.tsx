@@ -28,7 +28,7 @@ export function TechContactSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a14] to-[#141622] snap-start"
+      className="relative min-h-screen md:h-screen w-full flex flex-col bg-gradient-to-b from-[#0a0a14] to-[#141622] md:snap-start"
     >
       <div className="relative z-10 flex-1 flex items-center justify-center">
         <div className="w-full max-w-[1220px] mx-auto px-6 md:px-10 lg:px-20 text-center">

@@ -69,7 +69,7 @@ export function OtherLeadersSection({ currentSlug }: OtherLeadersSectionProps) {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] pt-[200px] pb-20 snap-start"
+      className="relative min-h-screen w-full flex flex-col bg-gradient-to-b from-[#000000] to-[#0a0a14] pt-[200px] pb-20 md:snap-start"
     >
       <div className="relative z-10 flex-1 flex flex-col justify-center">
         {/* Title Area */}
