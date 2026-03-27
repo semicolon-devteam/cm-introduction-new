@@ -8,7 +8,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cm-introduction-new.vercel.app"),
+  metadataBase: new URL("https://www.semi-colon.space"),
   title: "Semicolon - 당신의 커뮤니티, 우리의 솔루션",
   description: "연결과 소통을 통해 혁신적인 커뮤니티 생태계를 만듭니다.",
   icons: {
