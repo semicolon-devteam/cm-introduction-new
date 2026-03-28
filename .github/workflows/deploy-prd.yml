@@ -7,5 +7,5 @@ jobs:
     uses: semicolon-devteam/actions-template/.github/workflows/ci-next-docker.yml@main
     with:
       environment: prd
-      registry: ghcr.io
+      registry: docker.io
     secrets: inherit
