@@ -1,11 +1,46 @@
 name: Deploy to Prd
+
 on:
   push:
-    branches: [main]
+    branches: ["main"]
+
+permissions:
+  id-token: write
+  contents: write
+  actions: read
+  security-events: write
+
 jobs:
   build-and-deploy:
-    uses: semicolon-devteam/actions-template/.github/workflows/ci-next-docker.yml@main
+    name: 🔨 [introduction] prd CI[Build & Push]
+    permissions:
+      contents: write
+      id-token: write
+    uses: semicolon-devteam/actions-template/.github/workflows/ci-common.yml@main
     with:
+      source_repository: introduction
       environment: prd
-      registry: docker.io
-    secrets: inherit
+      ref: main
+      dockerfile_name: Dockerfile
+    secrets:
+      ACTION_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      ENV_FILE_CONTENT: ${{ secrets.PRD_ENV_FILE_CONTENT }}
+
+  kustomize-version-update:
+    name: 🔨 [introduction] prd Kustomize Version Update
+    permissions:
+      contents: write
+      id-token: write
+    needs: build-and-deploy
+    uses: semicolon-devteam/actions-template/.github/workflows/update-kustomize-tag.yml@main
+    with:
+      ops_repository: semi-colon-ops
+      ref: main
+      environment: prd
+      service_name: proj-introduction
+      image_name: docker.io/semicolonmanager/introduction
+      tag_value: ${{ needs.build-and-deploy.outputs.image_tag }}
+    secrets:
+      ACTION_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
