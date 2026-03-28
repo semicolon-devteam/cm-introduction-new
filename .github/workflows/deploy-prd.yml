@@ -1,0 +1,11 @@
+name: Deploy to Prd
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-deploy:
+    uses: semicolon-devteam/actions-template/.github/workflows/ci-next-docker.yml@main
+    with:
+      environment: prd
+      registry: ghcr.io
+    secrets: inherit

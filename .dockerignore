@@ -1,0 +1,16 @@
+.next
+node_modules
+.env*
+.git
+.vercel
+.claude
+.vscode
+.github
+.husky
+.docs
+.playwright-mcp
+*.md
+.editorconfig
+.lintstagedrc.json
+.nvmrc
+.prettierrc.json

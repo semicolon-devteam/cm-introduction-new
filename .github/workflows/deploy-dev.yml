@@ -1,0 +1,11 @@
+name: Deploy to Dev
+on:
+  push:
+    branches: [dev]
+jobs:
+  build-and-deploy:
+    uses: semicolon-devteam/actions-template/.github/workflows/ci-next-docker.yml@main
+    with:
+      environment: dev
+      registry: ghcr.io
+    secrets: inherit
